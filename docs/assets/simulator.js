@@ -5,7 +5,7 @@
   const lamps = [...root.querySelectorAll('.sa-lamp')];
   const buttons = Object.fromEntries(['g','h','center','j'].map(k => [k,q(k)]));
   const media = typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : {matches:false};
-  const HOLD_MS = 2500, BOOT_MS = 3600, STROKE_MS = 5000;
+  const HOLD_MS = 1500, BOOT_MS = 3600, STROKE_MS = 5000;
   let power = false, on = false, level = 4, maximum = 100, draft = 100;
   let runOpening = 40, position = 0, target = 0, motion = null;
   let mode = 'normal', reference = 40, heldPosition = 0, fault = 'normal';
@@ -127,7 +127,7 @@
     }
     setText(q('status'),status);setText(q('target'),detail);setText(q('switch-state'),helper);
     q('panel').setAttribute('aria-label',label);
-    setText(q('hold-caption'),!power?'Power on to operate':mode==='max'?'Release, then tap J to exit':press?'Keep holding…':'Hold 2.5 s to set max');
+    setText(q('hold-caption'),!power?'Power on to operate':mode==='max'?'Release, then tap J to exit':press?'Keep holding…':'Hold 1.5 s to set max');
     if(!press) q('hold-progress').style.width='0%';
     stage.dataset.power=String(power);stage.dataset.on=String(on);stage.dataset.setting=String(level);
     stage.dataset.maximum=String(maximum);stage.dataset.draft=String(draft);stage.dataset.mode=mode;

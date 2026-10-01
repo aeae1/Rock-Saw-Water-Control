@@ -27,7 +27,7 @@ A short J press toggles the water command on release. The on target is the saved
 
 ## Maximum setup
 
-1. Hold J continuously for 2.5 seconds. Enter setup at the threshold.
+1. Hold J continuously for 1.5 seconds. Enter setup at the threshold.
 2. Stop simulated motion and retain the valve position reached at entry. Releasing J leaves setup active.
 3. Set the reference opening to the actual simulated position if the water command was on, or to the saved resume opening if paused.
 4. Adjust a draft maximum with G/H. Do not move the valve or change the committed maximum while editing.
@@ -67,7 +67,7 @@ Settings persist across the simulator's power switch within the current page ses
 | :--- | :--- |
 | Full actuator stroke | 5 seconds |
 | Minimum modeled move | 200 ms |
-| Maximum-mode J threshold | 2.5 seconds |
+| Maximum-mode J threshold | 1.5 seconds |
 | Startup display duration | 3.6 seconds |
 | Blue/white interval | 600 ms |
 

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 600" role="img" aria-labelledby="title description">
+  <title id="title">Reference operator controls</title>
+  <desc id="description">The console G/H rocker increases or decreases the water setting. Center or reverse it to rearm. The J trigger on the right joystick toggles water with a tap and enters maximum setup with a 1.5 second hold. Shapes are schematic and do not identify connector pins.</desc>
+  <rect width="1280" height="600" rx="18" fill="#f4f6f7"/>
+  <g font-family="Arial, sans-serif" fill="#26333d">
+    <text x="48" y="53" font-size="17" letter-spacing="2">REFERENCE OPERATOR CONTROLS</text>
+    <text x="48" y="91" font-size="28" font-weight="700">G/H · Console rocker</text>
+    <text x="680" y="91" font-size="28" font-weight="700">J · Right joystick trigger</text>
+    <path d="M632 126V538" stroke="#d7dfe4" stroke-width="2"/>
+    <g transform="translate(62 140)">
+      <path d="M30 12Q30 0 45 0H180Q194 0 194 16V287Q194 303 179 303H44Q30 303 30 287Z" fill="#a9b4bd"/>
+      <rect x="40" y="12" width="144" height="279" rx="18" fill="#18232c"/>
+      <path d="M50 36Q50 24 63 24H161Q174 24 174 38V133H50Z" fill="#3a4854" stroke="#687886" stroke-width="2"/>
+      <path d="M50 171H174V264Q174 279 160 279H64Q50 279 50 264Z" fill="#2c3944" stroke="#687886" stroke-width="2"/>
+      <rect x="50" y="142" width="124" height="19" rx="4" fill="#111b23"/>
+      <text x="112" y="90" fill="#fff" font-size="42" text-anchor="middle" font-weight="700">G</text>
+      <text x="112" y="240" fill="#fff" font-size="42" text-anchor="middle" font-weight="700">H</text>
+      <path d="M198 67H248" stroke="#248ac3" stroke-width="3"/>
+      <circle cx="198" cy="67" r="5" fill="#248ac3"/>
+      <text x="264" y="62" font-size="23" font-weight="700">Increase</text>
+      <text x="264" y="88" font-size="17" fill="#536472">One step per activation</text>
+      <path d="M198 225H248" stroke="#248ac3" stroke-width="3"/>
+      <circle cx="198" cy="225" r="5" fill="#248ac3"/>
+      <text x="264" y="220" font-size="23" font-weight="700">Decrease</text>
+      <text x="264" y="246" font-size="17" fill="#536472">One step per activation</text>
+    </g>
+    <text x="80" y="489" font-size="19">Center or reverse to rearm.</text>
+    <text x="80" y="520" font-size="17" fill="#536472">Holding G/H does not repeat.</text>
+    <g transform="translate(686 115)">
+      <path d="M7 327Q7 312 26 305L206 299Q228 299 239 315L251 348Q255 365 235 372L24 379Q4 377 4 359Z" fill="#5e6a73"/>
+      <path d="M22 320Q14 338 39 347Q143 365 224 335L214 312Z" fill="#27343e"/>
+      <path d="M36 295Q27 314 49 322Q132 342 211 310L199 287Z" fill="#414f59" stroke="#73818b" stroke-width="3"/>
+      <path d="M52 271Q43 289 67 298Q130 314 195 285L184 263Z" fill="#283640" stroke="#687883" stroke-width="3"/>
+      <path d="M68 249Q62 266 82 274Q131 289 181 263L170 242Z" fill="#414f59" stroke="#74818b" stroke-width="3"/>
+      <path d="M91 239L113 133Q105 115 98 94Q86 62 110 36Q132 17 162 26Q199 35 201 68Q200 94 179 121L150 247Q120 265 91 239Z" fill="#293640" stroke="#667580" stroke-width="3"/>
+      <path d="M119 134L155 143L133 245Q112 249 104 240Z" fill="#364651"/>
+      <path d="M111 52Q121 32 150 35Q180 38 184 62Q178 89 147 92Q117 86 111 52Z" fill="#485963"/>
+      <ellipse cx="170" cy="66" rx="13" ry="17" fill="#152731" stroke="#2b9cda" stroke-width="5"/>
+      <path d="M187 66H252" stroke="#248ac3" stroke-width="3"/>
+      <circle cx="187" cy="66" r="5" fill="#248ac3"/>
+      <text x="267" y="66" font-size="25" font-weight="700">J trigger</text>
+      <text x="267" y="94" font-size="17" fill="#536472">Rear of right grip</text>
+      <text x="267" y="168" font-size="22" font-weight="700">Tap</text>
+      <text x="267" y="197" font-size="18">Water on / off</text>
+      <text x="267" y="253" font-size="22" font-weight="700">Hold 1.5 seconds</text>
+      <text x="267" y="282" font-size="18">Enter maximum setup</text>
+    </g>
+    <text x="706" y="520" font-size="17" fill="#536472">In setup: G/H adjusts max; tap J to save.</text>
+    <text x="48" y="575" font-size="15" fill="#677784">Schematic illustration based on supplied reference photographs · Shapes and positions are illustrative · Not a connector pinout</text>
+  </g>
+</svg>

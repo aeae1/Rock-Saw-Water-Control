@@ -37,7 +37,7 @@ writeFileSync(resolve(root, 'docs/index.html'), `<!doctype html>
       <ol>
         <li>Switch machine power on. Water starts off; white lamps show the saved level. The maximum lamp alternates blue and white briefly.</li>
         <li>Tap J to toggle water. G increases the level; H decreases it. Center or reverse the rocker to make another adjustment.</li>
-        <li>Hold J for 2.5 seconds to enter maximum setup. Release J, then use G/H to choose a maximum from 10% to 100%. The valve remains at its current position.</li>
+        <li>Hold J for 1.5 seconds to enter maximum setup. Release J, then use G/H to choose a maximum from 10% to 100%. The valve remains at its current position.</li>
         <li>Tap J to save and exit. The controller selects the nearest available level under the new maximum, preserving the prior on/off command.</li>
       </ol>
       <p>Settings persist through the simulated power switch, but reset on page reload. Power loss stops the modeled motor at its current position; it does not close the valve.</p>

@@ -2,6 +2,8 @@
 
 # Rock Saw Water Control
 
+**[▶ Open Live Simulator](https://aeae1.github.io/Rock-Saw-Water-Control/)** · [Control specification](docs/control-specification.md) · [Connection diagrams](docs/connections.md)
+
 A configurable attachment water controller for machines that provide three independent operator-control outputs. The proposed system adjusts a motorized water valve and presents operating status on ten blue/white indicator lamps. Typical applications include rock saws and other attachments supplied from a pressurized water hose.
 
 **Project status:** interactive simulator and engineering specification. Controller selection, electrical design, actuator characterization, and machine integration remain open. No hardware-ready firmware is included in this revision.
@@ -16,7 +18,7 @@ To run locally, open [`docs/index.html`](docs/index.html) in a current browser, 
 python3 -m http.server 8000 --directory docs
 ```
 
-Then open `http://localhost:8000`. GitHub Pages configuration is described in [Publishing](docs/publishing.md). The expected Pages address is `https://aeae1.github.io/Rock-Saw-Water-Control/`; it becomes available only after the repository and Pages deployment are configured.
+Then open `http://localhost:8000`. GitHub Pages configuration is described in [Publishing](docs/publishing.md). The hosted version is available at [aeae1.github.io/Rock-Saw-Water-Control](https://aeae1.github.io/Rock-Saw-Water-Control/).
 
 ## Machine compatibility
 
@@ -26,13 +28,17 @@ The Takeuchi TL12R2 with an HDRS24 rock saw is the reference installation. Its G
 
 ## Operating interface
 
+![Reference control layout: G/H console rocker and J right joystick trigger](docs/assets/control-layout.svg)
+
+The illustration shows the reference machine controls schematically. It is not a connector pinout.
+
 | Control | Normal operation | Maximum-opening setup |
 | :--- | :--- | :--- |
 | Increase (G) | Increase the selected level by one | Increase the draft maximum by 10 percentage points |
 | Decrease (H) | Decrease the selected level by one | Decrease the draft maximum by 10 percentage points |
 | Rocker center | Rearm G/H | Rearm G/H |
 | Toggle/setup (J), short press | Toggle the water command | Save the maximum and return to operation |
-| Toggle/setup (J), 2.5-second hold | Enter maximum-opening setup | Remain in setup |
+| Toggle/setup (J), 1.5-second hold | Enter maximum-opening setup | Remain in setup |
 | Machine power | Start with water commanded off | Discard an unsaved maximum on power loss |
 
 G/H produces one adjustment per activation. Holding a rocker direction does not repeat. A reversal passes through center and rearms the input.
@@ -82,7 +88,16 @@ npm ci
 npm run check
 ```
 
-Edit `simulator/source.html`, then run `npm run build`. The build extracts the simulator into the committed HTML, CSS, and JavaScript under `docs/`. Tests exercise startup, rocker rearming, J timing, maximum remapping, fault handling, and power interruption using a deterministic clock.
+Edit `simulator/source.html`, then run `npm run build`. The build extracts the simulator into the committed HTML, CSS, and JavaScript under `docs/`. The 46 deterministic tests include all 200 initial-level/new-maximum combinations across running and paused operation, gesture boundaries, interrupted motion, and 4,000 seeded stress actions. GitHub Actions runs them on Node.js 22 and 24, checks build reproducibility, and runs 12 real-browser cases across desktop Chromium, mobile Chromium, and mobile WebKit. Browser reports and failure traces are retained as workflow artifacts.
+
+To run browser checks locally:
+
+```sh
+npx playwright install --with-deps chromium webkit
+npm run test:browser
+```
+
+The test suite covers the simulator. Physical controller firmware will need its own fault-injection and hardware acceptance tests before field deployment.
 
 ## Scope and attribution
 
