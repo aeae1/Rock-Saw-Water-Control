@@ -14,6 +14,8 @@ The current pricing basis is **1/2 inch**, with 3/8 inch retained as an option i
 
 A [3/8-inch U.S. Solid listing](https://ussolid.com/products/38-3-way-brass-motorized-ball-valve-2-wire-9-24v-acdc-l-type-standard-port-with-manual-function-ip67) is $69.67, but it is a three-way L-port routing valve, not the two-way proportional candidate needed here. A suitable 3/8-inch two-way U.S. Solid percentage-control model was not verified in this review. The 1/2-inch range currently offers a clearer selection.
 
+The newer [build guide](build-guide.md) selects DFR1229 ($15.90, 3.3–5 V supply) as the next current-output bench candidate and SEN0262 plus ADS1115 for feedback. The older DFR0972 comparison below is retained for reference. The [flow-calibration plan](flow-calibration.md) defines the intended measured lookup curve.
+
 ## Component price comparison
 
 Manufacturer listed prices, USD, before tax and shipping; retrieved on the review date. This is not a complete project quotation.
@@ -89,7 +91,7 @@ Reflashing the wireless module is a third possibility if its exact chip and boar
 
 ## Required behavior before either percentage interface is accepted
 
-The simulator assumes that entering maximum setup **holds the actual current opening**, including during travel. A percentage command alone does not prove this capability. Verify a stop-and-hold command, or sufficiently current position feedback and a demonstrated hold-at-position method. Do not substitute the previous target for actual position. If the selected valve cannot satisfy this behavior, the operator specification must be revisited explicitly.
+The simulator assumes that entering Set Max **holds the actual current opening while commanded on**, including during opening travel. An OFF command continues closing. A percentage command alone does not prove this capability. Verify a stop-and-hold command, or sufficiently current position feedback and a demonstrated hold-at-position method. Do not substitute the previous target for actual position. If the selected valve cannot satisfy this behavior, the operator specification must be revisited explicitly.
 
 The smart model's listing specifies 5 V power, 8–10-second travel, and an ambient ceiling of 45°C / 113°F. Its [manual](https://file.ussolid.com/content/JFMSV/Instruction%20Manual-U.S.%20Solid%20Smart%20Motorized%20Ball%20Valve2025.pdf) and product page describe power-loss closure and configurable power-off states. Verify the supplied unit's configured behavior, including after a short powered interval and a controller reset. The simulator currently models the non-return reversing-valve baseline, not that smart-valve behavior.
 

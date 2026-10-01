@@ -1,6 +1,6 @@
 # Firmware Integration
 
-No flashable firmware is supplied in revision 0.1. The browser simulator is the executable interface reference. It uses idealized valve position and cannot substitute for physical actuator characterization.
+No flashable firmware is supplied in revision 0.3. The browser simulator is the executable interface reference. It uses idealized valve position and cannot substitute for physical actuator characterization.
 
 ## Required interfaces
 
@@ -18,3 +18,5 @@ No flashable firmware is supplied in revision 0.1. The browser simulator is the 
 Port the rules in [Control Specification](../docs/control-specification.md), including release-based short presses, maximum-mode position hold, nearest-step rounding, and prior on/off-state retention. Driver outputs must have defined reset and brownout behavior. Do not treat retained settings as proof of mechanical position.
 
 Before implementation, select the actuator and output electronics, measure movement behavior, establish the machine pinout, and choose the position-reference strategy. The simulator's 5-second stroke and 200 ms minimum movement are display-model values, not approved firmware constants.
+
+The current [build and pin-allocation plan](../docs/build-guide.md), [fault contract](../docs/faults.md), and [flow-curve plan](../docs/flow-calibration.md) define the next implementation. Use Normal, Set Max and Flush as the user-facing mode names. The three-second fault acknowledgement is distinct from the 1.5-second mode hold.

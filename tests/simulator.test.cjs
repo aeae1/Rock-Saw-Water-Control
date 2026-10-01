@@ -51,7 +51,10 @@ function simulator({ reducedMotion = false } = {}) {
   const tap = () => { down(); advance(100); up(); };
   const hold = () => { down(); advance(1501); up(); };
   function draft(cap) {
+    assert.equal(stage.dataset.mode, 'max', 'draft edits require maximum setup');
+    let attempts = 0;
     while (Number(stage.dataset.draft) !== cap) {
+      assert.ok(++attempts <= 10, 'draft adjustment must make bounded progress');
       click('center'); click(Number(stage.dataset.draft) > cap ? 'h' : 'g');
     }
   }
@@ -83,7 +86,8 @@ test('every paused maximum/level combination alternates blue with the underlying
   for (let cap = 10; cap <= 100; cap += 10) {
     const s = simulator(); s.power(true); s.hold(); s.draft(cap); s.tap(); s.advance(32);
     for (let level = 1; level <= 10; level++) {
-      while (Number(s.stage.dataset.setting) !== level) {
+      for (let guard=0; Number(s.stage.dataset.setting) !== level; guard++) {
+        assert.ok(guard < 12, 'level adjustment must make progress');
         s.click('center'); s.click(Number(s.stage.dataset.setting) > level ? 'h' : 'g');
       }
       const base = Array.from({ length: 10 }, (_, i) => i < level ? 'white' : 'off');
@@ -102,7 +106,7 @@ test('running, drain, setup, fault, and power-off displays take priority over th
   const s = simulator(); s.power(true); s.hold(); s.draft(70);
   assert.equal(s.stage.dataset.colors.split(',').filter(c => c !== 'off').length, 1);
   s.tap();
-  while (Number(s.stage.dataset.setting) > 4) { s.click('center'); s.click('h'); }
+  for (let guard=0; Number(s.stage.dataset.setting) > 4; guard++) { assert.ok(guard < 12); s.click('center'); s.click('h'); }
   s.tap(); s.advance(6000);
   assert.equal(s.stage.dataset.colors, 'blue,blue,blue,blue,off,off,off,off,off,off');
   s.tap(); s.advance(700);
@@ -160,7 +164,7 @@ test('power interruption stops travel, retains settings, and discards draft', ()
   s.advance(3000); assert.equal(s.pos(), stopped);
   assert.equal(s.stage.dataset.colors, Array(10).fill('off').join(','));
   s.power(true); assert.equal(s.stage.dataset.on, 'false');
-  s.advance(2000); assert.equal(s.pos(), 0);
+  s.advance(2000); s.click('center'); assert.equal(s.pos(), 0);
   assert.equal(s.stage.dataset.setting, '8'); assert.equal(s.stage.dataset.maximum, '50');
   s.hold(); s.draft(20); s.power(false); s.power(true);
   assert.equal(s.stage.dataset.maximum, '50'); assert.equal(s.stage.dataset.mode, 'normal');
@@ -181,8 +185,9 @@ test('fault stops movement and inhibits controls until cleared', () => {
   assert.equal(s.pos(), stopped); assert.equal(s.q('j').disabled, true);
   assert.equal(s.stage.dataset.colors, 'off,off,off,white,off,off,off,off,off,off');
   s.click('g'); assert.equal(s.stage.dataset.setting, '4');
-  s.fault('input'); assert.equal(s.stage.dataset.colors.split(',')[6], 'white');
-  s.fault('normal'); s.advance(2500); assert.equal(s.pos(), 0); assert.equal(s.q('j').disabled, false);
+  s.fault('input'); assert.equal(s.stage.dataset.colors.split(',')[3], 'white');
+  assert.equal(s.stage.dataset.latchedFaults, 'driver,input');
+  s.fault('normal'); s.click('reset-fault'); s.advance(2500); assert.equal(s.pos(), 0); assert.equal(s.q('j').disabled, false);
 });
 
 test('reduced motion uses a steady maximum marker', () => {
@@ -212,7 +217,7 @@ test('changing reduced-motion preference stops and restarts idle blinking withou
 
 
 test('short/long boundary is exact and a long release never toggles water', () => {
-  for (const [duration, mode, on] of [[1499, 'normal', 'true'], [1500, 'max', 'false'], [1501, 'max', 'false']]) {
+  for (const [duration, mode, on] of [[499, 'normal', 'true'], [500, 'normal', 'false'], [1499, 'normal', 'false'], [1500, 'max', 'false'], [1501, 'max', 'false']]) {
     const s = simulator(); s.power(true); s.down(); s.advance(duration); s.up();
     assert.equal(s.stage.dataset.mode, mode); assert.equal(s.stage.dataset.on, on);
   }
@@ -270,12 +275,12 @@ test('cleaning restores the quantized running opening and locks G/H against acci
   const s = simulator(); s.power(true); s.tap(); s.advance(2500);
   s.hold(); s.draft(60); s.hold(); s.advance(6000);
   assert.equal(s.pos(), 100); assert.equal(s.stage.dataset.setting, '7'); assert.equal(s.stage.dataset.runOpening, '42');
-  for (const key of ['g', 'h', 'center']) {
+  for (const key of ['g', 'h']) {
     assert.equal(s.q(key).disabled, true); s.click(key);
   }
   assert.equal(s.stage.dataset.setting, '7'); assert.equal(s.stage.dataset.maximum, '60');
-  s.hold(); assert.equal(s.stage.dataset.mode, 'clean'); assert.equal(s.pos(), 100);
-  s.tap(); s.advance(6000);
+  s.down(); assert.equal(s.stage.dataset.mode, 'normal');
+  s.advance(6000); s.up();
   assert.equal(s.stage.dataset.mode, 'normal'); assert.equal(s.stage.dataset.on, 'true');
   assert.equal(s.pos(), 42); assert.equal(s.q('g').disabled, false);
 });
@@ -284,9 +289,9 @@ test('second-hold boundary is 1.5 seconds, and its release never exits cleaning'
   for (const duration of [1499, 1500, 1501]) {
     const s = simulator(); s.power(true); s.hold(); s.draft(70);
     s.down(); s.advance(duration); s.up();
-    assert.equal(s.stage.dataset.mode, duration < 1500 ? 'normal' : 'clean');
+    assert.equal(s.stage.dataset.mode, duration < 1500 ? 'max' : 'clean');
     assert.equal(s.stage.dataset.target, duration < 1500 ? '0' : '100');
-    assert.equal(s.stage.dataset.maximum, '70');
+    assert.equal(s.stage.dataset.maximum, duration < 1500 ? '100' : '70');
   }
 });
 
@@ -326,7 +331,8 @@ test('power interruption or fault during cleaning stops travel and recovery clos
     interrupt === 'power' ? s.power(false) : s.fault('driver');
     const stopped = s.pos(); assert.ok(stopped > 0 && stopped < 100);
     s.advance(6000); assert.equal(s.pos(), stopped); assert.equal(s.stage.dataset.mode, 'normal');
-    interrupt === 'power' ? s.power(true) : s.fault('normal');
+    s.click('center');
+    interrupt === 'power' ? s.power(true) : (s.fault('normal'), s.click('reset-fault'));
     s.advance(6000);
     assert.equal(s.stage.dataset.on, 'false'); assert.equal(s.pos(), 0); assert.equal(s.stage.dataset.maximum, '50');
   }
@@ -354,7 +360,7 @@ test('normal J taps under 500 ms never show hold feedback and still toggle on re
         s.down(); s.advance(duration);
         assert.equal(s.stage.dataset.colors, colors);
         assert.equal(s.q('panel').getAttribute('aria-label'), label);
-        assert.equal(s.q('mode-label').textContent, '10 LEVELS');
+        assert.equal(s.q('mode-label').textContent, 'NORMAL');
         assert.equal(s.q('hold-caption').textContent, 'Hold 1.5 s to set max');
         assert.equal(s.q('hold-progress').style.width, '0%');
         assert.equal(s.stage.dataset.on, String(running));
@@ -413,7 +419,7 @@ test('fault clearing closes the valve; a power cycle alone does not clear the fa
   const s = simulator(); s.power(true); s.tap(); s.advance(2500); s.fault('driver');
   s.power(false); s.power(true); s.advance(4000);
   assert.equal(s.pos(), 40); assert.equal(s.q('j').disabled, true);
-  s.fault('normal'); s.advance(2500); assert.equal(s.pos(), 0); assert.equal(s.stage.dataset.on, 'false');
+  s.fault('normal'); s.click('reset-fault'); s.advance(2500); assert.equal(s.pos(), 0); assert.equal(s.stage.dataset.on, 'false');
 });
 
 test('rapid on/off reversals settle at the final command without overshoot', () => {
@@ -432,11 +438,11 @@ test('setup entered during motion freezes the position reached at entry', () => 
   s.tap(); s.advance(6000); assert.equal(s.pos(), 30);
 });
 
-test('setup entered while closing holds motion, then continues closing on save', () => {
+test('Set Max never interrupts an OFF command that is still closing', () => {
   const s = simulator(); s.power(true);
   for (let i = 0; i < 6; i++) { s.click('center'); s.click('g'); }
   s.tap(); s.advance(6000); s.tap(); s.hold(); const frozen = s.pos();
-  assert.ok(frozen > 0 && frozen < 100); s.draft(60); s.advance(8000); assert.equal(s.pos(), frozen);
+  assert.ok(frozen > 0 && frozen < 100); s.draft(60); s.advance(8000); assert.equal(s.pos(), 0);
   s.tap(); s.advance(6000); assert.equal(s.pos(), 0); assert.equal(s.stage.dataset.on, 'false');
   assert.equal(s.stage.dataset.runOpening, '60');
 });
@@ -456,7 +462,8 @@ for (const running of [false, true]) {
     test('all ten levels remap to nearest available position at max ' + cap + '%, ' + (running ? 'running' : 'paused'), () => {
       for (let startingLevel = 1; startingLevel <= 10; startingLevel++) {
         const s = simulator({ reducedMotion: true }); s.power(true);
-        while (Number(s.stage.dataset.setting) !== startingLevel) {
+        for (let guard=0; Number(s.stage.dataset.setting) !== startingLevel; guard++) {
+          assert.ok(guard < 12, 'starting level adjustment must make progress');
           s.click('center'); s.click(Number(s.stage.dataset.setting) < startingLevel ? 'g' : 'h');
         }
         if (running) { s.tap(); s.advance(6000); }
@@ -479,15 +486,16 @@ for (const seed of [17, 103, 4099, 65537]) {
     const next = n => { rng = (Math.imul(rng, 1664525) + 1013904223) >>> 0; return rng % n; };
     const s = simulator({ reducedMotion: true });
     for (let i = 0; i < 1000; i++) {
-      switch (next(10)) {
+      switch (next(12)) {
         case 0: s.power(s.stage.dataset.power !== 'true'); break;
         case 1: s.tap(); break;
         case 2: s.hold(); break;
         case 3: s.click('g'); break;
         case 4: s.click('h'); break;
         case 5: s.click('center'); break;
-        case 6: if (!s.q('fault').disabled) s.fault(['normal', 'driver', 'input'][next(3)]); break;
+        case 6: if (!s.q('fault').disabled) s.fault(['normal', 'normal', 'driver', 'input', 'supply', 'stall', 'communication', 'timeout', 'settings', 'position', 'temperature', 'trigger'][next(12)]); break;
         case 7: s.down(); s.advance(next(2600)); s.emit(s.q('j'), 'pointercancel', { pointerId: 1 }); break;
+        case 8: s.fault('normal'); s.click('center'); s.click('reset-fault'); break;
         default: s.advance(next(7000));
       }
       const d = s.stage.dataset, level = Number(d.setting), cap = Number(d.maximum);
@@ -498,12 +506,129 @@ for (const seed of [17, 103, 4099, 65537]) {
       assert.equal(Number(d.runOpening), level * cap / 10, 'repeatability at action ' + i);
       assert.equal(d.colors.split(',').length, 10);
       assert.ok(d.colors.split(',').every(c => ['off', 'blue', 'white'].includes(c)));
-      assert.ok(s.pendingJobs() <= 2, 'no timer accumulation at action ' + i);
+      assert.ok(s.pendingJobs() <= 3, 'no timer accumulation at action ' + i);
       if (d.power === 'false') {
         assert.equal(d.on, 'false'); assert.equal(d.mode, 'normal');
         assert.equal(d.colors, Array(10).fill('off').join(','));
       }
-      if (d.mode === 'max') assert.equal(d.moving, 'false');
+      if (d.mode === 'max' && d.on === 'true') assert.equal(d.moving, 'false');
+      if (d.fault !== 'normal') { assert.equal(d.on, 'false'); assert.equal(d.moving, 'false'); assert.equal(d.positionKnown, 'false'); }
+      if (d.recovering === 'true') { assert.equal(d.target, '0'); assert.equal(d.on, 'false'); assert.equal(d.inputsReady, 'false'); }
     }
   });
 }
+
+test('aborted holds cannot toggle water or commit a draft', () => {
+  for (const duration of [500, 501, 1000, 1499]) {
+    for (const running of [false, true]) {
+      const s = simulator(); s.power(true);
+      if (running) { s.tap(); s.advance(6000); }
+      s.down(); s.advance(duration); s.up();
+      assert.equal(s.stage.dataset.on, String(running)); assert.equal(s.stage.dataset.mode, 'normal');
+      s.hold(); s.draft(30); s.down(); s.advance(duration); s.up();
+      assert.equal(s.stage.dataset.mode, 'max'); assert.equal(s.stage.dataset.maximum, '100');
+    }
+  }
+});
+
+test('a Flush hold started during closing cannot queue entry after closing completes', () => {
+  const s = simulator(); s.power(true);
+  for (let i = 0; i < 6; i++) { s.click('center'); s.click('g'); }
+  s.tap(); s.advance(6000); s.tap(); s.hold();
+  assert.equal(s.stage.dataset.mode, 'max'); assert.equal(s.stage.dataset.moving, 'true');
+  s.down(); s.advance(6000); s.up();
+  assert.equal(s.pos(), 0); assert.equal(s.stage.dataset.mode, 'max');
+  s.hold(); assert.equal(s.stage.dataset.mode, 'clean');
+});
+
+test('fresh Flush press exits immediately and consumes its hold and release', () => {
+  for (const running of [false, true]) {
+    const s = simulator(); s.power(true);
+    if (running) { s.tap(); s.advance(6000); }
+    s.hold(); s.hold(); s.advance(1000); s.down();
+    assert.equal(s.stage.dataset.mode, 'normal'); assert.equal(s.stage.dataset.on, String(running));
+    s.advance(2000); s.up(); s.advance(6000);
+    assert.equal(s.stage.dataset.mode, 'normal'); assert.equal(s.pos(), running ? 40 : 0);
+    assert.equal(s.stage.dataset.on, String(running));
+  }
+});
+
+test('startup closes fully and requires released J and centered rocker; nothing is queued', () => {
+  const s = simulator(); s.power(true); s.tap(); s.advance(6000); s.click('g');
+  s.down(); s.power(false); s.power(true);
+  assert.equal(s.stage.dataset.recovering, 'true'); assert.equal(s.stage.dataset.inputsReady, 'false');
+  s.advance(7000); assert.equal(s.pos(), 0); assert.equal(s.stage.dataset.inputsReady, 'false');
+  s.up(); assert.equal(s.stage.dataset.inputsReady, 'false');
+  s.click('center'); assert.equal(s.stage.dataset.inputsReady, 'true'); assert.equal(s.stage.dataset.on, 'false');
+  assert.equal(s.stage.dataset.mode, 'normal'); s.tap(); assert.equal(s.stage.dataset.on, 'true');
+});
+
+test('J commands during recovery are discarded until release even after closing finishes', () => {
+  const s = simulator(); s.power(true); s.tap(); s.advance(6000); s.power(false); s.power(true);
+  s.down(); s.advance(6000); assert.equal(s.stage.dataset.inputsReady, 'false');
+  s.up(); assert.equal(s.stage.dataset.inputsReady, 'true'); assert.equal(s.stage.dataset.on, 'false');
+  s.tap(); assert.equal(s.stage.dataset.on, 'true');
+});
+
+const faultTypes = ['supply', 'stall', 'communication', 'driver', 'timeout', 'settings', 'input', 'position', 'temperature', 'trigger'];
+for (const [index, cause] of faultTypes.entries()) {
+  test('fault ' + (index + 1) + ' ' + cause + ': latches, blocks restart, then acknowledges and references closed', () => {
+    for (const mode of ['normal', 'max', 'clean']) {
+      const s = simulator(); s.power(true); s.tap(); s.advance(6000);
+      if (mode !== 'normal') s.hold();
+      if (mode === 'clean') s.hold();
+      s.advance(1000); s.fault(cause); const stopped = s.pos();
+      assert.equal(s.stage.dataset.colors.split(',')[index], 'white');
+      assert.equal(s.stage.dataset.on, 'false'); assert.equal(s.stage.dataset.mode, 'normal');
+      s.click('reset-fault'); s.tap(); s.advance(6000); assert.equal(s.pos(), stopped);
+      s.power(false); s.power(true); assert.equal(s.stage.dataset.fault, cause);
+      s.fault('normal'); s.advance(6000); assert.equal(s.pos(), stopped); // Cause removal is not acknowledgement.
+      s.click('reset-fault'); assert.equal(s.stage.dataset.fault, 'normal');
+      assert.equal(s.stage.dataset.recovering, 'true'); s.advance(6000);
+      assert.equal(s.pos(), 0); assert.equal(s.stage.dataset.on, 'false'); assert.equal(s.stage.dataset.inputsReady, 'true');
+    }
+  });
+}
+
+test('fault reset requires neutral controls, accepts a fresh 3-second J hold, and consumes release', () => {
+  const s = simulator(); s.power(true); s.tap(); s.advance(6000); s.click('g'); s.fault('driver'); s.fault('normal');
+  s.click('reset-fault'); assert.equal(s.stage.dataset.fault, 'driver');
+  s.click('center'); s.down(); s.advance(2999); assert.equal(s.stage.dataset.fault, 'driver');
+  s.up(); assert.equal(s.stage.dataset.fault, 'driver');
+  s.down(); s.advance(3000); assert.equal(s.stage.dataset.fault, 'normal');
+  s.advance(6000); assert.equal(s.stage.dataset.inputsReady, 'false');
+  s.up(); assert.equal(s.stage.dataset.inputsReady, 'true'); assert.equal(s.stage.dataset.on, 'false');
+  s.tap(); assert.equal(s.stage.dataset.on, 'true');
+});
+
+test('a new cause during reset cancels acknowledgement and multiple faults stay latched', () => {
+  const s = simulator(); s.power(true); s.fault('driver'); s.fault('normal');
+  s.down(); s.advance(2000); s.fault('supply'); s.advance(2000); s.up();
+  assert.equal(s.stage.dataset.fault, 'supply'); assert.equal(s.stage.dataset.latchedFaults, 'driver,supply');
+  s.fault('normal'); assert.equal(s.stage.dataset.fault, 'supply');
+  s.click('reset-fault'); assert.equal(s.stage.dataset.latchedFaults, '');
+});
+
+test('invalid settings reset to documented defaults only on acknowledgement', () => {
+  const s = simulator(); s.power(true); s.hold(); s.draft(30); s.tap(); s.click('center');
+  s.fault('settings'); s.fault('normal'); assert.equal(s.stage.dataset.maximum, '30');
+  s.click('reset-fault'); assert.equal(s.stage.dataset.maximum, '100'); assert.equal(s.stage.dataset.setting, '4');
+  assert.equal(s.stage.dataset.runOpening, '40'); assert.equal(s.stage.dataset.on, 'false');
+});
+
+test('30-second stuck-J watchdog latches fault 10 and requires release before reset', () => {
+  const s = simulator(); s.power(true); s.down(); s.advance(29999);
+  assert.equal(s.stage.dataset.fault, 'normal'); s.advance(1);
+  assert.equal(s.stage.dataset.fault, 'trigger'); assert.equal(s.q('reset-fault').disabled, true);
+  s.click('reset-fault'); assert.equal(s.stage.dataset.fault, 'trigger');
+  s.up(); s.click('reset-fault'); assert.equal(s.stage.dataset.fault, 'normal'); assert.equal(s.stage.dataset.on, 'false');
+});
+
+test('unrelated keyboard release does not end a J hold and pointer compatibility clicks cannot toggle twice', () => {
+  const s = simulator(); s.power(true);
+  s.emit(s.q('j'), 'keydown', { key: 'Enter', repeat: false }); s.advance(100);
+  s.emit(s.q('j'), 'keyup', { key: ' ' }); assert.equal(s.stage.dataset.on, 'false');
+  s.advance(1400); assert.equal(s.stage.dataset.mode, 'max');
+  s.emit(s.q('j'), 'keyup', { key: 'Enter' }); s.advance(1000);
+  s.emit(s.q('j'), 'click', { detail: 1 }); assert.equal(s.stage.dataset.mode, 'max');
+});

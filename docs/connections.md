@@ -1,53 +1,55 @@
 # Conceptual Connections
 
-The architecture applies to machines with three independent operator-control outputs: increase, decrease, and toggle/setup. The Takeuchi TL12R2 / HDRS24 is the reference installation. Other machines require their own harness mapping and input conditioning.
+The architecture applies to machines with three independent controls: increase, decrease, and trigger. The Takeuchi TL12R2 / HDRS24 is the reference installation. G/H/J identify operator functions here; they are not a released machine connector pinout.
 
-These diagrams define functional interfaces. Connector cavities, protection-component values, conductor sizes, and driver details are not released for construction. G, H, and J below identify intended operator functions; their electrical behavior must be verified on the specific TL12R2 and attachment harness.
+The [build guide](build-guide.md) contains the proposed controller pin allocation, valve wire table, complete lamp-switch mapping and enclosure plan. Protection values, wire gauges and machine connector cavities require measurements before construction.
 
-## Power and control
+## Preferred proportional-valve architecture
 
 ```mermaid
 flowchart TD
-    P["Machine attachment power"] --> F["Fuse and reverse/surge protection"]
-    F --> R["Regulated supply rails"]
-    R --> C["Microcontroller"]
-    R --> M["Bidirectional motor driver"]
-    R --> L["20 high-side lamp channels"]
-    I["G / H rocker and J trigger"] --> Q["Protected input conditioning"]
+    P["Machine supply"] --> F["Fuse, reverse and surge protection"]
+    F --> R["Regulated power rails"]
+    R --> C["Nano Every controller"]
+    R --> V["Supervised valve power"]
+    I["G / H / J"] --> Q["Three protected input channels"]
     Q --> C
-    C --> M
-    C --> X["Output expansion"]
-    X --> L
-    M --> V["Two-wire valve actuator"]
-    L --> B["Ten blue/white lamps"]
+    C --> D["4–20 mA command interface"]
+    D --> A["Integrated proportional actuator"]
+    V --> A
+    A --> B["Position feedback receiver and ADC"]
+    B --> C
+    C --> E["Two GPIO expanders"]
+    E --> L["Twenty lamp power switches"]
+    R --> L
+    L --> T["Ten blue/white lamps"]
+    W["Independent watchdog / inhibit"] --> V
+    W --> L
 ```
 
-The wired candidate uses regulated 12 V for a compatible valve, lamp bank, and Nano Every VIN. A different controller may require a separate regulated logic supply. A nominal 12 V machine connector is not a clean logic-level supply. Never connect machine control lines directly to microcontroller GPIO.
+The proportional valve contains its motor and motor controller. Do not connect an external reversing H-bridge to it. The lower-cost two-wire reversing alternative requires a different output circuit, described in [valve research](valve-control-research.md).
 
-Ground returns join at the designed power distribution point. Motor output terminals are a reversing pair; neither is a permanent ground. Suppression and protection must suit bidirectional drive. The controller commands the H-bridge; it does not supply motor current through GPIO.
+Power returns join at a designed distribution point; keep valve and lamp current out of the analog signal return. Machine inputs are conditioned before reaching GPIO. Input protection, rail supervision and a hardware inhibit remain necessary even if the microcontroller can accept a nominal twelve-volt VIN supply.
 
-## Lamp connections
-
-The diagram above covers the reversing-valve baseline. A [wired proportional alternative](valve-control-research.md#documented-wired-percentage-control) replaces the H-bridge with a 4–20 mA output and adds position feedback. The valve's integrated actuator controller remains responsible for motor movement. These alternatives must not be connected simultaneously to the same actuator.
+## One lamp, repeated ten times
 
 ```mermaid
-flowchart LR
-    P["Protected lamp supply"] --> D["Two high-side channels per lamp"]
-    D --> W["White positive lead"]
-    D --> B["Blue positive lead"]
-    W --> L["Dual-color lamp"]
-    B --> L
+flowchart TD
+    P["Fused lamp supply"] --> B["Blue high-side switch"]
+    P --> W["White high-side switch"]
+    C["Expander logic outputs"] --> B
+    C --> W
+    B --> L["Dual-color 12 V lamp"]
+    W --> L
     L --> G["Common negative return"]
 ```
 
-Repeat the circuit for lamps 1–10. The proposed three-wire lamps share a negative lead, so independently selecting white and blue requires twenty switched positive outputs. The intended wire identification is black common negative, white white-positive, and blue blue-positive; verify the supplied batch before assembly. Only one color channel per lamp should be enabled at a time. Driver ratings depend on measured current and enclosure temperature.
+This topology assumes the actual BJZ lamps are common-negative, with separately powered color leads. Confirm that wiring on the supplied units. They are complete twelve-volt lamps; the external electronics switch power and do not replace their internal LED current limiting. Use one color at a time. Common-positive lamps require a revised low-side circuit.
 
-## Water path
+Twenty switched color leads plus a shared return connect a remote lamp bar. A controller located behind the lamps keeps those wires short. Do not use long unbuffered I²C wiring between separated enclosures.
 
-Garden-hose supply → manual isolation and suitable strainer → motorized valve → attachment hose/manifold → saw spray outlets. Select adapters to match the actual hose and valve threads; nominal 3/4-inch garden-hose threads and 3/4-inch NPT are different interfaces. Support the plumbing and protect the actuator and wiring from debris and attachment motion.
+## Water and installation
 
-## Interface verification
+Garden-hose supply → manual shutoff → strainer → proportional valve → actual attachment hose/manifold/nozzles. Use removable fittings, independently supported plumbing and flexible hose sections. Match garden-hose and NPT threads explicitly. The flow curve must be measured through this complete downstream restriction.
 
-Before assigning connector cavities, measure supply voltage, ground, and G/H/J operation on this machine. Record polarity, switched behavior, latching behavior, and current capacity. Verify that the selected signals cannot unintentionally operate the saw's hydraulic solenoids through the existing harness. This project controls water; existing depth and wheel-alignment functions remain part of the machine/attachment system.
-
-Pinout references: [Skid Steer Genius technical resources](https://www.skidsteergenius.com/pages/technical) and [help center](https://www.skidsteergenius.com/apps/help-center). Published mappings are reference material and do not replace identification of the fitted harness.
+Before assigning machine connector cavities, record voltage, polarity, switch behavior and existing attachment connections. Confirm water commands cannot unintentionally energize hydraulic functions. Sources for the reference harness include [Skid Steer Genius technical resources](https://www.skidsteergenius.com/pages/technical) and its [help center](https://www.skidsteergenius.com/apps/help-center); use the exact machine/harness documentation and verify the fitted wiring.

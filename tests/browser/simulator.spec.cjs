@@ -96,7 +96,7 @@ test('second keyboard hold enters full-open cleaning and one tap restores paused
   await expect(stage).toHaveAttribute('data-setting', '8');
   await expect(stage).toHaveAttribute('data-position', '100');
   await expect(stage.locator('button[data-g]')).toBeDisabled();
-  await expect(stage.locator('[data-status]')).toHaveText('Cleaning · ball 100% open');
+  await expect(stage.locator('[data-status]')).toHaveText('Flush · ball 100% open');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await testInfo.attach('full-open-cleaning', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
   await trigger.click();
@@ -116,6 +116,8 @@ test('power interruption and real select controls stop and recover predictably',
   await power.uncheck(); await expect(stage).toHaveAttribute('data-position', '40');
   await power.check(); await expect(stage.locator('button[data-j]')).toBeDisabled();
   await stage.locator('select[data-fault]').selectOption('normal');
+  await expect(stage).toHaveAttribute('data-fault', 'driver');
+  await stage.locator('button[data-reset-fault]').click();
   await expect(stage).toHaveAttribute('data-position', '0');
   await expect(stage).toHaveAttribute('data-on', 'false');
 });
@@ -133,4 +135,40 @@ test('canceled pointer, reduced motion, dark theme, and narrow viewport', async 
   await expect(stage).toHaveAttribute('data-colors', 'off,off,off,off,off,off,off,off,off,white');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await testInfo.attach('dark-narrow-setup', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
+});
+
+
+test('an aborted hold does nothing and a fresh Flush press exits before release', async ({ page }) => {
+  const stage = page.locator('.sa-stage'), trigger = stage.locator('button[data-j]');
+  await stage.locator('input[data-power]').check();
+  await page.clock.install();
+  await trigger.focus(); await page.keyboard.down('Space');
+  await page.clock.runFor(1000); await page.keyboard.up('Space');
+  await expect(stage).toHaveAttribute('data-on', 'false');
+  await expect(stage).toHaveAttribute('data-mode', 'normal');
+  await page.keyboard.down('Space'); await page.clock.runFor(1500); await page.keyboard.up('Space');
+  await expect(stage).toHaveAttribute('data-mode', 'max');
+  await page.keyboard.down('Space'); await page.clock.runFor(1500); await page.keyboard.up('Space');
+  await expect(stage).toHaveAttribute('data-mode', 'clean');
+  await page.clock.runFor(1000); await page.keyboard.down('Space');
+  await expect(stage).toHaveAttribute('data-mode', 'normal');
+  await expect(stage).toHaveAttribute('data-on', 'false');
+  await page.clock.runFor(2000); await page.keyboard.up('Space');
+  await expect(stage).toHaveAttribute('data-mode', 'normal');
+  await expect(stage).toHaveAttribute('data-on', 'false');
+});
+
+test('fault acknowledgement from J closes and requires release before rearming', async ({ page }) => {
+  const stage = page.locator('.sa-stage'), trigger = stage.locator('button[data-j]');
+  await stage.locator('input[data-power]').check(); await trigger.click();
+  await expect(stage).toHaveAttribute('data-position', '40');
+  await stage.locator('select[data-fault]').selectOption('position');
+  await stage.locator('select[data-fault]').selectOption('normal');
+  await page.clock.install();
+  await trigger.focus(); await page.keyboard.down('Space');
+  await page.clock.runFor(3000); await expect(stage).toHaveAttribute('data-fault', 'normal');
+  await page.clock.runFor(6000); await expect(stage).toHaveAttribute('data-position', '0');
+  await expect(stage).toHaveAttribute('data-inputs-ready', 'false');
+  await page.keyboard.up('Space'); await expect(stage).toHaveAttribute('data-inputs-ready', 'true');
+  await expect(stage).toHaveAttribute('data-on', 'false');
 });

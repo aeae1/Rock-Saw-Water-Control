@@ -1,6 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 600" role="img" aria-labelledby="title description">
   <title id="title">Reference operator controls</title>
-  <desc id="description">The console G/H rocker increases or decreases the water setting. Center or reverse it to rearm. The J trigger on the right joystick toggles water with a tap and enters maximum setup with a 1.5 second hold. Shapes are schematic and do not identify connector pins.</desc>
+  <desc id="description">The console G/H rocker increases or decreases the water setting. Center or reverse it to rearm. The J trigger on the right joystick toggles water with a tap and enters Set Max with a 1.5 second hold. Shapes are schematic and do not identify connector pins.</desc>
+  <defs>
+    <linearGradient id="grip" x1="0" y1="0" x2="1" y2=".15"><stop stop-color="#20262c"/><stop offset=".38" stop-color="#505962"/><stop offset=".72" stop-color="#323b43"/><stop offset="1" stop-color="#182029"/></linearGradient>
+    <linearGradient id="boot" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#627079"/><stop offset=".4" stop-color="#37424a"/><stop offset="1" stop-color="#18232a"/></linearGradient>
+    <radialGradient id="button"><stop stop-color="#424b52"/><stop offset=".7" stop-color="#252f37"/><stop offset="1" stop-color="#111a21"/></radialGradient>
+  </defs>
   <rect width="1280" height="600" rx="18" fill="#f4f6f7"/>
   <g font-family="Arial, sans-serif" fill="#26333d">
     <text x="48" y="53" font-size="17" letter-spacing="2">REFERENCE OPERATOR CONTROLS</text>
@@ -27,25 +32,30 @@
     <text x="80" y="489" font-size="19">Center or reverse to rearm.</text>
     <text x="80" y="520" font-size="17" fill="#536472">Holding G/H does not repeat.</text>
     <g transform="translate(686 115)">
-      <path d="M7 327Q7 312 26 305L206 299Q228 299 239 315L251 348Q255 365 235 372L24 379Q4 377 4 359Z" fill="#5e6a73"/>
-      <path d="M22 320Q14 338 39 347Q143 365 224 335L214 312Z" fill="#27343e"/>
-      <path d="M36 295Q27 314 49 322Q132 342 211 310L199 287Z" fill="#414f59" stroke="#73818b" stroke-width="3"/>
-      <path d="M52 271Q43 289 67 298Q130 314 195 285L184 263Z" fill="#283640" stroke="#687883" stroke-width="3"/>
-      <path d="M68 249Q62 266 82 274Q131 289 181 263L170 242Z" fill="#414f59" stroke="#74818b" stroke-width="3"/>
-      <path d="M91 239L113 133Q105 115 98 94Q86 62 110 36Q132 17 162 26Q199 35 201 68Q200 94 179 121L150 247Q120 265 91 239Z" fill="#293640" stroke="#667580" stroke-width="3"/>
-      <path d="M119 134L155 143L133 245Q112 249 104 240Z" fill="#364651"/>
-      <path d="M111 52Q121 32 150 35Q180 38 184 62Q178 89 147 92Q117 86 111 52Z" fill="#485963"/>
-      <ellipse cx="170" cy="66" rx="13" ry="17" fill="#152731" stroke="#2b9cda" stroke-width="5"/>
-      <path d="M187 66H252" stroke="#248ac3" stroke-width="3"/>
-      <circle cx="187" cy="66" r="5" fill="#248ac3"/>
+      <ellipse cx="123" cy="374" rx="123" ry="17" fill="#202a31" opacity=".12"/>
+      <path d="M16 329 Q113 301 224 327 L238 359 Q122 391 4 360 Z" fill="#202b33" stroke="#66737c" stroke-width="2"/>
+      <path d="M26 309 Q118 285 216 306 L228 333 Q122 363 15 338 Z" fill="url(#boot)" stroke="#1e2931" stroke-width="3"/>
+      <path d="M39 287 Q120 267 201 286 L215 311 Q123 340 26 316 Z" fill="url(#boot)" stroke="#1e2931" stroke-width="3"/>
+      <path d="M54 267 Q121 250 185 267 L201 290 Q125 315 40 292 Z" fill="url(#boot)" stroke="#1e2931" stroke-width="3"/>
+      <path d="M71 248 Q124 236 167 248 L185 270 Q126 292 54 272 Z" fill="url(#boot)" stroke="#1e2931" stroke-width="3"/>
+      <path d="M94 208 L152 217 L154 252 Q126 267 93 249 Z" fill="#28343d" stroke="#5b6871" stroke-width="2"/>
+      <path d="M76 40 Q79 10 107 5 Q149 -3 176 21 Q195 40 193 79 Q192 103 172 126 Q157 148 154 178 L149 226 Q121 241 93 222 L97 178 Q99 151 89 124 Q79 99 73 77 Q68 56 76 40 Z" fill="url(#grip)" stroke="#17232c" stroke-width="3"/>
+      <path d="M87 39 Q108 15 142 20 Q169 24 180 47" fill="none" stroke="#75818a" stroke-width="2" opacity=".7"/>
+      <path d="M91 85 Q118 104 170 102 M98 134 Q105 164 105 195 L103 219" fill="none" stroke="#18242d" stroke-width="2" opacity=".65"/>
+      <path d="M177 111 Q165 132 162 144 M167 146 Q158 160 158 173" fill="none" stroke="#68757d" stroke-width="2" opacity=".45"/>
+      <ellipse cx="114" cy="62" rx="19" ry="20" fill="#121d26"/>
+      <ellipse cx="114" cy="62" rx="13" ry="14" fill="url(#button)" stroke="#75838d" stroke-width="1.5"/>
+      <ellipse cx="114" cy="62" rx="23" ry="24" fill="none" stroke="#248ac3" stroke-width="3"/>
+      <path d="M139 62 H252" stroke="#248ac3" stroke-width="2"/>
+      <circle cx="139" cy="62" r="4" fill="#248ac3"/>
       <text x="267" y="66" font-size="25" font-weight="700">J trigger</text>
-      <text x="267" y="94" font-size="17" fill="#536472">Rear of right grip</text>
+      <text x="267" y="94" font-size="17" fill="#536472">Rear view of right grip</text>
       <text x="267" y="168" font-size="22" font-weight="700">Tap</text>
       <text x="267" y="197" font-size="18">Water on / off</text>
       <text x="267" y="253" font-size="22" font-weight="700">Hold 1.5 seconds</text>
-      <text x="267" y="282" font-size="18">Enter maximum setup</text>
+      <text x="267" y="282" font-size="18">Normal → Set Max</text>
     </g>
-    <text x="706" y="520" font-size="17" fill="#536472">In setup: G/H adjusts max; tap J to save.</text>
+    <text x="706" y="520" font-size="17" fill="#536472">Set Max: G/H changes cap; tap J to save.</text>
     <text x="48" y="575" font-size="15" fill="#677784">Schematic illustration based on supplied reference photographs · Shapes and positions are illustrative · Not a connector pinout</text>
   </g>
 </svg>

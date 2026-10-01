@@ -1,6 +1,6 @@
 # Control Specification
 
-Revision 0.2 · Design baseline
+Revision 0.3 · Design baseline
 
 ## State variables
 
@@ -13,10 +13,10 @@ Revision 0.2 · Design baseline
 | Draft maximum | 10–100%, in 10-point increments | Saved maximum |
 | Saved resume opening | Level × maximum / 10 | 40% |
 | Simulated valve position | 0–100% | 0% |
-| Mode | Normal, maximum setup, full-open cleaning | Normal |
+| Mode | Normal, Set Max, Flush | Normal |
 | Cleaning return command | Paused, on | Paused |
 | Rocker state | G, center, H | Center |
-| Diagnostic | None, driver, conflicting inputs | None |
+| Diagnostic | None or one/more latched codes 1–10 | None |
 
 The opening scale represents actuator travel. It does not imply linear water flow, an encoder, or measured position in a physical controller.
 
@@ -24,12 +24,12 @@ The opening scale represents actuator travel. It does not imply linear water flo
 
 G and H increment or decrement the level once per activation, within 1–10. A direction remains latched until the rocker returns to center or reverses. A reversal is interpreted as passage through center. Holding a direction produces no autorepeat. While J is being held before entry into setup, normal G/H adjustment is ignored.
 
-A short J press toggles the water command on release. The on target is the saved resume opening; the paused target is fully closed. A long press must not produce a subsequent short-press toggle.
+A J press shorter than 500 ms toggles the water command on release. Releasing at 500–1,499 ms cancels without action. A 1,500 ms hold changes mode. Classify release by elapsed time even if a timer callback is delayed. The on target is the saved resume opening; the paused target is fully closed. A long press must not produce a subsequent short-press toggle.
 
-## Maximum setup
+## Set Max
 
 1. Hold J continuously for 1.5 seconds. Enter setup at the threshold.
-2. Stop simulated motion and retain the valve position reached at entry. Releasing J leaves setup active.
+2. If the water command is on, stop simulated motion and retain the valve position reached at entry. If off, continue any existing closing motion. Releasing J leaves Set Max active.
 3. Set the reference opening to the actual simulated position if the water command was on, or to the saved resume opening if paused.
 4. Adjust a draft maximum with G/H. Do not move the valve or change the committed maximum while editing.
 5. Display only the lamp at `draft maximum / 10`, alternating blue and white every 600 ms.
@@ -52,23 +52,24 @@ valveTarget = previousWaterCommandIsOn ? resumeOpening : 0
 | 30%, paused | 50% | 6 | 30%; valve remains closed |
 | 0%, on during initial motion | 50% | 1 | 5% |
 
-Level zero is reserved for the off command and is not a selectable running level. If setup is entered while a closing valve is still moving, motion stops at that intermediate position; saving while paused resumes closing.
+Level zero is reserved for the off command and is not a selectable running level. Set Max cannot interrupt an existing OFF command. Closing continues during editing and saving.
 
-## Full-open cleaning
+## Flush
 
-From maximum setup, a second 1.5-second J hold commits the draft maximum and quantizes the saved resume opening using the calculation above. It then records the prior normal on/off command and commands 100% actuator opening. This temporarily bypasses the saved maximum without changing that maximum or rescaling the saved level from the cleaning position. G/H inputs are ignored.
+From maximum setup, a second 1.5-second J hold commits the draft maximum and quantizes the saved resume opening using the calculation above. It then records the prior normal on/off command and commands 100% actuator opening. This temporarily bypasses the saved maximum without changing that maximum or rescaling the saved level from the cleaning position. G/H adjustments are ignored; the actual rocker latch is retained. A Flush hold started while an OFF command is still closing is ineligible for that entire press; a fresh hold is required after closure.
 
-A short J press returns directly to normal operation: move to the saved resume opening if previously on, or close if previously paused. Return is available while the valve is still opening. A long hold within cleaning leaves cleaning active. Each hold can cause only one mode change; J must be released before another hold can advance a mode.
+Any fresh J press returns immediately, on press-down, to Normal: move to the saved resume opening if previously on, or close if previously paused. Return is available while the valve is still opening. The exit press is consumed; continuing to hold or releasing it cannot toggle water or enter another mode. The original entry press must be released before exit is available. Each hold can cause only one mode change; J must be released before another hold can advance a mode.
 
 Power loss or an injected fault clears cleaning and the return command. Recovery commands closing and does not automatically resume cleaning.
 
 ```mermaid
 stateDiagram-v2
+    state "Set Max" as SetMax
     [*] --> Normal
-    Normal --> Maximum: Hold J 1.5 s
-    Maximum --> Normal: Tap J / save
-    Maximum --> Cleaning: Release, hold J 1.5 s / save
-    Cleaning --> Normal: Tap J / restore
+    Normal --> SetMax: Hold J 1.5 s
+    SetMax --> Normal: Tap J / save
+    SetMax --> Flush: Release, hold J 1.5 s / save
+    Flush --> Normal: Fresh J press / restore
 ```
 
 ## Paused maximum indication
@@ -79,7 +80,7 @@ Idle blinking uses one scheduled timeout per color change. Reduced-motion mode u
 
 ## Startup and power interruption
 
-On machine power-up, the water command is paused and the valve is commanded closed. Saved level and maximum are retained. Once closed, the standard persistent paused maximum indication applies. There is no separate startup display or startup timer.
+On machine power-up, the water command is paused and the valve is commanded closed. Saved level and maximum are retained. All opening commands are locked until closure/reference completes, J is released, and G/H is centered. Inputs received while locked are discarded. Once closed, the standard persistent paused maximum indication applies. There is no separate startup display or startup timer.
 
 Removing power extinguishes all lamps, cancels motor motion at the current simulated position, discards an unsaved draft, and clears the water command. The simulated actuator is non-return: electrical power loss does not mechanically shut off water. On the next power-up, closing is commanded again.
 
@@ -99,11 +100,12 @@ Settings persist across the simulator's power switch within the current page ses
 
 Fill progresses from left to right as the modeled valve opens. Drain replaces blue with white from right to left as it closes. During either mode-changing J hold, the existing lamp display is retained for the first 500 ms. After that delay, white lamp pairs fill inward from both ends during the remaining second. The progress bar and hold-specific labels follow the same delay. The mode still changes at 1,500 ms from the original press. Early release or cancellation removes the hold display and resets the feedback delay for the next press. Cleaning uses white pairs moving outward from the center across blue lamps, followed by one all-blue interval before repeating. Reduced-motion mode uses steady white lamps during a hold and a steady white center pair on blue during cleaning. Timing is illustrative and must be replaced by characterized actuator behavior in firmware.
 
-## Diagnostic previews
+## Faults and recovery
 
-| Code | Meaning | Response |
-| ---: | :--- | :--- |
-| 4 | Motor-driver fault | Stop motor commands; inhibit operator commands |
-| 7 | Conflicting control inputs | Stop motor commands; inhibit operator commands |
+The [fault contract](faults.md) defines ten latched codes and the required physical detection hardware. The simulator injects all ten and automatically detects J held for 30 seconds. Cause removal alone is insufficient: require neutral controls and explicit acknowledgement by a fresh three-second J hold, or the simulator Reset fault button. Acknowledgement starts closing/reference recovery and never restores an ON or Flush command. Multiple faults remain latched and the lowest number is displayed. Power cycling does not clear a latch in the current page session.
 
-The simulator's fault selector injects these conditions; it does not read physical diagnostics. Clearing a preview commands closing while powered. White fault indication flashes three times and then remains steady; reduced-motion mode uses steady indication. Stopping an actuator does not establish closed position. Physical diagnostic detection and recovery remain unimplemented.
+The browser models a stopped actuator after faults. The physical proportional actuator requires a characterized output-inhibit method; loss of its command signal is not assumed to stop it.
+
+## Planned flow calibration
+
+The current simulator remains an actuator-opening model. The approved next hardware step is a measured flow lookup curve, described in [Flow calibration](flow-calibration.md). With a validated curve, Set Max will cap calibrated flow and the ten levels will divide that flow cap. Before changing the simulator's percentage meaning, provide the measured data; no invented valve curve is used here.

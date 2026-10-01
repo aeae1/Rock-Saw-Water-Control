@@ -1,18 +1,18 @@
 # Hardware Candidates
 
-Revision 0.1 · Candidate register, not a purchase release
+Revision 0.3 · Candidate register, not a purchase release
 
-The low-cost reversing-valve architecture is the present simulator baseline. A wired proportional valve is the preferred next bench candidate when repeatable percentage control is required. Selection must account for temperature inside a sun-exposed enclosure, power transients, water ingress, vibration, actuator current, and repeatability of short movements. The simulator does not depend on a particular microcontroller.
+See the [build guide](build-guide.md) for the current priced proportional-valve plan, including twenty lamp channels and enclosures. The simulator models generic non-return actuation. A wired proportional valve is the preferred next bench candidate when repeatable percentage control is required. Selection must account for temperature inside a sun-exposed enclosure, power transients, water ingress, vibration, actuator current, and repeatability of short movements. The simulator does not depend on a particular microcontroller.
 
 ## Controller and power electronics
 
 | Function | Candidate | Selection condition |
 | :--- | :--- | :--- |
 | Microcontroller | [Arduino Nano Every, ABX00028](https://docs.arduino.cc/hardware/nano-every/) | Sufficient for the control logic with external I/O expansion; requires protected inputs and an enclosure |
-| Motor driver | [Pololu TB67H453FNG carrier, 4971](https://www.pololu.com/product/4971) | Characterize motor startup/stall current and thermal margin before selecting |
+| Motor driver (economy reversing option only) | [Pololu TB67H453FNG carrier, 4971](https://www.pololu.com/product/4971) | Characterize motor startup/stall current and thermal margin before selecting |
 | Regulated 12 V supply | [Pololu S18V20F12, 2577](https://www.pololu.com/product/2577) | Candidate only; system protection and combined lamp/motor load require evaluation |
-| Enclosure | [Bud PN-1339-A](https://www.budind.com/product/nema-ip-rated-boxes/pn-a-series-nema-6p-box/ip68-nema-6p-box-pn-1339-a/) | Confirm usable volume, mounting, UV exposure, glands, and internal temperature |
-| Lamp interface | I/O expansion and twenty high-side outputs | Device selection remains open; use measured current for each color channel |
+| Enclosure | [Hammond 1554VA2GY](https://www.hammfg.com/part/1554VA2GY) | Confirm usable volume, mounting, UV exposure, glands, and internal temperature |
+| Lamp interface | Two MCP23017 expanders and twenty power-switch channels | TBD62783APG bench candidate if common-negative; verify current and protection |
 | Machine inputs | Three protected input channels | Thresholds, filtering, transient limits, and physical pinout remain open |
 
 The Nano Every uses 5 V logic and specifies 7–21 V at VIN in the [manufacturer documentation](https://docs.arduino.cc/resources/datasheets/ABX00028-datasheet.pdf). These ratings do not make its pins suitable for machine wiring or establish automotive transient immunity. The motor-driver carrier specifies 4.5–44 V operation and 1.3 A continuous output under its stated conditions; that is a component rating rather than a validated sealed-enclosure capability.
@@ -34,7 +34,7 @@ The HSH-Flo listing covers multiple sizes and configurations, with several switc
 
 ## Lamp assembly
 
-The proposed display uses the user's [ten-pack of PSEQT blue/white lamps](https://www.amazon.com/dp/B0CTK4KGY6). Record the exact supplied item, wire functions, current, brightness, and mounting dimensions during bench inspection. Twenty independently driven color channels are required by the current display behavior. The controller cannot drive the lamps directly.
+The proposed display uses the user's [BJZ blue/white lamps (B0CT8G71TW)](https://www.amazon.com/BJZ-Trailer-Marker-Clearance-Indicator/dp/B0CT8G71TW/). Record the exact supplied item, wire functions, current, brightness, and mounting dimensions during bench inspection. Twenty independently driven color channels are required by the current display behavior. The controller cannot drive the lamps directly.
 
 ## Smart-valve research path
 
@@ -46,4 +46,4 @@ A valve using its integrated smart controller would use a different power/interf
 
 ## Procurement status
 
-A final system total is not fixed in this revision. Dated valve and interface prices appear in the research note. The lamp-driver bank, harness, input protection, and environmental provisions are incomplete; component-only subtotals do not represent the final assembly. The [planning BOM](bom.csv) records these omissions explicitly. Manufacturer references were reviewed where available on 2026-10-01; listed candidates have not been tested as a complete system.
+The current complete-prototype allowance is approximately $445–665 plus lamps, tax, shipping and labor; see the [build guide](build-guide.md) for inclusions and exclusions. This is not a fixed quotation. Dated valve and interface prices appear in the research note. The lamp-switch bank, harness, input protection, and environmental provisions are incomplete; component-only subtotals do not represent the final assembly. The [planning BOM](bom.csv) records these omissions explicitly. Manufacturer references were reviewed where available on 2026-10-01; listed candidates have not been tested as a complete system.

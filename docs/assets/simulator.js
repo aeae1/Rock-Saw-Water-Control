@@ -5,12 +5,16 @@
   const lamps = [...root.querySelectorAll('.sa-lamp')];
   const buttons = Object.fromEntries(['g','h','center','j'].map(k => [k,q(k)]));
   const media = typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : {matches:false};
-  const HOLD_MS = 1500, HOLD_FEEDBACK_MS = 500, BLINK_MS = 600, RIPPLE_MS = 180, STROKE_MS = 5000;
+  const HOLD_MS = 1500, HOLD_FEEDBACK_MS = 500, RESET_MS = 3000, STUCK_MS = 30000, BLINK_MS = 600, RIPPLE_MS = 180, STROKE_MS = 5000;
   let power = false, on = false, level = 4, maximum = 100, draft = 100;
   let runOpening = 40, position = 0, target = 0, motion = null;
-  let mode = 'normal', reference = 40, heldPosition = 0, fault = 'normal';
-  let resumeOn = false;
+  let mode = 'normal', reference = 40, heldPosition = 0, fault = 'normal', faultCause = 'normal';
+  const latchedFaults = new Set();
+  let resumeOn = false, triggerCause = false, triggerTimer = null;
   let rocker = 'center', armed = true;
+  let recovering = false, inputsReady = false, positionKnown = false, jInput = null;
+  const faultCodes = {supply:1,stall:2,communication:3,driver:4,timeout:5,settings:6,input:7,position:8,temperature:9,trigger:10};
+  const faultNames = {supply:'supply / brownout',stall:'valve jam / overcurrent',communication:'valve / interface communication',driver:'motor driver',timeout:'motion timeout',settings:'invalid saved settings',input:'conflicting inputs',position:'position unknown',temperature:'controller overtemperature',trigger:'stuck J trigger'};
   let flashOrigin = 0, flashTimer = null;
   let press = null, holdTimer = null, suppressClickUntil = 0;
   let frame = null, lastTime = performance.now(), fluidPhase = 0;
@@ -19,14 +23,22 @@
   const nearest = (opening,cap) => clamp(Math.round(opening * 10 / cap),1,10);
   const setText = (el,text) => { if (el.textContent !== text) el.textContent = text; };
   const pausedMarker = () => power && fault==='normal' && mode==='normal' && !on && !motion;
-  const holdingForMode = () => !!press?.feedback && !press.long && mode!=='clean';
+  const ready = () => power && fault==='normal' && !recovering && positionKnown && inputsReady;
+  const holdingForMode = () => !!press?.feedback && !press.long && !press.consumed && press.holdEligible;
   const flashingLights = () => power && fault==='normal' && (mode==='max' || mode==='clean' || pausedMarker());
+
+  const causeActive = () => faultCause!=='normal'||triggerCause;
+  const canResetFault = () => power&&fault!=='normal'&&!causeActive()&&rocker==='center';
 
   function updatePosition(now) {
     if (!motion) return false;
     const p = clamp((now-motion.start)/motion.duration,0,1);
     position = motion.from + (motion.to-motion.from)*p;
-    if (p >= 1) { position=motion.to; motion=null; return true; }
+    if (p >= 1) {
+      position=motion.to;
+      if(motion.kind==='boot'){recovering=false;positionKnown=true;}
+      motion=null;return true;
+    }
     return false;
   }
   function stopMotor(now=performance.now()) {
@@ -43,10 +55,20 @@
     else motion={from:position,to:target,start:now,duration:Math.max(200,distance/100*STROKE_MS),kind};
     ensureFrame();
   }
+  function tryArmInputs(){
+    if(power&&fault==='normal'&&!recovering&&positionKnown&&!inputsReady&&rocker==='center'&&!jInput){
+      inputsReady=true;armed=true;
+    }
+  }
+  function beginRecovery(){
+    recovering=true;positionKnown=false;inputsReady=false;
+    moveTo(0,'boot');
+    if(!motion){recovering=false;positionKnown=true;}
+  }
   function paintLights(now) {
     const colors=Array(10).fill('off');
     if (power) {
-      if (fault !== 'normal') colors[(fault==='driver'?4:7)-1]='white';
+      if (fault !== 'normal') colors[faultCodes[fault]-1]='white';
       else if (holdingForMode()) {
         // Symmetric inward white fill is reserved for deliberate mode changes.
         const pairs=media.matches?5:clamp(Math.floor((now-press.start-HOLD_FEEDBACK_MS)/((HOLD_MS-HOLD_FEEDBACK_MS)/5))+1,1,5);
@@ -92,30 +114,32 @@
       q(name).setAttribute('opacity',flowing?'.9':'0');
     }
     setText(q('valve-readout'),fmt(position)+'% open');
-    setText(q('valve-state'),!power?'Unpowered':mode==='max'?'Position held':motion?'Valve moving':flowing?'Water moving':'Closed');
-    q('valve-svg').setAttribute('aria-label','Simulated ball valve '+fmt(position)+' percent open. '+(flowing?'Water flows left to right.':'No water flow.')+(mode==='max'?' Position held during maximum setup.':''));
+    setText(q('valve-state'),!power?'Unpowered':fault!=='normal'?'Position unconfirmed':motion?'Valve moving':mode==='max'&&on?'Position held':flowing?'Water moving':'Closed');
+    q('valve-svg').setAttribute('aria-label','Simulated ball valve '+fmt(position)+' percent open. '+(flowing?'Water flows left to right.':'No water flow.')+(mode==='max'?(on?' Position held during Set Max.':motion?' OFF command continues closing during setup.':' Valve closed during setup.'):'')+(!positionKnown?' Controller position reference unknown.':''));
     stage.dataset.position=String(Number(position.toFixed(4)));
     stage.dataset.target=String(Number(target.toFixed(4)));
   }
   function render() {
     const now=performance.now();
     updatePosition(now);
+    tryArmInputs();
     const failed=fault!=='normal';
     q('power').checked=power;
     setText(q('power-state'),power?'ON':'OFF');
-    Object.entries(buttons).forEach(([key,b])=>{b.disabled=!power||failed||(mode==='clean'&&key!=='j');});
+    Object.entries(buttons).forEach(([key,b])=>{b.disabled=key==='center'?false:key==='j'?(!power||(failed?!canResetFault():recovering||!inputsReady)):!power||failed||recovering||mode==='clean';});
     q('fault').disabled=!power;
+    q('reset-fault').disabled=!canResetFault()||!!jInput;
     buttons.g.setAttribute('aria-pressed',String(rocker==='g'));
     buttons.h.setAttribute('aria-pressed',String(rocker==='h'));
     buttons.center.setAttribute('aria-pressed',String(rocker==='center'));
-    buttons.j.setAttribute('aria-pressed',String(!!press));
-    setText(buttons.j.querySelector('small'),mode==='clean'?'Tap: return':mode==='max'?'Tap: save & exit':on?'Tap: water off':'Tap: water on');
-    buttons.j.setAttribute('aria-label',mode==='clean'?'J: tap to leave cleaning and restore normal operation':mode==='max'?'J: tap to save maximum; hold for 1.5 seconds for full-open cleaning':'J: tap to toggle water; hold for 1.5 seconds to enter maximum setup');
-    setText(q('mode-label'),!power?'POWER OFF':holdingForMode()?(mode==='max'?'HOLD → CLEANING':'HOLD → MAXIMUM'):mode==='clean'?'CLEANING · 100%':mode==='max'?'SET MAXIMUM':'10 LEVELS');
+    buttons.j.setAttribute('aria-pressed',String(!!jInput));
+    setText(buttons.j.querySelector('small'),failed?'Hold 3 s: reset':mode==='clean'?'Press: return':mode==='max'?'Tap: save & exit':on?'Tap: water off':'Tap: water on');
+    buttons.j.setAttribute('aria-label',failed?'J: remove fault cause, center G/H, then hold for 3 seconds to reset':mode==='clean'?'J: press to immediately leave Flush and restore normal operation':mode==='max'?'J: tap to save maximum; hold for 1.5 seconds for Flush':'J: tap to toggle water; hold for 1.5 seconds to enter Set Max');
+    setText(q('mode-label'),!power?'POWER OFF':holdingForMode()?(mode==='max'?'HOLD → FLUSH':'HOLD → SET MAX'):mode==='clean'?'FLUSH · 100%':mode==='max'?'SET MAX':'NORMAL');
     setText(q('scale-start'),mode==='clean'?'FULL OPEN':mode==='max'?'10% OPEN':'LESS');
     setText(q('scale-end'),mode==='clean'?'100%':mode==='max'?'100% OPEN':'MORE');
     setText(q('blue-key'),mode==='clean'?'Full-open command':mode==='max'?'One lamp: maximum':pausedMarker()?'Maximum marker':'On command');
-    setText(q('white-key'),holdingForMode()?'Hold progress':mode==='clean'?(media.matches?'Cleaning marker':'Outward ripple: cleaning'):mode==='max'?'Lamp 5 = 50%':'Paused / saved level');
+    setText(q('white-key'),holdingForMode()?'Hold progress':mode==='clean'?(media.matches?'Flush marker':'Outward ripple: Flush'):mode==='max'?'Lamp 5 = 50%':'Paused / saved level');
     let status='', detail='', helper='', label='';
     if(!power){
       status='Machine power off';
@@ -123,21 +147,32 @@
       helper=position>.01?'Valve holds its position without power':'Power on starts with water off';
       label='All ten lamps off. Machine power off.';
     } else if(failed){
-      const code=fault==='driver'?4:7;
-      status='Fault '+code+' · '+(code===4?'motor driver':'conflicting inputs');
-      detail='Motor command stopped';helper='Valve position is not confirmed by the controller';
+      const code=faultCodes[fault];
+      status='Fault '+code+' · '+faultNames[fault];
+      detail='Motor command stopped · position unconfirmed';
+      helper=causeActive()?'Remove fault cause before reset':press?.reset?'Hold J for 3 seconds to reset':jInput||rocker!=='center'?'Release J and center G / H before reset':'Cause removed · Hold J 3 s or use Reset fault';
+      if(latchedFaults.has('settings'))detail+=' · Reset restores level 4 / max 100%';
+      if(latchedFaults.size>1)detail+=' · '+latchedFaults.size+' faults latched';
       label='Fault '+code+'. Lamp '+code+' white.';
+    } else if(recovering){
+      status='Startup / recovery · closing valve';
+      detail='Opening commands locked until the valve is closed';
+      helper='Release J and center G / H · commands are not queued';
+      label='Startup or recovery closing. Opening commands inhibited.';
+    } else if(!inputsReady){
+      status='Waiting for released controls';detail='Valve closed · water stays off';
+      helper='Release J and center G / H to arm';label='Valve closed. Release J and center the rocker before operating.';
     } else if(mode==='max'){
       const next=nearest(Math.min(reference,draft),draft), newOpening=next*draft/10;
-      status='Set maximum · '+draft+'% opening';
+      status='Set Max · '+draft+'% opening';
       detail='On exit: level '+next+'/10 · '+(on?(Math.abs(newOpening-heldPosition)>.02?'moves to '+fmt(newOpening)+'%':'stays at '+fmt(heldPosition)+'%'):'water stays off');
-      helper='G / H adjusts maximum · Tap J to save · Hold J for cleaning';
-      label='Maximum setup. Only lamp '+draft/10+(media.matches?' is steady white.':' alternates blue and white.')+' Maximum '+draft+' percent. Valve held at '+fmt(position)+' percent.';
+      helper=!on&&motion?'OFF command still closing · Flush requires a fresh hold after closed':'G / H adjusts maximum · Tap J to save · Hold J for Flush';
+      label='Set Max. Only lamp '+draft/10+(media.matches?' is steady white.':' alternates blue and white.')+' Maximum '+draft+' percent. '+(on?'Valve held at '+fmt(position)+' percent.':motion?'OFF command continues closing.':'Valve closed.');
     } else if(mode==='clean'){
-      status=motion?'Cleaning · opening fully':'Cleaning · ball 100% open';
+      status=motion?'Flush · opening fully':'Flush · ball 100% open';
       detail='Saved max '+maximum+'% · Return: '+(resumeOn?'level '+level+'/10 at '+fmt(runOpening)+'%':'water paused');
-      helper='Tap J to restore normal operation · G / H locked';
-      label='Full-open cleaning. '+(media.matches?'Blue lamps with a steady white center pair.':'White pairs ripple outward across blue lamps.')+' Target 100 percent open. Tap J to return '+(resumeOn?'to level '+level+' of ten.':'to water paused.');
+      helper='Press J to return immediately · G / H locked';
+      label='Flush. '+(media.matches?'Blue lamps with a steady white center pair.':'White pairs ripple outward across blue lamps.')+' Target 100 percent open. Press J to return '+(resumeOn?'to level '+level+' of ten.':'to water paused.');
     } else {
       const approximate=Math.abs(runOpening-level*maximum/10)>.02;
       const shown=(approximate?'≈':'')+level+' / 10';
@@ -147,23 +182,25 @@
       label=(on?'Water on. ':'Water paused. ')+'Level '+level+' of ten.'+(pausedMarker()?' Maximum lamp '+maximum/10+(media.matches?' is steady blue.':' alternates blue and '+(maximum/10<=level?'white.':'off.')):'');
     }
     if(power&&!failed&&holdingForMode()){
-      helper='Keep holding J to enter '+(mode==='max'?'full-open cleaning':'maximum setup');
+      helper='Keep holding J to enter '+(mode==='max'?'Flush':'Set Max');
       label=media.matches?'Steady white lamps while holding J.': 'White lamps fill inward from both ends while holding J.';
-      label+=' Next mode: '+(mode==='max'?'full-open cleaning.':'maximum setup.');
+      label+=' Next mode: '+(mode==='max'?'Flush.':'Set Max.');
     }
     setText(q('status'),status);setText(q('target'),detail);setText(q('switch-state'),helper);
     q('panel').setAttribute('aria-label',label);
-    setText(q('hold-caption'),!power?'Power on to operate':press?.long?'Release J to rearm':holdingForMode()?'Keep holding…':mode==='clean'?'Tap J to return':mode==='max'?'Hold 1.5 s for full open':'Hold 1.5 s to set max');
-    if(!press||!press.feedback||mode==='clean')q('hold-progress').style.width='0%';
+    setText(q('hold-caption'),!power?'Power on to operate':failed?(press?.reset?'Keep holding · reset at 3 s':'Remove cause · center G/H · hold J 3 s'):!ready()?'Waiting for closing / neutral':press?.long||press?.consumed?'Release J to rearm':holdingForMode()?'Keep holding…':mode==='clean'?'Press J to return':mode==='max'?(!on&&motion?'Closing before Flush':'Hold 1.5 s for full open'):'Hold 1.5 s to set max');
+    if(!press||(!press.feedback&&!press.reset)||press.consumed||mode==='clean')q('hold-progress').style.width='0%';
     else if(press.long)q('hold-progress').style.width='100%';
     stage.dataset.power=String(power);stage.dataset.on=String(on);stage.dataset.setting=String(level);
     stage.dataset.maximum=String(maximum);stage.dataset.draft=String(draft);stage.dataset.mode=mode;
     stage.dataset.runOpening=String(runOpening);stage.dataset.moving=String(!!motion);
     stage.dataset.armed=String(armed);
+    stage.dataset.inputsReady=String(inputsReady);stage.dataset.recovering=String(recovering);stage.dataset.positionKnown=String(positionKnown);
+    stage.dataset.fault=fault;stage.dataset.faultCause=faultCause;stage.dataset.latchedFaults=[...latchedFaults].join(',');
     paintLights(now);drawValve(now);ensureFrame();
   }
   function needsFrame(){
-    return !!motion||!!press||(position>.0001&&!media.matches);
+    return !!motion||(!!press&&!press.consumed)||(position>.0001&&!media.matches);
   }
   function ensureFrame(){
     if(frame===null&&needsFrame())frame=requestAnimationFrame(tick);
@@ -180,15 +217,17 @@
   function tick(now){
     frame=null;
     const ended=updatePosition(now);
-    const feedbackStarted=press&&!press.feedback&&!press.long&&mode!=='clean'&&now-press.start>=HOLD_FEEDBACK_MS;
+    const feedbackStarted=press&&press.holdEligible&&!press.consumed&&!press.feedback&&!press.long&&now-press.start>=HOLD_FEEDBACK_MS;
     if(feedbackStarted)press.feedback=true;
-    if(press&&mode!=='clean')q('hold-progress').style.width=(clamp((now-press.start-HOLD_FEEDBACK_MS)/(HOLD_MS-HOLD_FEEDBACK_MS),0,1)*100)+'%';
+    if(press?.reset)q('hold-progress').style.width=(clamp((now-press.start)/RESET_MS,0,1)*100)+'%';
+    if(holdingForMode())q('hold-progress').style.width=(clamp((now-press.start-HOLD_FEEDBACK_MS)/(HOLD_MS-HOLD_FEEDBACK_MS),0,1)*100)+'%';
     if(ended||feedbackStarted)render();
     else {paintLights(now);drawValve(now);ensureFrame();}
   }
   function enterMax(){
-    if(!power||fault!=='normal'||mode!=='normal')return;
-    const now=performance.now();stopMotor(now);
+    if(!ready()||mode!=='normal')return;
+    const now=performance.now();
+    if(on)stopMotor(now);else updatePosition(now);
     heldPosition=position;reference=on?position:runOpening;
     draft=maximum;mode='max';flashOrigin=now;
     render();
@@ -202,13 +241,13 @@
     commitMaximum();
     mode='normal';
     // Quantize to a repeatable step under the new maximum, moving only after exit.
-    moveTo(on?runOpening:0,'cap');
+    if(on||!motion)moveTo(on?runOpening:0,'cap');
     render();
   }
   function enterCleaning(){
-    if(!power||fault!=='normal'||mode!=='max')return;
+    if(!ready()||mode!=='max'||(!on&&motion))return;
     commitMaximum();resumeOn=on;on=true;mode='clean';
-    rocker='center';armed=true;flashOrigin=performance.now();
+    armed=false;flashOrigin=performance.now();
     moveTo(100,'clean');render();
   }
   function exitCleaning(){
@@ -216,15 +255,18 @@
     moveTo(on?runOpening:0,on?'open':'close');render();
   }
   function tapJ(){
-    if(!power||fault!=='normal'||press)return;
+    if(!ready()||press||jInput)return;
     if(mode==='max'){exitMax();return;}
     if(mode==='clean'){exitCleaning();return;}
     on=!on;
     moveTo(on?runOpening:0,on?'open':'close');render();
   }
   function selectRocker(next){
-    if(!power||fault!=='normal'||mode==='clean')return;
-    if(press&&mode!=='max')return;
+    // Center is always available to release a latched physical rocker.
+    if(next==='center'){rocker=next;armed=true;render();return;}
+    if(!power||fault!=='normal'||recovering||mode==='clean')return;
+    if(!inputsReady){rocker=next;render();return;}
+    if(press)return;
     if((rocker==='g'&&next==='h')||(rocker==='h'&&next==='g'))armed=true;
     rocker=next;
     if(next==='center')armed=true;
@@ -238,33 +280,57 @@
     }
     render();
   }
-  function startPress(source,pointerId=null){
-    if(!power||fault!=='normal'||press)return;
-    press={source,pointerId,start:performance.now(),long:false,feedback:false};
+  function activateHold(){
+    if(press?.reset){if(!press.consumed&&canResetFault()){press.consumed=true;resetFault(true);}return;}
+    if(!press||press.long||press.consumed||!press.holdEligible||!ready())return;
+    press.long=true;
+    if(mode==='normal')enterMax();
+    else if(mode==='max')enterCleaning();
+  }
+  function startPress(source,pointerId=null,key=null){
+    if(jInput)return;
+    jInput={source,pointerId,key};
+    armTriggerWatchdog();
+    if(canResetFault()){
+      press={source,pointerId,start:performance.now(),reset:true,consumed:false};
+      holdTimer=setTimeout(()=>{holdTimer=null;activateHold();render();},RESET_MS);
+      render();return;
+    }
+    if(!ready()){render();return;}
+    press={source,pointerId,start:performance.now(),long:false,feedback:false,consumed:mode==='clean',holdEligible:mode!=='clean'&&!(mode==='max'&&!on&&motion)};
+    if(press.consumed){exitCleaning();return;}
     holdTimer=setTimeout(()=>{
       holdTimer=null;if(!press)return;
-      press.long=true;
-      if(mode==='normal')enterMax();
-      else if(mode==='max')enterCleaning();
-      else render();
+      activateHold();render();
     },HOLD_MS);
     render();
   }
   function endPress(allowTap=false){
     if(!press)return;
-    const wasLong=press.long;
+    const elapsed=performance.now()-press.start;
+    // Classify by elapsed time even if a busy browser delayed the hold timer.
+    if(allowTap&&elapsed>=(press.reset?RESET_MS:HOLD_MS))activateHold();
+    const shouldTap=allowTap&&!press.reset&&!press.long&&!press.consumed&&elapsed<HOLD_FEEDBACK_MS;
     if(holdTimer!==null)clearTimeout(holdTimer);
     holdTimer=null;press=null;suppressClickUntil=performance.now()+500;
     render();
-    if(allowTap&&!wasLong)tapJ();
+    if(shouldTap)tapJ();
+  }
+  function releaseInput(allowTap=false){
+    jInput=null;triggerCause=false;
+    if(triggerTimer!==null)clearTimeout(triggerTimer);triggerTimer=null;
+    suppressClickUntil=performance.now()+500;
+    endPress(allowTap);render();
   }
   q('power').addEventListener('change',()=>{
     const wanted=q('power').checked;
-    endPress(false);stopMotor();power=wanted;on=false;resumeOn=false;mode='normal';draft=maximum;
-    rocker='center';armed=true;
+    endPress(false);stopMotor();power=wanted;
+    if(triggerTimer!==null)clearTimeout(triggerTimer);triggerTimer=null;
+    if(power&&jInput)armTriggerWatchdog();on=false;resumeOn=false;mode='normal';draft=maximum;
+    armed=false;inputsReady=false;recovering=false;positionKnown=false;
     if(power&&fault==='normal'){
       flashOrigin=performance.now();
-      moveTo(0,'boot');
+      beginRecovery();
     }
     render();
   });
@@ -272,25 +338,51 @@
   buttons.h.addEventListener('click',()=>selectRocker('h'));
   buttons.center.addEventListener('click',()=>selectRocker('center'));
   buttons.j.addEventListener('pointerdown',e=>{
-    if((e.pointerType==='mouse'&&e.button!==0)||press||!power)return;
+    if((e.pointerType==='mouse'&&e.button!==0)||jInput)return;
     startPress('pointer',e.pointerId);
     try{buttons.j.setPointerCapture(e.pointerId);}catch(_){}
   });
-  buttons.j.addEventListener('pointerup',e=>{if(press?.source==='pointer'&&press.pointerId===e.pointerId)endPress(true);});
-  buttons.j.addEventListener('pointercancel',e=>{if(press?.source==='pointer'&&press.pointerId===e.pointerId)endPress(false);});
-  buttons.j.addEventListener('lostpointercapture',()=>{if(press?.source==='pointer')endPress(false);});
+  const pointerUp=e=>{if(jInput?.source==='pointer'&&jInput.pointerId===e.pointerId)releaseInput(true);};
+  buttons.j.addEventListener('pointerup',pointerUp);
+  window.addEventListener('pointerup',pointerUp);
+  buttons.j.addEventListener('pointercancel',e=>{if(jInput?.source==='pointer'&&jInput.pointerId===e.pointerId)releaseInput(false);});
+  buttons.j.addEventListener('lostpointercapture',()=>{if(jInput?.source==='pointer')releaseInput(false);});
   buttons.j.addEventListener('contextmenu',e=>e.preventDefault());
-  buttons.j.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();if(!e.repeat)startPress('keyboard');}});
-  buttons.j.addEventListener('keyup',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();if(press?.source==='keyboard')endPress(true);}});
-  buttons.j.addEventListener('click',()=>{if(performance.now()>=suppressClickUntil)tapJ();});
-  window.addEventListener('blur',()=>endPress(false));
-  document.addEventListener('visibilitychange',()=>{if(document.hidden)endPress(false);});
-  q('fault').addEventListener('change',()=>{
-    endPress(false);stopMotor();fault=q('fault').value;mode='normal';draft=maximum;
-    on=false;resumeOn=false;rocker='center';armed=true;
-    if(fault==='normal'&&power)moveTo(0,'boot');
+  buttons.j.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();if(!e.repeat)startPress('keyboard',null,e.key);}});
+  const keyUp=e=>{if(jInput?.source==='keyboard'&&jInput.key===e.key){e.preventDefault();releaseInput(true);}};
+  buttons.j.addEventListener('keyup',keyUp);window.addEventListener('keyup',keyUp);
+  // Pointer clicks are already handled on down/up; retain accessibility activation.
+  buttons.j.addEventListener('click',e=>{if(!e.detail&&performance.now()>=suppressClickUntil)tapJ();});
+  window.addEventListener('blur',()=>releaseInput(false));
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)releaseInput(false);});
+  function armTriggerWatchdog(){
+    if(!power||!jInput)return;
+    if(triggerTimer!==null)clearTimeout(triggerTimer);
+    triggerTimer=setTimeout(()=>{
+      triggerTimer=null;
+      if(power&&jInput){triggerCause=true;latchFault('trigger');}
+    },STUCK_MS);
+  }
+  function latchFault(cause){
+    if(!Object.hasOwn(faultCodes,cause))return;
+    endPress(false);stopMotor();latchedFaults.add(cause);
+    fault=[...latchedFaults].sort((a,b)=>faultCodes[a]-faultCodes[b])[0];
+    mode='normal';draft=maximum;
+    on=false;resumeOn=false;armed=false;inputsReady=false;recovering=false;positionKnown=false;
     render();
+  }
+  q('fault').addEventListener('change',()=>{
+    if(!power)return;
+    faultCause=q('fault').value;
+    if(faultCause!=='normal')latchFault(faultCause);else render();
   });
+  function resetFault(fromHold=false){
+    if(!canResetFault()||(!fromHold&&jInput))return;
+    if(latchedFaults.has('settings')){level=4;maximum=100;runOpening=40;}
+    latchedFaults.clear();fault='normal';draft=maximum;
+    beginRecovery();render();
+  }
+  q('reset-fault').addEventListener('click',()=>resetFault());
   media.addEventListener?.('change',render);
   render();
 })();

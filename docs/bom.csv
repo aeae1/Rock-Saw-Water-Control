@@ -1,18 +1,18 @@
 Category,Quantity,Unit,Candidate or requirement,Status,Unit price USD,Notes
-Controller,1,board,Arduino Nano Every ABX00028,Candidate,,External protected I/O required
-Valve,1,assembly,U.S. Solid USS-MSV00012 OR USS-MSV50033 OR USS-MSV00087,Candidate,,Select one 1/2-inch candidate; 3/8-inch option pending; see research prices
-Motor driver,1,board,Pololu TB67H453FNG carrier 4971,Reversing-valve option only,,Validate startup and stall current
-Current output,1,board,DFRobot DFR0972,Proportional-valve option only,9.90,2026-10-01 price; requires separate 18-24V supply
-Position receiver,1,circuit,Protected 4-20mA feedback input,Proportional-valve option only,,ADC scaling and protection design pending
-Loop power,1,converter,18-24V regulated output for DFR0972,Proportional-valve option only,,Not included in main 12V regulator
-Power supply,1,assembly,Protected regulated supply rails,Design pending,,Size for simultaneous motor and lamp loading
-Enclosure,1,box,Bud PN-1339-A or equivalent,Candidate,,Validate UV exposure and internal temperature
-Indicator lamps,10,lamp,PSEQT blue/white three-wire lamps,User-selected type,,Verify batch wire functions and current
-Lamp outputs,20,channel,High-side switching drivers,Design pending,,Two color channels per lamp
-Output expansion,1,assembly,Controller-compatible I/O expansion,Design pending,,Channel count depends on driver topology
-Control inputs,3,channel,Protected G H J inputs,Design pending,,No direct machine voltage on GPIO
-Power protection,1,set,Fuse reverse-polarity and transient protection,Design pending,,Component values require electrical design
-Machine harness,1,set,Compatible 14-pin connector and harness,Verification pending,,Confirm connector cavities and existing hydraulic functions
-Wiring and seals,1,set,Cable glands terminals sealed connectors wire,Design pending,,Quantity determined by layout
-Plumbing,1,set,Manual isolation strainer adapters hose fittings,Design pending,,Garden-hose and NPT threads differ
-Display housing,1,assembly,Ten-lamp mounting bar,Design pending,,Confirm mounting dimensions and visibility
+Controller,1,board,Arduino Nano Every ABX00028,Bench candidate,12.90,2026-10-01 listed price; protected 12V to VIN
+Valve,1,assembly,U.S. Solid USS-MSV50033,Bench candidate,99.99,1/2 inch proportional; integrated motor and controller
+Current output,1,board,DFRobot DFR1229 GP8600,Bench candidate,15.90,3.3-5V supply; verify current-mode load and startup output
+Position receiver,1,board,DFRobot SEN0262,Bench candidate,4.90,Protected installation required
+ADC,1,board,Adafruit ADS1115 1085,Bench candidate,14.95,Position feedback conversion
+Output expansion,2,board,Adafruit MCP23017 5346,Bench candidate,5.95,32 logic channels; 20 used for colors
+Lamp switches,3,IC,Toshiba TBD62783APG,Conditional bench candidate,2.45,8 source channels each; verify common-negative lamps and thermal current limits; add protection
+Regulated supply,1,board,Pololu S18V20F12 2577,Conditional bench candidate,29.95,Not a complete automotive transient-protection front end
+Indicator lamps,10,lamp,BJZ B0CT8G71TW,User-selected type,,Verify actual color leads common current and mounting size
+Enclosure,1,box,Hammond 1554VA2GY,Candidate allowance,,45-65 USD; UV polycarbonate
+Carrier,1,set,PCB terminals passives standoffs,Design pending allowance,,15-25 USD
+Protection and inputs,1,set,Power frontend three protected inputs watchdog inhibit,Design pending allowance,,50-90 USD
+Sensing,1,set,Protected voltage current and temperature sensing,Design pending allowance,,20-35 USD
+Machine harness,1,set,Verified connector and breakout,Verification pending allowance,,35-100 USD; preserve hydraulic-function independence
+Wiring and seals,1,set,Wire sealed connectors glands vent,Layout pending allowance,,35-60 USD
+Plumbing,1,set,Manual shutoff strainer adapters hose,Layout pending allowance,,25-50 USD
+Display housing,1,assembly,Ten-lamp housing and hood if separate,Layout pending allowance,,20-40 USD; may combine with controller box
