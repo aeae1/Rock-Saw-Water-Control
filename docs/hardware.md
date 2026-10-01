@@ -34,7 +34,7 @@ The HSH-Flo listing covers multiple sizes and configurations, with several switc
 
 ## Lamp assembly
 
-The proposed display uses the user's [BJZ blue/white lamps (B0CT8G71TW)](https://www.amazon.com/BJZ-Trailer-Marker-Clearance-Indicator/dp/B0CT8G71TW/). Record the exact supplied item, wire functions, current, brightness, and mounting dimensions during bench inspection. Twenty independently driven color channels are required by the current display behavior. The controller cannot drive the lamps directly.
+The proposed display uses ten 12 V blue/white lamps with a common negative and separately powered positive color leads. Brand is flexible: the user supplied [BJZ B0CT8G71TW](https://www.amazon.com/BJZ-Trailer-Marker-Clearance-Indicator/dp/B0CT8G71TW/) and [Nilight B0F7XP3QZB](https://www.amazon.com/Nilight-Clearance-Indicator-Trailer-Warranty/dp/B0F7XP3QZB) as examples. The [build guide](build-guide.md) records the Nilight manufacturer's wiring and an example ten-pack price. Record the actual supplied item, wire functions, per-color current, brightness, and mounting dimensions during bench inspection. Twenty independently switched color channels are required by the current display behavior. The lamps contain their own current limiting, but controller GPIO cannot supply their twelve-volt power directly.
 
 ## Smart-valve research path
 

@@ -44,7 +44,7 @@ flowchart TD
     L --> G["Common negative return"]
 ```
 
-This topology assumes the actual BJZ lamps are common-negative, with separately powered color leads. Confirm that wiring on the supplied units. They are complete twelve-volt lamps; the external electronics switch power and do not replace their internal LED current limiting. Use one color at a time. Common-positive lamps require a revised low-side circuit.
+This topology uses common-negative lamps with separately powered color leads, independent of brand. Nilight documents this arrangement for its TL-248BW example; confirm polarity and per-color current on the actual supplied units. They are complete twelve-volt lamps; the external electronics switch power and do not replace their internal LED current limiting. Use one color at a time. Common-positive lamps require a revised low-side circuit. See the [build guide](build-guide.md) for example products and manufacturer references.
 
 Twenty switched color leads plus a shared return connect a remote lamp bar. A controller located behind the lamps keeps those wires short. Do not use long unbuffered I²C wiring between separated enclosures.
 

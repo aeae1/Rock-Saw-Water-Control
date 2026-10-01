@@ -30,7 +30,9 @@ The newer [DFR1229 documentation](https://wiki.dfrobot.com/dfr1229/) specifies a
 
 ## The complete lamp controller
 
-The selected lamp is the user-supplied [BJZ B0CT8G71TW](https://www.amazon.com/BJZ-Trailer-Marker-Clearance-Indicator/dp/B0CT8G71TW/), replacing the earlier PSEQT reference. A twelve-volt ready lamp contains its own LED current-limiting arrangement. The external parts below are electronic **on/off switches**, not an extra constant-current LED power supply. Full wiring/current specifications for this exact listing were not retrievable; confirm them from the supplied lamps before final construction.
+The lamp requirement is brand-neutral: **ten 12 V blue/white lamps with a common negative and separately powered positive color leads**. The user-supplied [BJZ B0CT8G71TW](https://www.amazon.com/BJZ-Trailer-Marker-Clearance-Indicator/dp/B0CT8G71TW/) and [Nilight B0F7XP3QZB](https://www.amazon.com/Nilight-Clearance-Indicator-Trailer-Warranty/dp/B0F7XP3QZB) are examples; compatible replacements are acceptable. A twelve-volt ready lamp contains its own LED current-limiting arrangement. The external parts below are electronic **on/off switches**, not an extra constant-current LED power supply.
+
+The [Nilight TL-248BW manufacturer listing](https://www.nilight.com/products/3-4inch-dual-color-marker-light-10pcs-blue-to-white-auxiliary-side-marker-bullet-clearance-indicator-lights-3-plug-connector-ip68-waterproof-for-trailer-truck-pickup-camper-rv-atv-utv-van-bus) identifies black as negative, blue as blue-positive, and white as white-positive. It lists 12 V operation, an approximately 0.78-inch mounting hole, potted IP68 lamps, and a **$25.99 ten-pack** as reviewed on 2026-10-01. Per-color current and temperature limits were not specified in the retrieved listing. Confirm current, polarity, daylight visibility and fit on the supplied units before finalizing the output bank. The lamp body's ingress claim does not establish a sealed panel penetration or sealed bullet connectors.
 
 These are twelve-volt lamp assemblies, so the I/O expanders provide commands and the power drivers provide lamp current. For the expected common-negative wiring, the architecture is:
 
@@ -146,6 +148,8 @@ These allowances include categories that often disappear from a cheap board-only
 | **Core parts plus completion allowance** | **$442.84–662.84** |
 
 Budget approximately **$445–665 plus the lamps, shipping, tax and labor** for this more complete prototype. Tools, a purchased bench supply, a permanent flow meter, independent fail-close valve, professional harness/PCB assembly and redesigns are excluded. If the lamps are already owned, do not buy them again. Combining controller and lamp housings can remove the separate-display allowance. A higher-capacity or protected output stage may increase the budget.
+
+Using the example $25.99 Nilight pack brings the core parts plus lamps to **$223.83**, or approximately **$470–690** for the more complete prototype before shipping, tax and labor. This is an example price, not a brand requirement.
 
 ## Programming and assembly sequence
 

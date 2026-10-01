@@ -7,7 +7,7 @@ ADC,1,board,Adafruit ADS1115 1085,Bench candidate,14.95,Position feedback conver
 Output expansion,2,board,Adafruit MCP23017 5346,Bench candidate,5.95,32 logic channels; 20 used for colors
 Lamp switches,3,IC,Toshiba TBD62783APG,Conditional bench candidate,2.45,8 source channels each; verify common-negative lamps and thermal current limits; add protection
 Regulated supply,1,board,Pololu S18V20F12 2577,Conditional bench candidate,29.95,Not a complete automotive transient-protection front end
-Indicator lamps,10,lamp,BJZ B0CT8G71TW,User-selected type,,Verify actual color leads common current and mounting size
+Indicator lamps,10,lamp,12 V blue/white common-negative lamps,Brand-neutral requirement,,BJZ B0CT8G71TW or Nilight TL-248BW examples; Nilight ten-pack 25.99 USD; verify current and mounting size
 Enclosure,1,box,Hammond 1554VA2GY,Candidate allowance,,45-65 USD; UV polycarbonate
 Carrier,1,set,PCB terminals passives standoffs,Design pending allowance,,15-25 USD
 Protection and inputs,1,set,Power frontend three protected inputs watchdog inhibit,Design pending allowance,,50-90 USD
