@@ -1,5 +1,7 @@
 # Validation Plan
 
+Browser CI uses the version-pinned official Playwright container, which includes browser binaries and system libraries. This avoids installing operating-system packages on every run. Keep its version aligned with the locked Playwright package. The test server uses Node.js and listens only on loopback. See [Playwright's container guidance](https://playwright.dev/docs/docker).
+
 ## Simulator verification
 
 `npm test` exercises the actual exported script and markup with a deterministic clock. The checks cover startup-off behavior, saved-level and maximum indication, J short and long presses, latched maximum setup, nearest-step rounding, clamping, rocker rearming, interrupted movement, canceled gestures, fault inhibition, and reduced-motion behavior.
