@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Interactive prototype of a ten-level attachment water controller using three operator-control outputs.">
+  <title>Rock Saw Water Control · Simulator</title>
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/simulator.css">
+  <script defer src="assets/simulator.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <p class="eyebrow">THREE-INPUT ATTACHMENT CONTROL · SIMULATOR</p>
+    <h1>Rock Saw Water Control</h1>
+    <nav aria-label="Project"><a href="#simulator" aria-current="page">Simulator</a><a href="swatches.html">Artwork swatches</a><a href="https://github.com/aeae1/Rock-Saw-Water-Control">Repository</a></nav>
+  </header>
+  <main id="simulator">
+    <noscript>This simulator requires JavaScript. Its operation is documented in the repository.</noscript>
+    <div id="rock-saw-animations">
+
+  <div class="viz-dotted-background" aria-label="Fill and drain water control">
+    <section class="sa-stage" data-variant="Fill & drain" data-style="fill" aria-label="Fill and drain animation">
+      <div class="sa-power-row"><label class="cursor-interaction"><input class="sa-power-toggle cursor-interaction" type="checkbox" role="switch" data-power>Machine power</label><span class="sa-power-state" data-power-state>OFF</span></div>
+      <div class="sa-panel" role="img" aria-label="All ten lamps off. Machine power off." data-panel>
+        <div class="sa-brand"><strong>ROCK SAW / WATER</strong><span data-mode-label>POWER OFF</span></div>
+        <div class="sa-lights" aria-hidden="true">
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">1</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">2</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">3</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">4</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">5</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">6</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">7</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">8</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">9</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">10</span></div>
+        </div>
+        <div class="sa-scale"><span data-scale-start>LESS</span><span data-scale-end>MORE</span></div>
+      </div>
+      <div class="sa-legend" aria-label="Light meanings">
+        <span class="sa-key"><span class="sa-dot sa-dot-blue" aria-hidden="true"></span><span data-blue-key>On command</span></span>
+        <span class="sa-key"><span class="sa-dot sa-dot-white" aria-hidden="true"></span><span data-white-key>Paused / saved setting</span></span>
+      </div>
+      <div class="sa-controls">
+        <div>
+          <div class="sa-label">G/H rocker</div>
+          <div class="sa-rocker">
+            <button type="button" class="cursor-interaction" data-g aria-pressed="false" aria-label="G: increase setting">G +<small>More</small></button>
+            <button type="button" class="cursor-interaction" data-center aria-pressed="true" aria-label="Recenter the G/H rocker">Center<small>Rearm</small></button>
+            <button type="button" class="cursor-interaction" data-h aria-pressed="false" aria-label="H: decrease setting">H −<small>Less</small></button>
+          </div>
+        </div>
+        <div class="sa-trigger">
+          <div class="sa-label">J trigger</div>
+          <button type="button" class="cursor-interaction" data-j aria-pressed="false" aria-label="J: tap to toggle water; hold for 2.5 seconds to enter maximum setup">J<small>Tap on/off</small></button>
+          <div class="sa-hold-track" aria-hidden="true"><div class="sa-hold-progress" data-hold-progress></div></div>
+          <div class="sa-hold-caption" data-hold-caption>Hold 2.5 s to set max</div>
+        </div>
+        <div class="sa-valve">
+          <div class="sa-valve-heading"><span>Ball valve · schematic</span><span data-valve-state>Unpowered</span></div>
+          <svg viewBox="0 0 420 174" role="img" aria-label="Simulated ball valve closed, with no water flow" data-valve-svg>
+            <defs>
+              <linearGradient id="sa-pipe-metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#87959e"/><stop offset=".2" stop-color="#d5e0e7"/><stop offset=".55" stop-color="#697b88"/><stop offset="1" stop-color="#334650"/></linearGradient>
+              <linearGradient id="sa-brass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#daba72"/><stop offset=".3" stop-color="#f2da9e"/><stop offset=".65" stop-color="#a9843d"/><stop offset="1" stop-color="#6d4a22"/></linearGradient>
+              <radialGradient id="sa-ball-metal" cx=".32" cy=".22" r=".85"><stop offset="0" stop-color="#f8fdff"/><stop offset=".3" stop-color="#c8d5dc"/><stop offset=".7" stop-color="#738a99"/><stop offset="1" stop-color="#354b5a"/></radialGradient>
+              <clipPath id="sa-ball-clip"><circle cx="210" cy="87" r="42"/></clipPath>
+            </defs>
+            <rect x="10" y="60" width="400" height="54" rx="10" fill="url(#sa-pipe-metal)"/>
+            <rect x="10" y="74" width="400" height="26" rx="3" fill="#0c4564"/>
+            <rect x="126" y="37" width="168" height="100" rx="23" fill="url(#sa-brass)" stroke="#8a6939" stroke-width="2"/>
+            <rect x="126" y="71" width="168" height="32" fill="#0c4564"/>
+            <path d="M 14 87 H 167 M 253 87 H 406" stroke="#1498d3" stroke-width="17" fill="none" opacity="0" data-water-body/>
+            <path d="M 14 87 H 167 M 253 87 H 406" stroke="#8aeaff" stroke-width="4" stroke-linecap="round" stroke-dasharray="12 22" fill="none" opacity="0" data-water-stream/>
+            <circle cx="210" cy="87" r="49" fill="#263b46" stroke="#d3b16e" stroke-width="4"/>
+            <circle cx="210" cy="87" r="43" fill="url(#sa-ball-metal)"/>
+            <g clip-path="url(#sa-ball-clip)">
+              <g data-ball transform="rotate(90 210 87)">
+                <rect x="164" y="71" width="92" height="32" rx="4" fill="#082c41" stroke="#e6f1f6" stroke-width="2"/>
+                <path d="M 164 87 H 256" stroke="#1498d3" stroke-width="18" fill="none" opacity="0" data-bore-water/>
+                <path d="M 164 87 H 256" stroke="#8aeaff" stroke-width="4" stroke-linecap="round" stroke-dasharray="12 22" fill="none" opacity="0" data-bore-stream/>
+              </g>
+            </g>
+            <path d="M 140 47 H 161 M 259 47 H 280" stroke="#ffe4a5" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+            <path d="M 20 63 H 112 M 308 63 H 400" stroke="#f1f9fd" stroke-width="2" opacity=".6"/>
+          </svg>
+          <div class="sa-valve-readout" data-valve-readout>0% open</div>
+          <div class="sa-valve-note">Illustrative flow · not measured GPM</div>
+        </div>
+      </div>
+      <div class="sa-status" aria-live="polite" data-status>Machine power off</div>
+      <div class="sa-target" aria-live="polite" data-target>Saved level 4/10 · Max 100%</div>
+      <div class="sa-switch-state" aria-live="polite" data-switch-state>Power on starts with water off</div>
+      <div class="sa-preview">
+        <label for="sa-fill-fault">Fault preview</label>
+        <select id="sa-fill-fault" data-fault>
+          <option value="normal">Normal operation</option>
+          <option value="driver">Fault 4 · motor driver</option>
+          <option value="input">Fault 7 · conflicting inputs</option>
+        </select>
+      </div>
+    </section>
+  </div>
+
+</div>
+    <details class="instructions">
+      <summary>Operating instructions</summary>
+      <ol>
+        <li>Switch machine power on. Water starts off; white lamps show the saved level. The maximum lamp alternates blue and white briefly.</li>
+        <li>Tap J to toggle water. G increases the level; H decreases it. Center or reverse the rocker to make another adjustment.</li>
+        <li>Hold J for 2.5 seconds to enter maximum setup. Release J, then use G/H to choose a maximum from 10% to 100%. The valve remains at its current position.</li>
+        <li>Tap J to save and exit. The controller selects the nearest available level under the new maximum, preserving the prior on/off command.</li>
+      </ol>
+      <p>Settings persist through the simulated power switch, but reset on page reload. Power loss stops the modeled motor at its current position; it does not close the valve.</p>
+      <p>To operate J with a keyboard, focus the button and press or hold Space or Enter. Reduced-motion preferences disable flashing and moving water effects.</p>
+    </details>
+  </main>
+  <footer>Engineering simulation · Opening percentage is not measured water flow · Hardware integration pending</footer>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "rock-saw-water-control",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Machine-independent attachment water-control simulator and engineering specification",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.cjs",
+    "check": "npm run build && npm test"
+  },
+  "engines": { "node": ">=22" },
+  "devDependencies": { "linkedom": "0.18.13" }
+}

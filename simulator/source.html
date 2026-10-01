@@ -1,0 +1,390 @@
+<div id="rock-saw-animations">
+  <style>
+    #rock-saw-animations .sa-stage { color: light-dark(#18222c, #edf2f7); font: 400 14px/1.5 system-ui, sans-serif; padding: 26px 0 16px; min-height: 436px; }
+    #rock-saw-animations .sa-stage * { box-sizing: border-box; }
+    #rock-saw-animations .sa-power-row { display: flex; align-items: center; gap: 10px; min-height: 44px; margin-bottom: 12px; }
+    #rock-saw-animations .sa-power-row label { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; }
+    #rock-saw-animations .sa-power-toggle { appearance: none; -webkit-appearance: none; width: 44px; height: 26px; border-radius: 20px; background: light-dark(#84909a, #52616c); position: relative; margin: 0; }
+    #rock-saw-animations .sa-power-toggle::before { content: ''; position: absolute; width: 20px; height: 20px; top: 3px; left: 3px; border-radius: 50%; background: #fff; }
+    #rock-saw-animations .sa-power-toggle:checked { background: #087bd0; }
+    #rock-saw-animations .sa-power-toggle:checked::before { left: 21px; }
+    #rock-saw-animations .sa-power-state { font-size: 12px; color: light-dark(#4d5b68, #b9c5d0); }
+    #rock-saw-animations .sa-panel { padding: 22px clamp(9px, 3vw, 25px) 17px; border-radius: 12px; color: #eff3f7; background: linear-gradient(160deg, #30383f, #20282e 60%, #192027); box-shadow: inset 0 1px 0 #65717a, 0 8px 20px #0002; position: relative; overflow: hidden; }
+    #rock-saw-animations .sa-panel::before { content: ''; position: absolute; height: 7px; top: 0; left: 0; right: 0; background: linear-gradient(#48545d, #141b20); }
+    #rock-saw-animations .sa-brand { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 5px; margin: 0 6px 20px; }
+    #rock-saw-animations .sa-brand strong { font-size: 12px; letter-spacing: 2px; font-weight: 500; }
+    #rock-saw-animations .sa-brand span { color: #b5c1ca; font-size: 11px; letter-spacing: 1px; }
+    #rock-saw-animations .sa-lights { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: clamp(3px, 1.2vw, 10px); }
+    #rock-saw-animations .sa-lamp { min-width: 0; text-align: center; }
+    #rock-saw-animations .sa-grommet { width: 100%; aspect-ratio: 1; max-width: 57px; padding: clamp(3px, .6vw, 5px); margin: auto; border-radius: 50%; background: #0b1013; box-shadow: inset 0 2px 3px #000b, 0 1px 0 #626b71; }
+    #rock-saw-animations .sa-lens { position: relative; width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle at 33% 22%, #58646d, #303c46 45%, #1b252e 90%); box-shadow: inset 0 0 2px #8897a15c; }
+    #rock-saw-animations .sa-lens::before { content: ''; position: absolute; inset: 15% 19% 61%; border-radius: 50%; background: #fff2; transform: rotate(-20deg); }
+    #rock-saw-animations .sa-blue .sa-lens { background: radial-gradient(circle at 36% 27%, #effdff, #6cd3ff 22%, #139bfd 52%, #0860c7 90%); box-shadow: 0 0 13px #1197ff9c, inset 0 0 3px #e0ffff; }
+    #rock-saw-animations .sa-white .sa-lens { background: radial-gradient(circle at 36% 27%, #fff, #fffef5 27%, #e4e7e6 64%, #a3b4be 95%); box-shadow: 0 0 10px #eeffff55, inset 0 0 3px #fff; }
+    #rock-saw-animations .sa-number { display: block; padding-top: 9px; font-size: 11px; color: #c2cdd5; font-variant-numeric: tabular-nums; }
+    #rock-saw-animations .sa-scale { display: flex; justify-content: space-between; margin-top: 11px; padding: 0 5px; color: #aebdc8; font-size: 11px; letter-spacing: 1px; }
+    #rock-saw-animations .sa-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 7px 19px; margin: 14px 0 20px; font-size: 12px; }
+    #rock-saw-animations .sa-key { display: inline-flex; align-items: center; gap: 7px; }
+    #rock-saw-animations .sa-dot { width: 8px; height: 8px; display: inline-block; border-radius: 50%; }
+    #rock-saw-animations .sa-dot-blue { background: #139bfd; }
+    #rock-saw-animations .sa-dot-white { background: #f4f6f8; box-shadow: 0 0 0 1px #93a0aa; }
+    #rock-saw-animations .sa-controls { display: grid; grid-template-columns: 90px 125px minmax(0, 1fr); gap: 18px; align-items: center; margin: 0 auto; }
+    #rock-saw-animations .sa-label { font-size: 12px; margin-bottom: 7px; color: light-dark(#4d5b68, #b9c5d0); }
+    #rock-saw-animations .sa-rocker { display: grid; grid-template-columns: 1fr; gap: 3px; padding: 5px; border-radius: 10px; background: light-dark(#dbe1e5, #111b24); }
+    #rock-saw-animations .sa-rocker [data-center] { min-height: 42px; }
+    #rock-saw-animations .sa-rocker [data-center] small { display: none; }
+    #rock-saw-animations .sa-stage button { min-height: 49px; width: 100%; border: 1px solid light-dark(#b9c4ce, #55616b); border-radius: 7px; background: light-dark(#f9fbfc, #242e37); color: light-dark(#16222d, #edf5fa); font: 500 14px/1.25 system-ui, sans-serif; padding: 7px 4px; touch-action: manipulation; }
+    #rock-saw-animations .sa-stage button small { font: 400 11px/1.4 system-ui, sans-serif; display: block; margin-top: 3px; }
+    #rock-saw-animations .sa-stage button[aria-pressed="true"] { color: light-dark(#fff, #12212d); background: light-dark(#283d4d, #d5e6f2); border-color: light-dark(#283d4d, #d5e6f2); }
+    #rock-saw-animations .sa-stage button:disabled { opacity: .4; }
+    #rock-saw-animations .sa-status { text-align: center; min-height: 24px; margin-top: 19px; font-weight: 500; font-variant-numeric: tabular-nums; }
+    #rock-saw-animations .sa-switch-state { min-height: 22px; text-align: center; color: light-dark(#4d5b68, #b9c5d0); font-size: 12px; margin-top: 3px; }
+    #rock-saw-animations .sa-target { text-align: center; font-size: 12px; color: light-dark(#4d5b68, #b9c5d0); margin-top: 5px; min-height: 22px; font-variant-numeric: tabular-nums; }
+    #rock-saw-animations .sa-hold-row { display: flex; justify-content: center; margin-top: 12px; }
+    #rock-saw-animations .sa-hold-row label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 12px; }
+    #rock-saw-animations .sa-hold-row input { width: 18px; height: 18px; margin: 0; accent-color: light-dark(#283d4d, #d5e6f2); }
+    #rock-saw-animations .sa-hold-track { height: 4px; margin: 10px 0 8px; background: light-dark(#dce3e9, #374653); border-radius: 3px; overflow: hidden; }
+    #rock-saw-animations .sa-hold-progress { height: 100%; width: 0; background: #159ffd; }
+    #rock-saw-animations .sa-hold-caption { font-size: 11px; color: light-dark(#4d5b68, #b9c5d0); min-height: 34px; text-align: center; }
+    #rock-saw-animations .sa-valve { min-width: 0; }
+    #rock-saw-animations .sa-valve svg { display: block; width: 100%; height: auto; }
+    #rock-saw-animations .sa-valve-heading { display: flex; justify-content: space-between; gap: 6px; flex-wrap: wrap; font-size: 12px; color: light-dark(#4d5b68, #b9c5d0); }
+    #rock-saw-animations .sa-valve-readout { text-align: center; font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; }
+    #rock-saw-animations .sa-valve-note { text-align: center; font-size: 11px; color: light-dark(#4d5b68, #b9c5d0); margin-top: 4px; }
+    #rock-saw-animations [data-j] { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    #rock-saw-animations .sa-preview { margin: 18px auto 0; max-width: 550px; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; }
+    #rock-saw-animations .sa-preview label { font-size: 12px; color: light-dark(#4d5b68, #b9c5d0); }
+    #rock-saw-animations .sa-stage select { max-width: 100%; min-height: 44px; border-radius: 7px; border: 1px solid light-dark(#b9c4ce, #55616b); padding: 8px; font: 400 16px/1.4 system-ui, sans-serif; background: light-dark(#fff, #242e37); color: light-dark(#16222d, #edf5fa); }
+    #rock-saw-animations .sa-fault .sa-lens { animation: sa-error-flash 1.2s steps(1,end) 3; }
+    @keyframes sa-error-flash { 0%, 64% { opacity: 1; } 65%, 100% { opacity: .19; box-shadow: none; } }
+    @media (max-width: 600px) { #rock-saw-animations .sa-controls { grid-template-columns: 90px minmax(0, 1fr); column-gap: 24px; row-gap: 20px; max-width: 430px; } #rock-saw-animations .sa-trigger { max-width: 180px; justify-self: center; width: 100%; } #rock-saw-animations .sa-valve { grid-column: 1 / -1; } }
+    @media (max-width: 380px) { #rock-saw-animations .sa-brand { margin-left: 3px; margin-right: 3px; } }
+    @media (prefers-reduced-motion: reduce) { #rock-saw-animations .sa-fault .sa-lens { animation: none; } }
+  </style>
+  <div class="viz-dotted-background" aria-label="Fill and drain water control">
+    <section class="sa-stage" data-variant="Fill & drain" data-style="fill" aria-label="Fill and drain animation">
+      <div class="sa-power-row"><label class="cursor-interaction"><input class="sa-power-toggle cursor-interaction" type="checkbox" role="switch" data-power>Machine power</label><span class="sa-power-state" data-power-state>OFF</span></div>
+      <div class="sa-panel" role="img" aria-label="All ten lamps off. Machine power off." data-panel>
+        <div class="sa-brand"><strong>ROCK SAW / WATER</strong><span data-mode-label>POWER OFF</span></div>
+        <div class="sa-lights" aria-hidden="true">
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">1</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">2</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">3</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">4</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">5</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">6</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">7</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">8</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">9</span></div>
+          <div class="sa-lamp"><div class="sa-grommet"><div class="sa-lens"></div></div><span class="sa-number">10</span></div>
+        </div>
+        <div class="sa-scale"><span data-scale-start>LESS</span><span data-scale-end>MORE</span></div>
+      </div>
+      <div class="sa-legend" aria-label="Light meanings">
+        <span class="sa-key"><span class="sa-dot sa-dot-blue" aria-hidden="true"></span><span data-blue-key>On command</span></span>
+        <span class="sa-key"><span class="sa-dot sa-dot-white" aria-hidden="true"></span><span data-white-key>Paused / saved setting</span></span>
+      </div>
+      <div class="sa-controls">
+        <div>
+          <div class="sa-label">G/H rocker</div>
+          <div class="sa-rocker">
+            <button type="button" class="cursor-interaction" data-g aria-pressed="false" aria-label="G: increase setting">G +<small>More</small></button>
+            <button type="button" class="cursor-interaction" data-center aria-pressed="true" aria-label="Recenter the G/H rocker">Center<small>Rearm</small></button>
+            <button type="button" class="cursor-interaction" data-h aria-pressed="false" aria-label="H: decrease setting">H −<small>Less</small></button>
+          </div>
+        </div>
+        <div class="sa-trigger">
+          <div class="sa-label">J trigger</div>
+          <button type="button" class="cursor-interaction" data-j aria-pressed="false" aria-label="J: tap to toggle water; hold for 2.5 seconds to enter maximum setup">J<small>Tap on/off</small></button>
+          <div class="sa-hold-track" aria-hidden="true"><div class="sa-hold-progress" data-hold-progress></div></div>
+          <div class="sa-hold-caption" data-hold-caption>Hold 2.5 s to set max</div>
+        </div>
+        <div class="sa-valve">
+          <div class="sa-valve-heading"><span>Ball valve · schematic</span><span data-valve-state>Unpowered</span></div>
+          <svg viewBox="0 0 420 174" role="img" aria-label="Simulated ball valve closed, with no water flow" data-valve-svg>
+            <defs>
+              <linearGradient id="sa-pipe-metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#87959e"/><stop offset=".2" stop-color="#d5e0e7"/><stop offset=".55" stop-color="#697b88"/><stop offset="1" stop-color="#334650"/></linearGradient>
+              <linearGradient id="sa-brass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#daba72"/><stop offset=".3" stop-color="#f2da9e"/><stop offset=".65" stop-color="#a9843d"/><stop offset="1" stop-color="#6d4a22"/></linearGradient>
+              <radialGradient id="sa-ball-metal" cx=".32" cy=".22" r=".85"><stop offset="0" stop-color="#f8fdff"/><stop offset=".3" stop-color="#c8d5dc"/><stop offset=".7" stop-color="#738a99"/><stop offset="1" stop-color="#354b5a"/></radialGradient>
+              <clipPath id="sa-ball-clip"><circle cx="210" cy="87" r="42"/></clipPath>
+            </defs>
+            <rect x="10" y="60" width="400" height="54" rx="10" fill="url(#sa-pipe-metal)"/>
+            <rect x="10" y="74" width="400" height="26" rx="3" fill="#0c4564"/>
+            <rect x="126" y="37" width="168" height="100" rx="23" fill="url(#sa-brass)" stroke="#8a6939" stroke-width="2"/>
+            <rect x="126" y="71" width="168" height="32" fill="#0c4564"/>
+            <path d="M 14 87 H 167 M 253 87 H 406" stroke="#1498d3" stroke-width="17" fill="none" opacity="0" data-water-body/>
+            <path d="M 14 87 H 167 M 253 87 H 406" stroke="#8aeaff" stroke-width="4" stroke-linecap="round" stroke-dasharray="12 22" fill="none" opacity="0" data-water-stream/>
+            <circle cx="210" cy="87" r="49" fill="#263b46" stroke="#d3b16e" stroke-width="4"/>
+            <circle cx="210" cy="87" r="43" fill="url(#sa-ball-metal)"/>
+            <g clip-path="url(#sa-ball-clip)">
+              <g data-ball transform="rotate(90 210 87)">
+                <rect x="164" y="71" width="92" height="32" rx="4" fill="#082c41" stroke="#e6f1f6" stroke-width="2"/>
+                <path d="M 164 87 H 256" stroke="#1498d3" stroke-width="18" fill="none" opacity="0" data-bore-water/>
+                <path d="M 164 87 H 256" stroke="#8aeaff" stroke-width="4" stroke-linecap="round" stroke-dasharray="12 22" fill="none" opacity="0" data-bore-stream/>
+              </g>
+            </g>
+            <path d="M 140 47 H 161 M 259 47 H 280" stroke="#ffe4a5" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+            <path d="M 20 63 H 112 M 308 63 H 400" stroke="#f1f9fd" stroke-width="2" opacity=".6"/>
+          </svg>
+          <div class="sa-valve-readout" data-valve-readout>0% open</div>
+          <div class="sa-valve-note">Illustrative flow · not measured GPM</div>
+        </div>
+      </div>
+      <div class="sa-status" aria-live="polite" data-status>Machine power off</div>
+      <div class="sa-target" aria-live="polite" data-target>Saved level 4/10 · Max 100%</div>
+      <div class="sa-switch-state" aria-live="polite" data-switch-state>Power on starts with water off</div>
+      <div class="sa-preview">
+        <label for="sa-fill-fault">Fault preview</label>
+        <select id="sa-fill-fault" data-fault>
+          <option value="normal">Normal operation</option>
+          <option value="driver">Fault 4 · motor driver</option>
+          <option value="input">Fault 7 · conflicting inputs</option>
+        </select>
+      </div>
+    </section>
+  </div>
+  <script>
+(() => {
+  const root = document.getElementById('rock-saw-animations');
+  const stage = root.querySelector('.sa-stage');
+  const q = name => stage.querySelector('[data-' + name + ']');
+  const lamps = [...root.querySelectorAll('.sa-lamp')];
+  const buttons = Object.fromEntries(['g','h','center','j'].map(k => [k,q(k)]));
+  const media = typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : {matches:false};
+  const HOLD_MS = 2500, BOOT_MS = 3600, STROKE_MS = 5000;
+  let power = false, on = false, level = 4, maximum = 100, draft = 100;
+  let runOpening = 40, position = 0, target = 0, motion = null;
+  let mode = 'normal', reference = 40, heldPosition = 0, fault = 'normal';
+  let rocker = 'center', armed = true;
+  let bootUntil = 0, flashOrigin = 0;
+  let press = null, holdTimer = null, suppressClickUntil = 0;
+  let frame = null, lastTime = performance.now(), fluidPhase = 0;
+  const clamp = (v,lo,hi) => Math.max(lo,Math.min(hi,v));
+  const fmt = n => String(Math.round(n * 10) / 10);
+  const nearest = (opening,cap) => clamp(Math.round(opening * 10 / cap),1,10);
+  const setText = (el,text) => { if (el.textContent !== text) el.textContent = text; };
+
+  function updatePosition(now) {
+    if (!motion) return false;
+    const p = clamp((now-motion.start)/motion.duration,0,1);
+    position = motion.from + (motion.to-motion.from)*p;
+    if (p >= 1) { position=motion.to; motion=null; return true; }
+    return false;
+  }
+  function stopMotor(now=performance.now()) {
+    updatePosition(now);
+    motion=null;
+    target=position;
+  }
+  function moveTo(value,kind='adjust') {
+    const now=performance.now();
+    updatePosition(now);
+    target=clamp(value,0,100);
+    const distance=Math.abs(target-position);
+    if (distance < .0001) { position=target; motion=null; }
+    else motion={from:position,to:target,start:now,duration:Math.max(200,distance/100*STROKE_MS),kind};
+    ensureFrame();
+  }
+  function paintLights(now) {
+    const colors=Array(10).fill('off');
+    if (power) {
+      if (fault !== 'normal') colors[(fault==='driver'?4:7)-1]='white';
+      else if (mode==='max') colors[draft/10-1]=media.matches?'white':Math.floor((now-flashOrigin)/600)%2?'white':'blue';
+      else {
+        let blueCount=0;
+        if (on) blueCount=motion?Math.floor(clamp(position/Math.max(runOpening,.001),0,1)*level+.00001):level;
+        else if (motion && motion.kind!=='boot') blueCount=Math.ceil(clamp(position/Math.max(runOpening,.001),0,1)*level-.00001);
+        for(let i=0;i<level;i++) colors[i]=i<blueCount?'blue':'white';
+        if(now<bootUntil) colors[maximum/10-1]=media.matches?'blue':Math.floor((now-flashOrigin)/600)%2?'white':'blue';
+      }
+    }
+    colors.forEach((color,i)=>{
+      lamps[i].classList.toggle('sa-blue',color==='blue');
+      lamps[i].classList.toggle('sa-white',color==='white');
+      lamps[i].classList.toggle('sa-fault',power&&fault!=='normal'&&color==='white');
+      lamps[i].dataset.color=color;
+    });
+    stage.dataset.colors=colors.join(',');
+  }
+  function drawValve(now) {
+    const dt=clamp(now-lastTime,0,100);
+    lastTime=now;
+    const p=position/100;
+    if(!media.matches && p>.0001) fluidPhase=(fluidPhase+dt*(.035+.095*p))%34;
+    q('ball').setAttribute('transform','rotate('+fmt((1-p)*90)+' 210 87)');
+    const flowing=p>.0001;
+    for(const name of ['water-stream','bore-stream']){
+      const el=q(name);
+      el.setAttribute('stroke-dashoffset',String(-fluidPhase));
+      el.setAttribute('opacity',flowing?'1':'0');
+    }
+    for(const name of ['water-body','bore-water']){
+      q(name).setAttribute('stroke-width',String(flowing?3+15*Math.sqrt(p):0));
+      q(name).setAttribute('opacity',flowing?'.9':'0');
+    }
+    setText(q('valve-readout'),fmt(position)+'% open');
+    setText(q('valve-state'),!power?'Unpowered':mode==='max'?'Position held':motion?'Valve moving':flowing?'Water moving':'Closed');
+    q('valve-svg').setAttribute('aria-label','Simulated ball valve '+fmt(position)+' percent open. '+(flowing?'Water flows left to right.':'No water flow.')+(mode==='max'?' Position held during maximum setup.':''));
+    stage.dataset.position=String(Number(position.toFixed(4)));
+    stage.dataset.target=String(Number(target.toFixed(4)));
+  }
+  function render() {
+    const now=performance.now();
+    updatePosition(now);
+    const failed=fault!=='normal';
+    q('power').checked=power;
+    setText(q('power-state'),power?'ON':'OFF');
+    Object.values(buttons).forEach(b=>{b.disabled=!power||failed;});
+    q('fault').disabled=!power;
+    buttons.g.setAttribute('aria-pressed',String(rocker==='g'));
+    buttons.h.setAttribute('aria-pressed',String(rocker==='h'));
+    buttons.center.setAttribute('aria-pressed',String(rocker==='center'));
+    buttons.j.setAttribute('aria-pressed',String(!!press));
+    setText(buttons.j.querySelector('small'),mode==='max'?'Tap: save & exit':on?'Tap: water off':'Tap: water on');
+    setText(q('mode-label'),!power?'POWER OFF':mode==='max'?'SET MAXIMUM':'10 LEVELS');
+    setText(q('scale-start'),mode==='max'?'10% OPEN':'LESS');
+    setText(q('scale-end'),mode==='max'?'100% OPEN':'MORE');
+    setText(q('blue-key'),mode==='max'?'One flashing lamp: maximum':'On command');
+    setText(q('white-key'),mode==='max'?'Lamp 5 = 50%':'Paused / saved level');
+    let status='', detail='', helper='', label='';
+    if(!power){
+      status='Machine power off';
+      detail='Saved level '+level+'/10 · Max '+maximum+'%';
+      helper=position>.01?'Valve holds its position without power':'Power on starts with water off';
+      label='All ten lamps off. Machine power off.';
+    } else if(failed){
+      const code=fault==='driver'?4:7;
+      status='Fault '+code+' · '+(code===4?'motor driver':'conflicting inputs');
+      detail='Motor command stopped';helper='Valve position is not confirmed by the controller';
+      label='Fault '+code+'. Lamp '+code+' white.';
+    } else if(mode==='max'){
+      const next=nearest(Math.min(reference,draft),draft), newOpening=next*draft/10;
+      status='Set maximum · '+draft+'% opening';
+      detail='On exit: level '+next+'/10 · '+(on?(Math.abs(newOpening-heldPosition)>.02?'moves to '+fmt(newOpening)+'%':'stays at '+fmt(heldPosition)+'%'):'water stays off');
+      helper='G / H adjusts maximum · Tap J to save and exit';
+      label='Maximum setup. Only lamp '+draft/10+' alternates blue and white. Maximum '+draft+' percent. Valve held at '+fmt(position)+' percent.';
+    } else {
+      const approximate=Math.abs(runOpening-level*maximum/10)>.02;
+      const shown=(approximate?'≈':'')+level+' / 10';
+      status=motion?(motion.kind==='boot'?'Startup · closing valve':on?'Adjusting water':'Turning water off'):(on?'Water on · level '+shown:'Paused · level '+shown+' saved');
+      detail='Max '+maximum+'% · '+(on?'Saved opening ':'Next on: ')+fmt(runOpening)+'%';
+      helper=now<bootUntil?'Startup: white = saved level · flashing lamp = maximum':rocker==='center'?'Rocker centered · ready':rocker.toUpperCase()+' held · center or reverse to rearm';
+      label=(on?'Water on. ':'Water paused. ')+'Level '+level+' of ten.'+(now<bootUntil?' Maximum lamp '+maximum/10+' alternates blue and white.':'');
+    }
+    setText(q('status'),status);setText(q('target'),detail);setText(q('switch-state'),helper);
+    q('panel').setAttribute('aria-label',label);
+    setText(q('hold-caption'),!power?'Power on to operate':mode==='max'?'Release, then tap J to exit':press?'Keep holding…':'Hold 2.5 s to set max');
+    if(!press) q('hold-progress').style.width='0%';
+    stage.dataset.power=String(power);stage.dataset.on=String(on);stage.dataset.setting=String(level);
+    stage.dataset.maximum=String(maximum);stage.dataset.draft=String(draft);stage.dataset.mode=mode;
+    stage.dataset.runOpening=String(runOpening);stage.dataset.moving=String(!!motion);
+    stage.dataset.armed=String(armed);
+    paintLights(now);drawValve(now);ensureFrame();
+  }
+  function needsFrame(){
+    return !!motion||!!press||(power&&performance.now()<bootUntil)||(power&&mode==='max'&&!media.matches)||(position>.0001&&!media.matches);
+  }
+  function ensureFrame(){if(frame===null&&needsFrame())frame=requestAnimationFrame(tick);}
+  function tick(now){
+    frame=null;
+    const ended=updatePosition(now);
+    const bootEnded=bootUntil>0&&now>=bootUntil;
+    if(bootEnded)bootUntil=0;
+    if(press)q('hold-progress').style.width=(clamp((now-press.start)/HOLD_MS,0,1)*100)+'%';
+    if(ended||bootEnded)render();
+    else {paintLights(now);drawValve(now);ensureFrame();}
+  }
+  function enterMax(){
+    if(!power||fault!=='normal'||mode!=='normal')return;
+    const now=performance.now();stopMotor(now);
+    heldPosition=position;reference=on?position:runOpening;
+    draft=maximum;mode='max';bootUntil=0;flashOrigin=now;
+    render();
+  }
+  function exitMax(){
+    maximum=draft;
+    level=nearest(Math.min(reference,maximum),maximum);
+    runOpening=level*maximum/10;
+    mode='normal';bootUntil=0;
+    // Quantize to a repeatable step under the new maximum, moving only after exit.
+    moveTo(on?runOpening:0,'cap');
+    render();
+  }
+  function tapJ(){
+    if(!power||fault!=='normal'||press)return;
+    if(mode==='max'){exitMax();return;}
+    bootUntil=0;on=!on;
+    moveTo(on?runOpening:0,on?'open':'close');render();
+  }
+  function selectRocker(next){
+    if(!power||fault!=='normal')return;
+    if(press&&mode!=='max')return;
+    if((rocker==='g'&&next==='h')||(rocker==='h'&&next==='g'))armed=true;
+    rocker=next;
+    if(next==='center')armed=true;
+    else if(armed){
+      armed=false;
+      if(mode==='max')draft=clamp(draft+(next==='g'?10:-10),10,100);
+      else {
+        const newLevel=clamp(level+(next==='g'?1:-1),1,10);
+        if(newLevel!==level){level=newLevel;runOpening=level*maximum/10;bootUntil=0;if(on)moveTo(runOpening);}
+      }
+    }
+    render();
+  }
+  function startPress(source,pointerId=null){
+    if(!power||fault!=='normal'||press)return;
+    press={source,pointerId,start:performance.now(),long:false};
+    holdTimer=setTimeout(()=>{
+      holdTimer=null;if(!press)return;
+      press.long=true;
+      if(mode==='normal')enterMax();
+      else render();
+    },HOLD_MS);
+    render();
+  }
+  function endPress(allowTap=false){
+    if(!press)return;
+    const wasLong=press.long;
+    if(holdTimer!==null)clearTimeout(holdTimer);
+    holdTimer=null;press=null;suppressClickUntil=performance.now()+500;
+    render();
+    if(allowTap&&!wasLong)tapJ();
+  }
+  q('power').addEventListener('change',()=>{
+    const wanted=q('power').checked;
+    endPress(false);stopMotor();power=wanted;on=false;mode='normal';draft=maximum;
+    rocker='center';armed=true;bootUntil=0;
+    if(power&&fault==='normal'){
+      flashOrigin=performance.now();bootUntil=flashOrigin+BOOT_MS;
+      moveTo(0,'boot');
+    }
+    render();
+  });
+  buttons.g.addEventListener('click',()=>selectRocker('g'));
+  buttons.h.addEventListener('click',()=>selectRocker('h'));
+  buttons.center.addEventListener('click',()=>selectRocker('center'));
+  buttons.j.addEventListener('pointerdown',e=>{
+    if((e.pointerType==='mouse'&&e.button!==0)||press||!power)return;
+    startPress('pointer',e.pointerId);
+    try{buttons.j.setPointerCapture(e.pointerId);}catch(_){}
+  });
+  buttons.j.addEventListener('pointerup',e=>{if(press?.source==='pointer'&&press.pointerId===e.pointerId)endPress(true);});
+  buttons.j.addEventListener('pointercancel',e=>{if(press?.source==='pointer'&&press.pointerId===e.pointerId)endPress(false);});
+  buttons.j.addEventListener('lostpointercapture',()=>{if(press?.source==='pointer')endPress(false);});
+  buttons.j.addEventListener('contextmenu',e=>e.preventDefault());
+  buttons.j.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();if(!e.repeat)startPress('keyboard');}});
+  buttons.j.addEventListener('keyup',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();if(press?.source==='keyboard')endPress(true);}});
+  buttons.j.addEventListener('click',()=>{if(performance.now()>=suppressClickUntil)tapJ();});
+  window.addEventListener('blur',()=>endPress(false));
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)endPress(false);});
+  q('fault').addEventListener('change',()=>{
+    endPress(false);stopMotor();fault=q('fault').value;mode='normal';draft=maximum;
+    on=false;bootUntil=0;rocker='center';armed=true;
+    if(fault==='normal'&&power)moveTo(0,'boot');
+    render();
+  });
+  render();
+})();
+  </script>
+</div>

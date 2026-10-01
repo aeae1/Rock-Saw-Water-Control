@@ -1,0 +1,15 @@
+Category,Quantity,Unit,Candidate or requirement,Status,Unit price USD,Notes
+Controller,1,board,Arduino Nano Every ABX00028,Candidate,,External protected I/O required
+Valve,1,assembly,U.S. Solid USS-MSV00021 OR HSH-Flo CR201-B 12V 3/4 NPT,Candidate,,Select one; motor and gearbox included
+Motor driver,1,board,Pololu TB67H453FNG carrier 4971,Candidate,,Validate startup and stall current
+Power supply,1,assembly,Protected regulated supply rails,Design pending,,Size for simultaneous motor and lamp loading
+Enclosure,1,box,Bud PN-1339-A or equivalent,Candidate,,Validate UV exposure and internal temperature
+Indicator lamps,10,lamp,PSEQT blue/white three-wire lamps,User-selected type,,Verify batch wire functions and current
+Lamp outputs,20,channel,High-side switching drivers,Design pending,,Two color channels per lamp
+Output expansion,1,assembly,Controller-compatible I/O expansion,Design pending,,Channel count depends on driver topology
+Control inputs,3,channel,Protected G H J inputs,Design pending,,No direct machine voltage on GPIO
+Power protection,1,set,Fuse reverse-polarity and transient protection,Design pending,,Component values require electrical design
+Machine harness,1,set,Compatible 14-pin connector and harness,Verification pending,,Confirm connector cavities and existing hydraulic functions
+Wiring and seals,1,set,Cable glands terminals sealed connectors wire,Design pending,,Quantity determined by layout
+Plumbing,1,set,Manual isolation strainer adapters hose fittings,Design pending,,Garden-hose and NPT threads differ
+Display housing,1,assembly,Ten-lamp mounting bar,Design pending,,Confirm mounting dimensions and visibility

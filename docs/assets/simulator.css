@@ -1,0 +1,60 @@
+#rock-saw-animations .sa-stage { color: light-dark(#18222c, #edf2f7); font: 400 14px/1.5 system-ui, sans-serif; padding: 26px 0 16px; min-height: 436px; }
+    #rock-saw-animations .sa-stage * { box-sizing: border-box; }
+    #rock-saw-animations .sa-power-row { display: flex; align-items: center; gap: 10px; min-height: 44px; margin-bottom: 12px; }
+    #rock-saw-animations .sa-power-row label { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; }
+    #rock-saw-animations .sa-power-toggle { appearance: none; -webkit-appearance: none; width: 44px; height: 26px; border-radius: 20px; background: light-dark(#84909a, #52616c); position: relative; margin: 0; }
+    #rock-saw-animations .sa-power-toggle::before { content: ''; position: absolute; width: 20px; height: 20px; top: 3px; left: 3px; border-radius: 50%; background: #fff; }
+    #rock-saw-animations .sa-power-toggle:checked { background: #087bd0; }
+    #rock-saw-animations .sa-power-toggle:checked::before { left: 21px; }
+    #rock-saw-animations .sa-power-state { font-size: 12px; color: light-dark(#4d5b68, #b9c5d0); }
+    #rock-saw-animations .sa-panel { padding: 22px clamp(9px, 3vw, 25px) 17px; border-radius: 12px; color: #eff3f7; background: linear-gradient(160deg, #30383f, #20282e 60%, #192027); box-shadow: inset 0 1px 0 #65717a, 0 8px 20px #0002; position: relative; overflow: hidden; }
+    #rock-saw-animations .sa-panel::before { content: ''; position: absolute; height: 7px; top: 0; left: 0; right: 0; background: linear-gradient(#48545d, #141b20); }
+    #rock-saw-animations .sa-brand { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 5px; margin: 0 6px 20px; }
+    #rock-saw-animations .sa-brand strong { font-size: 12px; letter-spacing: 2px; font-weight: 500; }
+    #rock-saw-animations .sa-brand span { color: #b5c1ca; font-size: 11px; letter-spacing: 1px; }
+    #rock-saw-animations .sa-lights { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: clamp(3px, 1.2vw, 10px); }
+    #rock-saw-animations .sa-lamp { min-width: 0; text-align: center; }
+    #rock-saw-animations .sa-grommet { width: 100%; aspect-ratio: 1; max-width: 57px; padding: clamp(3px, .6vw, 5px); margin: auto; border-radius: 50%; background: #0b1013; box-shadow: inset 0 2px 3px #000b, 0 1px 0 #626b71; }
+    #rock-saw-animations .sa-lens { position: relative; width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle at 33% 22%, #58646d, #303c46 45%, #1b252e 90%); box-shadow: inset 0 0 2px #8897a15c; }
+    #rock-saw-animations .sa-lens::before { content: ''; position: absolute; inset: 15% 19% 61%; border-radius: 50%; background: #fff2; transform: rotate(-20deg); }
+    #rock-saw-animations .sa-blue .sa-lens { background: radial-gradient(circle at 36% 27%, #effdff, #6cd3ff 22%, #139bfd 52%, #0860c7 90%); box-shadow: 0 0 13px #1197ff9c, inset 0 0 3px #e0ffff; }
+    #rock-saw-animations .sa-white .sa-lens { background: radial-gradient(circle at 36% 27%, #fff, #fffef5 27%, #e4e7e6 64%, #a3b4be 95%); box-shadow: 0 0 10px #eeffff55, inset 0 0 3px #fff; }
+    #rock-saw-animations .sa-number { display: block; padding-top: 9px; font-size: 11px; color: #c2cdd5; font-variant-numeric: tabular-nums; }
+    #rock-saw-animations .sa-scale { display: flex; justify-content: space-between; margin-top: 11px; padding: 0 5px; color: #aebdc8; font-size: 11px; letter-spacing: 1px; }
+    #rock-saw-animations .sa-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 7px 19px; margin: 14px 0 20px; font-size: 12px; }
+    #rock-saw-animations .sa-key { display: inline-flex; align-items: center; gap: 7px; }
+    #rock-saw-animations .sa-dot { width: 8px; height: 8px; display: inline-block; border-radius: 50%; }
+    #rock-saw-animations .sa-dot-blue { background: #139bfd; }
+    #rock-saw-animations .sa-dot-white { background: #f4f6f8; box-shadow: 0 0 0 1px #93a0aa; }
+    #rock-saw-animations .sa-controls { display: grid; grid-template-columns: 90px 125px minmax(0, 1fr); gap: 18px; align-items: center; margin: 0 auto; }
+    #rock-saw-animations .sa-label { font-size: 12px; margin-bottom: 7px; color: light-dark(#4d5b68, #b9c5d0); }
+    #rock-saw-animations .sa-rocker { display: grid; grid-template-columns: 1fr; gap: 3px; padding: 5px; border-radius: 10px; background: light-dark(#dbe1e5, #111b24); }
+    #rock-saw-animations .sa-rocker [data-center] { min-height: 42px; }
+    #rock-saw-animations .sa-rocker [data-center] small { display: none; }
+    #rock-saw-animations .sa-stage button { min-height: 49px; width: 100%; border: 1px solid light-dark(#b9c4ce, #55616b); border-radius: 7px; background: light-dark(#f9fbfc, #242e37); color: light-dark(#16222d, #edf5fa); font: 500 14px/1.25 system-ui, sans-serif; padding: 7px 4px; touch-action: manipulation; }
+    #rock-saw-animations .sa-stage button small { font: 400 11px/1.4 system-ui, sans-serif; display: block; margin-top: 3px; }
+    #rock-saw-animations .sa-stage button[aria-pressed="true"] { color: light-dark(#fff, #12212d); background: light-dark(#283d4d, #d5e6f2); border-color: light-dark(#283d4d, #d5e6f2); }
+    #rock-saw-animations .sa-stage button:disabled { opacity: .4; }
+    #rock-saw-animations .sa-status { text-align: center; min-height: 24px; margin-top: 19px; font-weight: 500; font-variant-numeric: tabular-nums; }
+    #rock-saw-animations .sa-switch-state { min-height: 22px; text-align: center; color: light-dark(#4d5b68, #b9c5d0); font-size: 12px; margin-top: 3px; }
+    #rock-saw-animations .sa-target { text-align: center; font-size: 12px; color: light-dark(#4d5b68, #b9c5d0); margin-top: 5px; min-height: 22px; font-variant-numeric: tabular-nums; }
+    #rock-saw-animations .sa-hold-row { display: flex; justify-content: center; margin-top: 12px; }
+    #rock-saw-animations .sa-hold-row label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 12px; }
+    #rock-saw-animations .sa-hold-row input { width: 18px; height: 18px; margin: 0; accent-color: light-dark(#283d4d, #d5e6f2); }
+    #rock-saw-animations .sa-hold-track { height: 4px; margin: 10px 0 8px; background: light-dark(#dce3e9, #374653); border-radius: 3px; overflow: hidden; }
+    #rock-saw-animations .sa-hold-progress { height: 100%; width: 0; background: #159ffd; }
+    #rock-saw-animations .sa-hold-caption { font-size: 11px; color: light-dark(#4d5b68, #b9c5d0); min-height: 34px; text-align: center; }
+    #rock-saw-animations .sa-valve { min-width: 0; }
+    #rock-saw-animations .sa-valve svg { display: block; width: 100%; height: auto; }
+    #rock-saw-animations .sa-valve-heading { display: flex; justify-content: space-between; gap: 6px; flex-wrap: wrap; font-size: 12px; color: light-dark(#4d5b68, #b9c5d0); }
+    #rock-saw-animations .sa-valve-readout { text-align: center; font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; }
+    #rock-saw-animations .sa-valve-note { text-align: center; font-size: 11px; color: light-dark(#4d5b68, #b9c5d0); margin-top: 4px; }
+    #rock-saw-animations [data-j] { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    #rock-saw-animations .sa-preview { margin: 18px auto 0; max-width: 550px; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; }
+    #rock-saw-animations .sa-preview label { font-size: 12px; color: light-dark(#4d5b68, #b9c5d0); }
+    #rock-saw-animations .sa-stage select { max-width: 100%; min-height: 44px; border-radius: 7px; border: 1px solid light-dark(#b9c4ce, #55616b); padding: 8px; font: 400 16px/1.4 system-ui, sans-serif; background: light-dark(#fff, #242e37); color: light-dark(#16222d, #edf5fa); }
+    #rock-saw-animations .sa-fault .sa-lens { animation: sa-error-flash 1.2s steps(1,end) 3; }
+    @keyframes sa-error-flash { 0%, 64% { opacity: 1; } 65%, 100% { opacity: .19; box-shadow: none; } }
+    @media (max-width: 600px) { #rock-saw-animations .sa-controls { grid-template-columns: 90px minmax(0, 1fr); column-gap: 24px; row-gap: 20px; max-width: 430px; } #rock-saw-animations .sa-trigger { max-width: 180px; justify-self: center; width: 100%; } #rock-saw-animations .sa-valve { grid-column: 1 / -1; } }
+    @media (max-width: 380px) { #rock-saw-animations .sa-brand { margin-left: 3px; margin-right: 3px; } }
+    @media (prefers-reduced-motion: reduce) { #rock-saw-animations .sa-fault .sa-lens { animation: none; } }
