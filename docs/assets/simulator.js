@@ -5,7 +5,7 @@
   const lamps = [...root.querySelectorAll('.sa-lamp')];
   const buttons = Object.fromEntries(['g','h','center','j'].map(k => [k,q(k)]));
   const media = typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : {matches:false};
-  const HOLD_MS = 1500, BLINK_MS = 600, RIPPLE_MS = 180, STROKE_MS = 5000;
+  const HOLD_MS = 1500, HOLD_FEEDBACK_MS = 500, BLINK_MS = 600, RIPPLE_MS = 180, STROKE_MS = 5000;
   let power = false, on = false, level = 4, maximum = 100, draft = 100;
   let runOpening = 40, position = 0, target = 0, motion = null;
   let mode = 'normal', reference = 40, heldPosition = 0, fault = 'normal';
@@ -19,7 +19,7 @@
   const nearest = (opening,cap) => clamp(Math.round(opening * 10 / cap),1,10);
   const setText = (el,text) => { if (el.textContent !== text) el.textContent = text; };
   const pausedMarker = () => power && fault==='normal' && mode==='normal' && !on && !motion;
-  const holdingForMode = () => !!press && !press.long && mode!=='clean';
+  const holdingForMode = () => !!press?.feedback && !press.long && mode!=='clean';
   const flashingLights = () => power && fault==='normal' && (mode==='max' || mode==='clean' || pausedMarker());
 
   function updatePosition(now) {
@@ -49,7 +49,7 @@
       if (fault !== 'normal') colors[(fault==='driver'?4:7)-1]='white';
       else if (holdingForMode()) {
         // Symmetric inward white fill is reserved for deliberate mode changes.
-        const pairs=media.matches?5:clamp(Math.floor((now-press.start)/(HOLD_MS/5))+1,1,5);
+        const pairs=media.matches?5:clamp(Math.floor((now-press.start-HOLD_FEEDBACK_MS)/((HOLD_MS-HOLD_FEEDBACK_MS)/5))+1,1,5);
         for(let i=0;i<pairs;i++)colors[i]=colors[9-i]='white';
       }
       else if (mode==='max') colors[draft/10-1]=media.matches?'white':Math.floor((now-flashOrigin)/BLINK_MS)%2?'white':'blue';
@@ -153,8 +153,8 @@
     }
     setText(q('status'),status);setText(q('target'),detail);setText(q('switch-state'),helper);
     q('panel').setAttribute('aria-label',label);
-    setText(q('hold-caption'),!power?'Power on to operate':press?(press.long?'Release J to rearm':mode==='clean'?'Release to return':'Keep holding…'):mode==='clean'?'Tap J to return':mode==='max'?'Hold 1.5 s for full open':'Hold 1.5 s to set max');
-    if(!press||mode==='clean')q('hold-progress').style.width='0%';
+    setText(q('hold-caption'),!power?'Power on to operate':press?.long?'Release J to rearm':holdingForMode()?'Keep holding…':mode==='clean'?'Tap J to return':mode==='max'?'Hold 1.5 s for full open':'Hold 1.5 s to set max');
+    if(!press||!press.feedback||mode==='clean')q('hold-progress').style.width='0%';
     else if(press.long)q('hold-progress').style.width='100%';
     stage.dataset.power=String(power);stage.dataset.on=String(on);stage.dataset.setting=String(level);
     stage.dataset.maximum=String(maximum);stage.dataset.draft=String(draft);stage.dataset.mode=mode;
@@ -180,8 +180,10 @@
   function tick(now){
     frame=null;
     const ended=updatePosition(now);
-    if(press&&mode!=='clean')q('hold-progress').style.width=(clamp((now-press.start)/HOLD_MS,0,1)*100)+'%';
-    if(ended)render();
+    const feedbackStarted=press&&!press.feedback&&!press.long&&mode!=='clean'&&now-press.start>=HOLD_FEEDBACK_MS;
+    if(feedbackStarted)press.feedback=true;
+    if(press&&mode!=='clean')q('hold-progress').style.width=(clamp((now-press.start-HOLD_FEEDBACK_MS)/(HOLD_MS-HOLD_FEEDBACK_MS),0,1)*100)+'%';
+    if(ended||feedbackStarted)render();
     else {paintLights(now);drawValve(now);ensureFrame();}
   }
   function enterMax(){
@@ -238,7 +240,7 @@
   }
   function startPress(source,pointerId=null){
     if(!power||fault!=='normal'||press)return;
-    press={source,pointerId,start:performance.now(),long:false};
+    press={source,pointerId,start:performance.now(),long:false,feedback:false};
     holdTimer=setTimeout(()=>{
       holdTimer=null;if(!press)return;
       press.long=true;

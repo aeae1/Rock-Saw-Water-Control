@@ -57,7 +57,7 @@ Full-open cleaning temporarily commands 100% ball opening, regardless of the sav
 | Water paused | White saved-level bar with a persistent maximum marker: blue/off above the bar, blue/white within it |
 | Opening or closing | Fill or drain animation between white and blue |
 | Maximum-opening setup | One lamp alternates blue and white; its index represents 10–100% maximum opening |
-| Holding J to change mode | White lamps fill inward from both ends over 1.5 seconds |
+| Holding J to change mode | After 0.5 seconds, white lamps fill inward until the 1.5-second mode-change threshold |
 | Full-open cleaning | White pairs ripple outward across a blue bar |
 | Startup | Water commanded off; the standard paused indication appears once closing finishes |
 | Diagnostic preview | White lamp at the diagnostic index |
@@ -95,7 +95,7 @@ npm ci
 npm run check
 ```
 
-Edit `simulator/source.html`, then run `npm run build`. The build extracts the simulator into the committed HTML, CSS, and JavaScript under `docs/`. The 58 deterministic tests include all 200 initial-level/new-maximum combinations across running and paused operation, all 100 paused-indicator combinations, cleaning-mode restoration and interruption, gesture boundaries, and 4,000 seeded stress actions. GitHub Actions runs them on Node.js 22 and 24, checks build reproducibility, and runs 18 real-browser cases across desktop Chromium, mobile Chromium, and mobile WebKit. Browser reports and failure traces are retained as workflow artifacts.
+Edit `simulator/source.html`, then run `npm run build`. The build extracts the simulator into the committed HTML, CSS, and JavaScript under `docs/`. The 59 deterministic tests include all 200 initial-level/new-maximum combinations across running and paused operation, all 100 paused-indicator combinations, cleaning-mode restoration and interruption, gesture boundaries, and 4,000 seeded stress actions. GitHub Actions runs them on Node.js 22 and 24, checks build reproducibility, and runs 18 real-browser cases across desktop Chromium, mobile Chromium, and mobile WebKit. Browser reports and failure traces are retained as workflow artifacts.
 
 To run browser checks locally:
 

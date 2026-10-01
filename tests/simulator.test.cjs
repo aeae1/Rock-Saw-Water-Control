@@ -344,17 +344,45 @@ test('cleaning can be exited before reaching full open from both paused and runn
   }
 });
 
-test('both mode holds fill paired white lamps inward without moving the paused valve', () => {
+test('normal J taps under 500 ms never show hold feedback and still toggle on release', () => {
+  for (const reducedMotion of [false, true]) {
+    for (const running of [false, true]) {
+      for (const duration of [100, 499]) {
+        const s = simulator({ reducedMotion }); s.power(true);
+        if (running) { s.tap(); s.advance(2500); }
+        const colors = s.stage.dataset.colors, label = s.q('panel').getAttribute('aria-label');
+        s.down(); s.advance(duration);
+        assert.equal(s.stage.dataset.colors, colors);
+        assert.equal(s.q('panel').getAttribute('aria-label'), label);
+        assert.equal(s.q('mode-label').textContent, '10 LEVELS');
+        assert.equal(s.q('hold-caption').textContent, 'Hold 1.5 s to set max');
+        assert.equal(s.q('hold-progress').style.width, '0%');
+        assert.equal(s.stage.dataset.on, String(running));
+        s.up(); assert.equal(s.stage.dataset.on, String(!running));
+        s.advance(600); assert.equal(s.stage.dataset.mode, 'normal');
+      }
+    }
+  }
+});
+
+test('both mode holds delay feedback for 500 ms, fill inward, and transition at 1500 ms', () => {
   const s = simulator(); s.power(true);
   for (const nextMode of ['max', 'clean']) {
-    s.down();
+    const label = s.q('panel').getAttribute('aria-label');
+    s.down(); s.advance(499);
+    assert.equal(s.q('panel').getAttribute('aria-label'), label);
+    assert.equal(s.q('hold-progress').style.width, '0%');
+    s.advance(29); // Allow one render frame after the 500 ms threshold.
     for (let pair = 0; pair < 5; pair++) {
-      if (pair) s.advance(320);
+      if (pair) s.advance(200);
       const colors = Array(10).fill('off');
       for (let i = 0; i <= pair; i++) colors[i] = colors[9 - i] = 'white';
       assert.equal(s.stage.dataset.colors, colors.join(',')); assert.equal(s.pos(), 0);
     }
-    s.advance(221); s.up(); assert.equal(s.stage.dataset.mode, nextMode);
+    assert.match(s.q('panel').getAttribute('aria-label'), /White lamps fill inward/);
+    s.advance(171); assert.equal(s.stage.dataset.mode, nextMode === 'max' ? 'normal' : 'max');
+    s.advance(1); assert.equal(s.stage.dataset.mode, nextMode);
+    s.up(); assert.equal(s.stage.dataset.mode, nextMode);
   }
 });
 

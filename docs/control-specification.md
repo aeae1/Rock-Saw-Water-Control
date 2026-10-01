@@ -93,10 +93,11 @@ Settings persist across the simulator's power switch within the current page ses
 | Minimum modeled move | 200 ms |
 | Maximum-mode J threshold | 1.5 seconds |
 | Paused/setup color-change interval | 600 ms |
-| Hold-progress inward pair interval | 300 ms |
+| Hold-feedback delay | 500 ms |
+| Hold-progress inward pair interval | 200 ms |
 | Cleaning outward pair interval | 180 ms |
 
-Fill progresses from left to right as the modeled valve opens. Drain replaces blue with white from right to left as it closes. During either mode-changing J hold, white lamp pairs fill inward from both ends; early release or cancellation removes this display. Cleaning uses white pairs moving outward from the center across blue lamps, followed by one all-blue interval before repeating. Reduced-motion mode uses steady white lamps during a hold and a steady white center pair on blue during cleaning. Timing is illustrative and must be replaced by characterized actuator behavior in firmware.
+Fill progresses from left to right as the modeled valve opens. Drain replaces blue with white from right to left as it closes. During either mode-changing J hold, the existing lamp display is retained for the first 500 ms. After that delay, white lamp pairs fill inward from both ends during the remaining second. The progress bar and hold-specific labels follow the same delay. The mode still changes at 1,500 ms from the original press. Early release or cancellation removes the hold display and resets the feedback delay for the next press. Cleaning uses white pairs moving outward from the center across blue lamps, followed by one all-blue interval before repeating. Reduced-motion mode uses steady white lamps during a hold and a steady white center pair on blue during cleaning. Timing is illustrative and must be replaced by characterized actuator behavior in firmware.
 
 ## Diagnostic previews
 
