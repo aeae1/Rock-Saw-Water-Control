@@ -4,9 +4,15 @@ Reviewed 2026-10-01. These are candidate interfaces, not validated hardware conf
 
 ## Recommendation
 
-Evaluate the **U.S. Solid USS-MSV50034 wired proportional valve** before modifying a smart valve. It provides a documented percentage-control input and position-feedback output. The **USS-MSV00021 reversing valve** remains the lowest-cost candidate when estimated opening is sufficient. The Tuya route is feasible to investigate, but compatibility with a current production unit has not been demonstrated.
+Evaluate the **U.S. Solid USS-MSV50033 wired proportional valve** before modifying a smart valve. It provides a documented percentage-control input and position-feedback output. The **USS-MSV00012 reversing valve** remains the lowest-cost candidate when estimated opening is sufficient. The Tuya route is feasible to investigate, but compatibility with a current production unit has not been demonstrated.
 
 All three assemblies include the actuator motor and gearbox. No additional mechanical motor is required. Each alternative needs its own electrical interface; the external H-bridge applies only to the reversing valve.
+
+## Valve size
+
+The current pricing basis is **1/2 inch**, with 3/8 inch retained as an option if a suitable two-way controllable valve is identified. This reflects the reference installation's restricted spray head; it does not prescribe a valve size for other machines. Verify adequate spray at the weakest expected supply pressure with the actual hose length and nozzle. Nominal thread size alone does not establish usable flow or control resolution.
+
+A [3/8-inch U.S. Solid listing](https://ussolid.com/products/38-3-way-brass-motorized-ball-valve-2-wire-9-24v-acdc-l-type-standard-port-with-manual-function-ip67) is $69.67, but it is a three-way L-port routing valve, not the two-way proportional candidate needed here. A suitable 3/8-inch two-way U.S. Solid percentage-control model was not verified in this review. The 1/2-inch range currently offers a clearer selection.
 
 ## Component price comparison
 
@@ -14,12 +20,14 @@ Manufacturer listed prices, USD, before tax and shipping; retrieved on the revie
 
 | Candidate | Valve price | Interface and additional parts |
 | :--- | ---: | :--- |
-| [USS-MSV00021, 3/4-inch brass](https://ussolid.com/products/u-s-solid-motorized-ball-valve-3-4-brass-electrical-ball-valve-with-standard-port-9-24-v-dc-2-wire-reverse-polarity-html) | $35.79 | Reversing motor driver; calibrated timed movement without position feedback |
-| [USS-MSV00452, 3/4-inch brass smart valve](https://ussolid.com/products/wifi-34-brass-remote-control-motorized-ball-valve-with-power-off-memory-ac-100-240v-plug-adapter-with-dc-5v-output-manual-switch) | $97.99 | Regulated 5 V power and a verified local network or internal serial interface |
-| [USS-MSV50034, 3/4-inch brass proportional valve](https://ussolid.com/products/3-4-proportional-motorized-ball-valve-brass-dc-9-24v-4-20ma-control-5-wire-ip67-full-port) | $109.99 | 4–20 mA command output and protected feedback input |
+| [USS-MSV00012, 1/2-inch brass](https://ussolid.com/products/u-s-solid-motorized-ball-valve-1-2-brass-electrical-ball-valve-with-full-port-9-24-v-dc-2-wire-reverse-polarity-html) | $37.86 | Reversing motor driver; calibrated timed movement without position feedback |
+| [USS-MSV00087, 1/2-inch brass smart valve](https://ussolid.com/products/wifi-12-brass-remote-control-motorized-ball-valve-with-power-off-memory-5v-dc-usb-manual-switch) | $86.29 | Regulated 5 V power and a verified local network or internal serial interface |
+| [USS-MSV50033, 1/2-inch brass proportional valve](https://ussolid.com/products/1-2-proportional-motorized-ball-valve-brass-dc-9-24v-4-20ma-control-5-wire-ip67-full-port) | $99.99 | 4–20 mA command output and protected feedback input |
 | [DFRobot DFR0972 current-output module](https://www.dfrobot.com/product-2625.html) | $9.90 | Candidate interface for the proportional valve; requires an 18–24 V supply |
 
-The proportional valve costs **$12.00 more than the smart valve**. Valve plus the example current-output module totals **$119.89**, excluding its supply converter, feedback receiver, controller, protection, lamps, enclosure, harness, and plumbing. The complete total remains open until those parts are selected. None of these alternatives eliminates the protected machine inputs or lamp-driver bank.
+The smart price is for the 5 V USB version; an AC wall adapter is unnecessary for the machine installation. The separate [USS-MSV10090 smart model](https://ussolid.com/products/wifi-smart-motorized-ball-valve-1-2-2-way-brass-usb-powered-led-status-indicator) is listed at $86.25 with IP67, but its command set and internal hardware must be verified independently. Do not assume interchangeability with USS-MSV00087, which is listed as IP65.
+
+The proportional valve costs **$13.70 more than the smart valve**. Valve plus the example current-output module totals **$109.89**, excluding its supply converter, feedback receiver, controller, protection, lamps, enclosure, harness, and plumbing. The complete total remains open until those parts are selected. None of these alternatives eliminates the protected machine inputs or lamp-driver bank.
 
 ## Documented wired percentage control
 

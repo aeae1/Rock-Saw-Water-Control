@@ -1,6 +1,6 @@
 Category,Quantity,Unit,Candidate or requirement,Status,Unit price USD,Notes
 Controller,1,board,Arduino Nano Every ABX00028,Candidate,,External protected I/O required
-Valve,1,assembly,U.S. Solid USS-MSV00021 OR USS-MSV50034 OR smart valve OR HSH-Flo CR201-B,Candidate,,Select one; see valve-control-research.md for dated prices
+Valve,1,assembly,U.S. Solid USS-MSV00012 OR USS-MSV50033 OR USS-MSV00087,Candidate,,Select one 1/2-inch candidate; 3/8-inch option pending; see research prices
 Motor driver,1,board,Pololu TB67H453FNG carrier 4971,Reversing-valve option only,,Validate startup and stall current
 Current output,1,board,DFRobot DFR0972,Proportional-valve option only,9.90,2026-10-01 price; requires separate 18-24V supply
 Position receiver,1,circuit,Protected 4-20mA feedback input,Proportional-valve option only,,ADC scaling and protection design pending

@@ -19,12 +19,14 @@ The Nano Every uses 5 V logic and specifies 7–21 V at VIN in the [manufacturer
 
 ## Valve alternatives
 
+Current procurement comparisons use 1/2-inch valves. A suitable 3/8-inch two-way alternative remains open; verify spray performance with the actual hose and supply. The previously considered HSH-Flo 3/4-inch option is retained for reference only.
+
 | Candidate | Interface | Principal considerations |
 | :--- | :--- | :--- |
-| [U.S. Solid USS-MSV00021](https://ussolid.com/products/u-s-solid-motorized-ball-valve-3-4-brass-electrical-ball-valve-with-standard-port-9-24-v-dc-2-wire-reverse-polarity-html) | 3/4-inch brass, 9–24 V DC, two-wire reversing | Low-cost wired candidate; confirm environmental limits and intermediate-position repeatability |
+| [U.S. Solid USS-MSV00012](https://ussolid.com/products/u-s-solid-motorized-ball-valve-1-2-brass-electrical-ball-valve-with-full-port-9-24-v-dc-2-wire-reverse-polarity-html) | 1/2-inch brass, 9–24 V DC, two-wire reversing | Low-cost wired candidate; confirm environmental limits and intermediate-position repeatability |
 | [HSH-Flo CR201-B, 12 V, 3/4-inch NPT](https://www.hhflo.com/products/hsh-flo-brass-2-way-dc12v-cr201-electric-motorized-ball-valve-2-wires-switching-control-valve) | Two-wire reversing actuator with manual override | Manufacturer lists IP67 and ambient −15 to 50°C; exact variant and movement characteristics require confirmation |
-| [U.S. Solid smart Wi-Fi 3/4-inch valve](https://ussolid.com/products/wifi-34-brass-remote-control-motorized-ball-valve-with-power-off-memory-ac-100-240v-plug-adapter-with-dc-5v-output-manual-switch) | Integrated smart controller | Research alternative; a supported local percentage-command interface has not been established |
-| [U.S. Solid USS-MSV50034](https://ussolid.com/products/3-4-proportional-motorized-ball-valve-brass-dc-9-24v-4-20ma-control-5-wire-ip67-full-port) | 3/4-inch brass, 9–24 V DC, 4–20 mA command and feedback | Preferred percentage-control bench candidate; needs current-output interface and feedback receiver |
+| [U.S. Solid smart Wi-Fi 1/2-inch valve](https://ussolid.com/products/wifi-12-brass-remote-control-motorized-ball-valve-with-power-off-memory-5v-dc-usb-manual-switch) | Integrated smart controller | Research alternative; a supported local percentage-command interface has not been established |
+| [U.S. Solid USS-MSV50033](https://ussolid.com/products/1-2-proportional-motorized-ball-valve-brass-dc-9-24v-4-20ma-control-5-wire-ip67-full-port) | 1/2-inch brass, 9–24 V DC, 4–20 mA command and feedback | Preferred percentage-control bench candidate; needs current-output interface and feedback receiver |
 
 The wired valves include the motor and gearbox. A separate mechanical motor is unnecessary. An H-bridge reverses the electrical drive and permits timed movement. With no position feedback, partial opening remains an estimate; motor speed, backlash, startup delay, and supply voltage can affect repeatability. Closing to a known endpoint can establish a reference only after the actuator's limit behavior and timeout are verified.
 

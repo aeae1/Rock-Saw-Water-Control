@@ -27,7 +27,7 @@ writeFileSync(resolve(root, 'docs/index.html'), `<!doctype html>
   <header class="site-header">
     <p class="eyebrow">THREE-INPUT ATTACHMENT CONTROL · SIMULATOR</p>
     <h1>Rock Saw Water Control</h1>
-    <nav aria-label="Project"><a href="#simulator" aria-current="page">Simulator</a><a href="swatches.html">Artwork swatches</a><a href="https://github.com/aeae1/Rock-Saw-Water-Control">Repository</a></nav>
+    <nav aria-label="Project"><a href="#simulator" aria-current="page">Simulator</a><a href="https://github.com/aeae1/Rock-Saw-Water-Control">Repository</a></nav>
   </header>
   <main id="simulator">
     <noscript>This simulator requires JavaScript. Its operation is documented in the repository.</noscript>
