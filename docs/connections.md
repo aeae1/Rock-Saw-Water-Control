@@ -28,6 +28,8 @@ Ground returns join at the designed power distribution point. Motor output termi
 
 ## Lamp connections
 
+The diagram above covers the reversing-valve baseline. A [wired proportional alternative](valve-control-research.md#documented-wired-percentage-control) replaces the H-bridge with a 4–20 mA output and adds position feedback. The valve's integrated actuator controller remains responsible for motor movement. These alternatives must not be connected simultaneously to the same actuator.
+
 ```mermaid
 flowchart LR
     P["Protected lamp supply"] --> D["Two high-side channels per lamp"]

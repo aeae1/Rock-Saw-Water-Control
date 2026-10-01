@@ -65,7 +65,7 @@ The ten levels represent commanded valve opening, not measured GPM. The water an
 
 The proposed wired system comprises protected machine-power and control inputs, a microcontroller, a bidirectional valve driver, and twenty independently switched lamp channels. The valve assembly includes its motor and gearbox; the external driver controls electrical direction and duration.
 
-An alternative smart-valve path is retained as a research option. Local Tuya percentage control has not been verified for the candidate valve and is not a dependency of the simulator.
+A wired proportional valve with a 4–20 mA command and position feedback is the preferred next bench candidate for repeatable percentage control. It uses a current-output interface instead of the external motor driver. An alternative smart-valve path is retained as a research option; local Tuya control has not been verified for the candidate valve. The [valve-control research](docs/valve-control-research.md) compares costs, documented interfaces, and internal serial modification.
 
 ## Documentation
 
@@ -74,6 +74,7 @@ An alternative smart-valve path is retained as a research option. Local Tuya per
 | [Control specification](docs/control-specification.md) | State transitions, timing, rounding, and retention rules |
 | [Connection diagrams](docs/connections.md) | Conceptual power, signal, lamp, and water connections |
 | [Hardware candidates](docs/hardware.md) | Candidate components and unresolved selection criteria |
+| [Valve-control research](docs/valve-control-research.md) | Wired proportional control, Tuya feasibility, prices, and bench investigation |
 | [Planning BOM](docs/bom.csv) | Quantities and procurement status |
 | [Validation plan](docs/validation.md) | Simulator coverage and hardware acceptance work |
 | [Firmware integration](firmware/README.md) | Required hardware interfaces and implementation scope |

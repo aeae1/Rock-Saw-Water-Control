@@ -1,7 +1,10 @@
 Category,Quantity,Unit,Candidate or requirement,Status,Unit price USD,Notes
 Controller,1,board,Arduino Nano Every ABX00028,Candidate,,External protected I/O required
-Valve,1,assembly,U.S. Solid USS-MSV00021 OR HSH-Flo CR201-B 12V 3/4 NPT,Candidate,,Select one; motor and gearbox included
-Motor driver,1,board,Pololu TB67H453FNG carrier 4971,Candidate,,Validate startup and stall current
+Valve,1,assembly,U.S. Solid USS-MSV00021 OR USS-MSV50034 OR smart valve OR HSH-Flo CR201-B,Candidate,,Select one; see valve-control-research.md for dated prices
+Motor driver,1,board,Pololu TB67H453FNG carrier 4971,Reversing-valve option only,,Validate startup and stall current
+Current output,1,board,DFRobot DFR0972,Proportional-valve option only,9.90,2026-10-01 price; requires separate 18-24V supply
+Position receiver,1,circuit,Protected 4-20mA feedback input,Proportional-valve option only,,ADC scaling and protection design pending
+Loop power,1,converter,18-24V regulated output for DFR0972,Proportional-valve option only,,Not included in main 12V regulator
 Power supply,1,assembly,Protected regulated supply rails,Design pending,,Size for simultaneous motor and lamp loading
 Enclosure,1,box,Bud PN-1339-A or equivalent,Candidate,,Validate UV exposure and internal temperature
 Indicator lamps,10,lamp,PSEQT blue/white three-wire lamps,User-selected type,,Verify batch wire functions and current
