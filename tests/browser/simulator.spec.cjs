@@ -55,6 +55,57 @@ test('keyboard long press enters setup and saving preserves the on command', asy
   await expect(stage).toHaveAttribute('data-position', '40');
 });
 
+test('paused 70% maximum blinks blue/off above the bar and blue/white within it', async ({ page }) => {
+  const stage = page.locator('.sa-stage'), trigger = stage.locator('button[data-j]');
+  await stage.locator('input[data-power]').check();
+  await trigger.focus(); await page.keyboard.down('Space');
+  await expect(stage).toHaveAttribute('data-mode', 'max'); await page.keyboard.up('Space');
+  for (let i = 0; i < 3; i++) {
+    await stage.locator('button[data-center]').click(); await stage.locator('button[data-h]').click();
+  }
+  await trigger.click();
+  await expect(stage).toHaveAttribute('data-maximum', '70');
+  // Saving remaps the original 40% opening to level 6 (42%). Select level 4.
+  for (let i = 0; i < 2; i++) {
+    await stage.locator('button[data-center]').click(); await stage.locator('button[data-h]').click();
+  }
+  await expect(stage).toHaveAttribute('data-setting', '4');
+  await expect(stage).toHaveAttribute('data-colors', 'white,white,white,white,off,off,blue,off,off,off');
+  await expect(stage).toHaveAttribute('data-colors', 'white,white,white,white,off,off,off,off,off,off');
+  for (let i = 0; i < 3; i++) {
+    await stage.locator('button[data-center]').click(); await stage.locator('button[data-g]').click();
+  }
+  await expect(stage).toHaveAttribute('data-setting', '7');
+  await expect(stage).toHaveAttribute('data-colors', 'white,white,white,white,white,white,blue,off,off,off');
+  await expect(stage).toHaveAttribute('data-colors', 'white,white,white,white,white,white,white,off,off,off');
+  await expect(stage).toHaveAttribute('data-position', '0');
+  await expect(stage).toHaveAttribute('data-on', 'false');
+});
+
+test('second keyboard hold enters full-open cleaning and one tap restores paused operation', async ({ page }, testInfo) => {
+  const stage = page.locator('.sa-stage'), trigger = stage.locator('button[data-j]');
+  await stage.locator('input[data-power]').check();
+  await trigger.focus(); await page.keyboard.down('Space');
+  await expect(stage).toHaveAttribute('data-mode', 'max'); await page.keyboard.up('Space');
+  for (let i = 0; i < 5; i++) {
+    await stage.locator('button[data-center]').click(); await stage.locator('button[data-h]').click();
+  }
+  await trigger.focus(); await page.keyboard.down('Space');
+  await expect(stage).toHaveAttribute('data-mode', 'clean'); await page.keyboard.up('Space');
+  await expect(stage).toHaveAttribute('data-maximum', '50');
+  await expect(stage).toHaveAttribute('data-setting', '8');
+  await expect(stage).toHaveAttribute('data-position', '100');
+  await expect(stage.locator('button[data-g]')).toBeDisabled();
+  await expect(stage.locator('[data-status]')).toHaveText('Cleaning · ball 100% open');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await testInfo.attach('full-open-cleaning', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
+  await trigger.click();
+  await expect(stage).toHaveAttribute('data-mode', 'normal');
+  await expect(stage).toHaveAttribute('data-on', 'false');
+  await expect(stage).toHaveAttribute('data-position', '0');
+  await expect(stage).toHaveAttribute('data-run-opening', '40');
+});
+
 test('power interruption and real select controls stop and recover predictably', async ({ page }) => {
   const stage = page.locator('.sa-stage'), power = stage.locator('input[data-power]');
   await power.check(); await stage.locator('button[data-j]').click();

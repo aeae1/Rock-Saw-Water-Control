@@ -1,6 +1,6 @@
 # Control Specification
 
-Revision 0.1 · Design baseline
+Revision 0.2 · Design baseline
 
 ## State variables
 
@@ -13,7 +13,8 @@ Revision 0.1 · Design baseline
 | Draft maximum | 10–100%, in 10-point increments | Saved maximum |
 | Saved resume opening | Level × maximum / 10 | 40% |
 | Simulated valve position | 0–100% | 0% |
-| Mode | Normal, maximum setup | Normal |
+| Mode | Normal, maximum setup, full-open cleaning | Normal |
+| Cleaning return command | Paused, on | Paused |
 | Rocker state | G, center, H | Center |
 | Diagnostic | None, driver, conflicting inputs | None |
 
@@ -32,7 +33,7 @@ A short J press toggles the water command on release. The on target is the saved
 3. Set the reference opening to the actual simulated position if the water command was on, or to the saved resume opening if paused.
 4. Adjust a draft maximum with G/H. Do not move the valve or change the committed maximum while editing.
 5. Display only the lamp at `draft maximum / 10`, alternating blue and white every 600 ms.
-6. Tap J to commit, quantize, and exit. A second long hold in setup does not save or toggle.
+6. Tap J to commit, quantize, and exit, or release J and hold it again for 1.5 seconds to commit and enter full-open cleaning.
 
 The committed level is calculated as follows. Exact halfway values round upward.
 
@@ -53,9 +54,32 @@ valveTarget = previousWaterCommandIsOn ? resumeOpening : 0
 
 Level zero is reserved for the off command and is not a selectable running level. If setup is entered while a closing valve is still moving, motion stops at that intermediate position; saving while paused resumes closing.
 
+## Full-open cleaning
+
+From maximum setup, a second 1.5-second J hold commits the draft maximum and quantizes the saved resume opening using the calculation above. It then records the prior normal on/off command and commands 100% actuator opening. This temporarily bypasses the saved maximum without changing that maximum or rescaling the saved level from the cleaning position. G/H inputs are ignored.
+
+A short J press returns directly to normal operation: move to the saved resume opening if previously on, or close if previously paused. Return is available while the valve is still opening. A long hold within cleaning leaves cleaning active. Each hold can cause only one mode change; J must be released before another hold can advance a mode.
+
+Power loss or an injected fault clears cleaning and the return command. Recovery commands closing and does not automatically resume cleaning.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Normal
+    Normal --> Maximum: Hold J 1.5 s
+    Maximum --> Normal: Tap J / save
+    Maximum --> Cleaning: Release, hold J 1.5 s / save
+    Cleaning --> Normal: Tap J / restore
+```
+
+## Paused maximum indication
+
+Once closing finishes, white lamps show the saved level. The lamp at `saved maximum / 10` alternates blue with its underlying color every 600 ms: off above the saved-level bar, or white within the bar. At a 70% maximum and level 4, lamp 7 alternates blue/off; at level 7 or higher, it alternates blue/white. The marker remains active for the entire paused state and never changes the valve target. Running, fill/drain, hold-progress, setup, cleaning, fault, and unpowered displays take precedence.
+
+Idle blinking uses one scheduled timeout per color change. Reduced-motion mode uses a steady blue maximum marker and no idle animation timer. Delayed browser callbacks resume at the current phase without replaying missed changes.
+
 ## Startup and power interruption
 
-On machine power-up, the water command is paused and the valve is commanded closed. Saved level and maximum are retained. For 3.6 seconds, the white saved-level bar is overlaid by the maximum lamp alternating blue and white. Normal interaction ends this cue early. Reduced-motion mode substitutes a steady maximum marker.
+On machine power-up, the water command is paused and the valve is commanded closed. Saved level and maximum are retained. Once closed, the standard persistent paused maximum indication applies. There is no separate startup display or startup timer.
 
 Removing power extinguishes all lamps, cancels motor motion at the current simulated position, discards an unsaved draft, and clears the water command. The simulated actuator is non-return: electrical power loss does not mechanically shut off water. On the next power-up, closing is commanded again.
 
@@ -68,10 +92,11 @@ Settings persist across the simulator's power switch within the current page ses
 | Full actuator stroke | 5 seconds |
 | Minimum modeled move | 200 ms |
 | Maximum-mode J threshold | 1.5 seconds |
-| Startup display duration | 3.6 seconds |
-| Blue/white interval | 600 ms |
+| Paused/setup color-change interval | 600 ms |
+| Hold-progress inward pair interval | 300 ms |
+| Cleaning outward pair interval | 180 ms |
 
-Fill progresses from left to right as the modeled valve opens. Drain replaces blue with white from right to left as it closes. Timing is illustrative and must be replaced by characterized actuator behavior in firmware.
+Fill progresses from left to right as the modeled valve opens. Drain replaces blue with white from right to left as it closes. During either mode-changing J hold, white lamp pairs fill inward from both ends; early release or cancellation removes this display. Cleaning uses white pairs moving outward from the center across blue lamps, followed by one all-blue interval before repeating. Reduced-motion mode uses steady white lamps during a hold and a steady white center pair on blue during cleaning. Timing is illustrative and must be replaced by characterized actuator behavior in firmware.
 
 ## Diagnostic previews
 

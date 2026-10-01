@@ -9,10 +9,11 @@ function simulator({ reducedMotion = false } = {}) {
   const { document, window } = parseHTML(readFileSync(resolve(__dirname, '../docs/index.html'), 'utf8'));
   let clock = 0, id = 0;
   const jobs = new Map();
+  const media = { matches: reducedMotion, addEventListener: (_, listener) => { media.onchange = listener; } };
   const schedule = (fn, ms, raf = false) => { jobs.set(++id, { fn, at: clock + ms, raf }); return id; };
   vm.runInNewContext(readFileSync(resolve(__dirname, '../docs/assets/simulator.js'), 'utf8'), {
     document,
-    window: { matchMedia: () => ({ matches: reducedMotion }), addEventListener: window.addEventListener.bind(window) },
+    window: { matchMedia: () => media, addEventListener: window.addEventListener.bind(window) },
     performance: { now: () => clock },
     setTimeout: (fn, ms) => schedule(fn, ms), clearTimeout: id => jobs.delete(id),
     requestAnimationFrame: fn => schedule(fn, 16, true), cancelAnimationFrame: id => jobs.delete(id)
@@ -34,6 +35,15 @@ function simulator({ reducedMotion = false } = {}) {
     }
     clock = end;
   }
+  // Model a suspended browser delivering overdue callbacks at its current time.
+  function resumeAfter(ms) {
+    clock += ms;
+    const overdue = [...jobs].filter(([, job]) => job.at <= clock);
+    for (const [key, job] of overdue) {
+      if (!jobs.delete(key)) continue;
+      job.raf ? job.fn(clock) : job.fn();
+    }
+  }
   const click = key => emit(q(key), 'click');
   const power = value => { q('power').checked = value; emit(q('power'), 'change'); };
   const down = () => emit(q('j'), 'pointerdown', { pointerType: 'touch', pointerId: 1, button: 0 });
@@ -51,18 +61,60 @@ function simulator({ reducedMotion = false } = {}) {
     emit(q('fault'), 'change');
   };
   const pos = () => Number(stage.dataset.position);
-  return { stage, q, emit, advance, click, power, down, up, tap, hold, draft, fault, pos, document, window, pendingJobs: () => jobs.size };
+  const setReducedMotion = value => { media.matches = value; media.onchange?.(); };
+  return { stage, q, emit, advance, resumeAfter, setReducedMotion, click, power, down, up, tap, hold, draft, fault, pos, document, window, pendingJobs: () => jobs.size, pendingFrames: () => [...jobs.values()].filter(job => job.raf).length };
 }
 
-test('startup is off and shows saved level plus temporary maximum marker', () => {
+test('startup is off and keeps the paused maximum marker indefinitely', () => {
   const s = simulator();
   assert.equal(s.stage.dataset.power, 'false');
   assert.equal(s.stage.dataset.colors, Array(10).fill('off').join(','));
   s.power(true);
   assert.equal(s.stage.dataset.on, 'false'); assert.equal(s.pos(), 0);
   assert.equal(s.stage.dataset.colors, 'white,white,white,white,off,off,off,off,off,blue');
-  s.advance(650); assert.equal(s.stage.dataset.colors.split(',')[9], 'white');
-  s.advance(3100); assert.equal(s.stage.dataset.colors.split(',')[9], 'off');
+  s.advance(650); assert.equal(s.stage.dataset.colors.split(',')[9], 'off');
+  s.advance(2950); assert.equal(s.stage.dataset.colors.split(',')[9], 'blue');
+  s.advance(7200); assert.equal(s.stage.dataset.colors.split(',')[9], 'blue');
+  s.advance(600); assert.equal(s.stage.dataset.colors.split(',')[9], 'off');
+  assert.equal(s.pos(), 0); assert.equal(s.stage.dataset.on, 'false');
+});
+
+test('every paused maximum/level combination alternates blue with the underlying bar', () => {
+  for (let cap = 10; cap <= 100; cap += 10) {
+    const s = simulator(); s.power(true); s.hold(); s.draft(cap); s.tap(); s.advance(32);
+    for (let level = 1; level <= 10; level++) {
+      while (Number(s.stage.dataset.setting) !== level) {
+        s.click('center'); s.click(Number(s.stage.dataset.setting) > level ? 'h' : 'g');
+      }
+      const base = Array.from({ length: 10 }, (_, i) => i < level ? 'white' : 'off');
+      const marker = [...base]; marker[cap / 10 - 1] = 'blue';
+      const first = s.stage.dataset.colors; s.advance(600);
+      assert.deepEqual([first, s.stage.dataset.colors].sort(), [base.join(','), marker.join(',')].sort(), 'max ' + cap + ', level ' + level);
+      assert.match(s.q('panel').getAttribute('aria-label'), new RegExp('Maximum lamp ' + cap / 10 + ' alternates blue and ' + (cap / 10 <= level ? 'white' : 'off')));
+      assert.equal(s.pos(), 0); assert.equal(s.stage.dataset.target, '0'); assert.equal(s.stage.dataset.on, 'false');
+      assert.equal(Number(s.stage.dataset.runOpening), level * cap / 10);
+      assert.equal(s.pendingJobs(), 1); assert.equal(s.pendingFrames(), 0);
+    }
+  }
+});
+
+test('running, drain, setup, fault, and power-off displays take priority over the paused marker', () => {
+  const s = simulator(); s.power(true); s.hold(); s.draft(70);
+  assert.equal(s.stage.dataset.colors.split(',').filter(c => c !== 'off').length, 1);
+  s.tap();
+  while (Number(s.stage.dataset.setting) > 4) { s.click('center'); s.click('h'); }
+  s.tap(); s.advance(6000);
+  assert.equal(s.stage.dataset.colors, 'blue,blue,blue,blue,off,off,off,off,off,off');
+  s.tap(); s.advance(700);
+  assert.equal(s.stage.dataset.moving, 'true'); assert.equal(s.stage.dataset.colors.split(',')[6], 'off');
+  s.advance(1000);
+  const a = s.stage.dataset.colors.split(',')[6]; s.advance(600);
+  assert.deepEqual([a, s.stage.dataset.colors.split(',')[6]].sort(), ['blue', 'off']);
+  s.fault('driver'); s.advance(1200);
+  assert.equal(s.stage.dataset.colors, 'off,off,off,white,off,off,off,off,off,off');
+  assert.equal(s.pendingJobs(), 0);
+  s.fault('normal'); s.power(false); s.advance(1200);
+  assert.equal(s.stage.dataset.colors, Array(10).fill('off').join(',')); assert.equal(s.pendingJobs(), 0);
 });
 
 test('long press latches setup, holds position, then remaps to repeatable steps', () => {
@@ -134,10 +186,28 @@ test('fault stops movement and inhibits controls until cleared', () => {
 });
 
 test('reduced motion uses a steady maximum marker', () => {
-  const s = simulator({ reducedMotion: true }); s.power(true); s.hold(); s.draft(50);
+  const s = simulator({ reducedMotion: true }); s.power(true);
+  const paused = s.stage.dataset.colors; s.advance(24 * 60 * 60 * 1000);
+  assert.equal(s.stage.dataset.colors, paused); assert.equal(s.pendingJobs(), 0);
+  assert.equal(paused, 'white,white,white,white,off,off,off,off,off,blue');
+  assert.match(s.q('panel').getAttribute('aria-label'), /Maximum lamp 10 is steady blue/);
+  s.hold(); s.draft(50);
   const colors = s.stage.dataset.colors;
   s.advance(2000); assert.equal(s.stage.dataset.colors, colors);
   assert.equal(colors, 'off,off,off,off,white,off,off,off,off,off');
+});
+
+test('changing reduced-motion preference stops and restarts idle blinking without timer accumulation', () => {
+  const s = simulator(); s.power(true); s.advance(650);
+  assert.equal(s.stage.dataset.colors.split(',')[9], 'off');
+  for (let i = 0; i < 20; i++) {
+    s.setReducedMotion(true);
+    assert.equal(s.stage.dataset.colors.split(',')[9], 'blue'); assert.equal(s.pendingJobs(), 0);
+    s.setReducedMotion(false);
+    assert.equal(s.pendingJobs(), 1); assert.equal(s.pendingFrames(), 0);
+  }
+  s.advance(600); assert.equal(s.stage.dataset.colors.split(',')[9], 'blue');
+  s.power(false); assert.equal(s.pendingJobs(), 0);
 });
 
 
@@ -185,10 +255,122 @@ test('right clicks, another pointer, and keyboard repeat do not create extra com
   s.emit(s.q('j'), 'keyup', { key: 'Enter' }); assert.equal(s.stage.dataset.on, 'true');
 });
 
-test('a second long hold in setup does not save a draft', () => {
+test('a second long hold saves the maximum and enters full-open cleaning; a tap restores paused operation', () => {
   const s = simulator(); s.power(true); s.hold(); s.draft(30); s.hold();
-  assert.equal(s.stage.dataset.mode, 'max'); assert.equal(s.stage.dataset.maximum, '100');
-  s.tap(); assert.equal(s.stage.dataset.maximum, '30'); assert.equal(s.stage.dataset.on, 'false');
+  assert.equal(s.stage.dataset.mode, 'clean'); assert.equal(s.stage.dataset.maximum, '30');
+  assert.equal(s.stage.dataset.target, '100'); assert.equal(s.stage.dataset.on, 'true');
+  s.advance(6000); assert.equal(s.pos(), 100);
+  s.tap(); s.advance(6000);
+  assert.equal(s.stage.dataset.mode, 'normal'); assert.equal(s.stage.dataset.on, 'false');
+  assert.equal(s.pos(), 0); assert.equal(s.stage.dataset.maximum, '30');
+  assert.equal(s.stage.dataset.setting, '10'); assert.equal(s.stage.dataset.runOpening, '30');
+});
+
+test('cleaning restores the quantized running opening and locks G/H against accidental setting changes', () => {
+  const s = simulator(); s.power(true); s.tap(); s.advance(2500);
+  s.hold(); s.draft(60); s.hold(); s.advance(6000);
+  assert.equal(s.pos(), 100); assert.equal(s.stage.dataset.setting, '7'); assert.equal(s.stage.dataset.runOpening, '42');
+  for (const key of ['g', 'h', 'center']) {
+    assert.equal(s.q(key).disabled, true); s.click(key);
+  }
+  assert.equal(s.stage.dataset.setting, '7'); assert.equal(s.stage.dataset.maximum, '60');
+  s.hold(); assert.equal(s.stage.dataset.mode, 'clean'); assert.equal(s.pos(), 100);
+  s.tap(); s.advance(6000);
+  assert.equal(s.stage.dataset.mode, 'normal'); assert.equal(s.stage.dataset.on, 'true');
+  assert.equal(s.pos(), 42); assert.equal(s.q('g').disabled, false);
+});
+
+test('second-hold boundary is 1.5 seconds, and its release never exits cleaning', () => {
+  for (const duration of [1499, 1500, 1501]) {
+    const s = simulator(); s.power(true); s.hold(); s.draft(70);
+    s.down(); s.advance(duration); s.up();
+    assert.equal(s.stage.dataset.mode, duration < 1500 ? 'normal' : 'clean');
+    assert.equal(s.stage.dataset.target, duration < 1500 ? '0' : '100');
+    assert.equal(s.stage.dataset.maximum, '70');
+  }
+});
+
+test('one continuous J hold cannot advance through two modes', () => {
+  const s = simulator(); s.power(true); s.down(); s.advance(10000);
+  assert.equal(s.stage.dataset.mode, 'max'); assert.equal(s.pos(), 0);
+  s.up(); s.down(); s.advance(10000);
+  assert.equal(s.stage.dataset.mode, 'clean'); assert.equal(s.pos(), 100);
+  s.up(); assert.equal(s.stage.dataset.mode, 'clean');
+});
+
+test('canceling a second hold preserves setup and its uncommitted draft', () => {
+  for (const cancellation of ['pointercancel', 'lostpointercapture', 'blur', 'visibilitychange']) {
+    const s = simulator(); s.power(true); s.hold(); s.draft(20); s.down(); s.advance(1400);
+    if (cancellation === 'blur') s.emit(s.window, 'blur');
+    else if (cancellation === 'visibilitychange') {
+      Object.defineProperty(s.document, 'hidden', { value: true }); s.emit(s.document, 'visibilitychange');
+    } else s.emit(s.q('j'), cancellation, { pointerId: 1 });
+    s.advance(3000);
+    assert.equal(s.stage.dataset.mode, 'max'); assert.equal(s.stage.dataset.maximum, '100');
+    assert.equal(s.stage.dataset.draft, '20'); assert.equal(s.pos(), 0);
+  }
+});
+
+test('power loss or fault during the second hold cannot enter cleaning later', () => {
+  for (const interrupt of ['power', 'fault']) {
+    const s = simulator(); s.power(true); s.hold(); s.down(); s.advance(1400);
+    interrupt === 'power' ? s.power(false) : s.fault('driver');
+    s.advance(6000); s.up();
+    assert.equal(s.stage.dataset.mode, 'normal'); assert.equal(s.stage.dataset.on, 'false'); assert.equal(s.pos(), 0);
+  }
+});
+
+test('power interruption or fault during cleaning stops travel and recovery closes without resuming cleaning', () => {
+  for (const interrupt of ['power', 'fault']) {
+    const s = simulator(); s.power(true); s.hold(); s.draft(50); s.hold(); s.advance(500);
+    interrupt === 'power' ? s.power(false) : s.fault('driver');
+    const stopped = s.pos(); assert.ok(stopped > 0 && stopped < 100);
+    s.advance(6000); assert.equal(s.pos(), stopped); assert.equal(s.stage.dataset.mode, 'normal');
+    interrupt === 'power' ? s.power(true) : s.fault('normal');
+    s.advance(6000);
+    assert.equal(s.stage.dataset.on, 'false'); assert.equal(s.pos(), 0); assert.equal(s.stage.dataset.maximum, '50');
+  }
+});
+
+test('cleaning can be exited before reaching full open from both paused and running operation', () => {
+  for (const running of [false, true]) {
+    const s = simulator(); s.power(true);
+    if (running) { s.tap(); s.advance(2500); }
+    s.hold(); s.hold(); s.advance(500); const before = s.pos();
+    assert.ok(before > (running ? 40 : 0) && before < 100);
+    s.tap(); s.advance(6000);
+    assert.equal(s.stage.dataset.mode, 'normal'); assert.equal(s.stage.dataset.on, String(running));
+    assert.equal(s.pos(), running ? 40 : 0);
+  }
+});
+
+test('both mode holds fill paired white lamps inward without moving the paused valve', () => {
+  const s = simulator(); s.power(true);
+  for (const nextMode of ['max', 'clean']) {
+    s.down();
+    for (let pair = 0; pair < 5; pair++) {
+      if (pair) s.advance(320);
+      const colors = Array(10).fill('off');
+      for (let i = 0; i <= pair; i++) colors[i] = colors[9 - i] = 'white';
+      assert.equal(s.stage.dataset.colors, colors.join(',')); assert.equal(s.pos(), 0);
+    }
+    s.advance(221); s.up(); assert.equal(s.stage.dataset.mode, nextMode);
+  }
+});
+
+test('cleaning ripple travels symmetrically outward; reduced motion keeps a steady center pair', () => {
+  const s = simulator(); s.power(true); s.hold(); s.hold(); s.advance(32);
+  for (let ring = 0; ring < 6; ring++) {
+    if (ring) s.advance(180);
+    const colors = Array(10).fill('blue');
+    if (ring < 5) colors[4 - ring] = colors[5 + ring] = 'white';
+    assert.equal(s.stage.dataset.colors, colors.join(','));
+  }
+  s.setReducedMotion(true); s.advance(6000);
+  assert.equal(s.pos(), 100); assert.equal(s.pendingJobs(), 0);
+  assert.equal(s.stage.dataset.colors, 'blue,blue,blue,blue,white,white,blue,blue,blue,blue');
+  s.advance(24 * 60 * 60 * 1000); assert.equal(s.stage.dataset.mode, 'clean');
+  s.tap(); s.advance(6000); assert.equal(s.pos(), 0);
 });
 
 test('maximum cannot be adjusted beyond either bound', () => {
@@ -231,9 +413,13 @@ test('setup entered while closing holds motion, then continues closing on save',
   assert.equal(s.stage.dataset.runOpening, '60');
 });
 
-test('paused mode is quiescent after startup; long-idle input remains responsive', () => {
-  const s = simulator(); s.power(true); s.advance(10000); assert.equal(s.pendingJobs(), 0);
-  s.advance(24 * 60 * 60 * 1000); assert.equal(s.pendingJobs(), 0);
+test('paused blinking uses one timeout and remains responsive after a day of browser suspension', () => {
+  const s = simulator(); s.power(true); s.advance(10000);
+  assert.equal(s.pendingJobs(), 1); assert.equal(s.pendingFrames(), 0);
+  s.resumeAfter(24 * 60 * 60 * 1000 + 800);
+  assert.equal(s.pendingJobs(), 1); assert.equal(s.pendingFrames(), 0);
+  assert.equal(s.stage.dataset.colors.split(',')[9], 'blue');
+  s.advance(600); assert.equal(s.stage.dataset.colors.split(',')[9], 'off');
   s.tap(); s.advance(6000); assert.equal(s.pos(), 40);
 });
 

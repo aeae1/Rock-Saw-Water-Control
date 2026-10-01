@@ -35,11 +35,13 @@ writeFileSync(resolve(root, 'docs/index.html'), `<!doctype html>
     <details class="instructions">
       <summary>Operating instructions</summary>
       <ol>
-        <li>Switch machine power on. Water starts off; white lamps show the saved level. The maximum lamp alternates blue and white briefly.</li>
+        <li>Switch machine power on. Water starts off; white lamps show the saved level. The maximum lamp keeps blinking blue/off above the white bar, or blue/white within it.</li>
         <li>Tap J to toggle water. G increases the level; H decreases it. Center or reverse the rocker to make another adjustment.</li>
         <li>Hold J for 1.5 seconds to enter maximum setup. Release J, then use G/H to choose a maximum from 10% to 100%. The valve remains at its current position.</li>
         <li>Tap J to save and exit. The controller selects the nearest available level under the new maximum, preserving the prior on/off command.</li>
+        <li>For full-open cleaning, release J in maximum setup, then hold it again for 1.5 seconds. This saves your maximum edit and opens the ball to 100%. Tap J to restore normal operation and the prior on/off state. G/H is locked during cleaning.</li>
       </ol>
+      <p>Mode-changing holds show white lamps filling inward from both ends. Cleaning uses a white ripple moving outward across blue lamps. These effects are separate from the normal fill/drain animation.</p>
       <p>Settings persist through the simulated power switch, but reset on page reload. Power loss stops the modeled motor at its current position; it does not close the valve.</p>
       <p>To operate J with a keyboard, focus the button and press or hold Space or Enter. Reduced-motion preferences disable flashing and moving water effects.</p>
     </details>

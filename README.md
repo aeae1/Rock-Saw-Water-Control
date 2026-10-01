@@ -32,14 +32,14 @@ The Takeuchi TL12R2 with an HDRS24 rock saw is the reference installation. Its G
 
 The illustration shows the reference machine controls schematically. It is not a connector pinout.
 
-| Control | Normal operation | Maximum-opening setup |
-| :--- | :--- | :--- |
-| Increase (G) | Increase the selected level by one | Increase the draft maximum by 10 percentage points |
-| Decrease (H) | Decrease the selected level by one | Decrease the draft maximum by 10 percentage points |
-| Rocker center | Rearm G/H | Rearm G/H |
-| Toggle/setup (J), short press | Toggle the water command | Save the maximum and return to operation |
-| Toggle/setup (J), 1.5-second hold | Enter maximum-opening setup | Remain in setup |
-| Machine power | Start with water commanded off | Discard an unsaved maximum on power loss |
+| Control | Normal operation | Maximum-opening setup | Full-open cleaning |
+| :--- | :--- | :--- | :--- |
+| Increase (G) | Increase the selected level by one | Increase the draft maximum by 10 percentage points | Ignored |
+| Decrease (H) | Decrease the selected level by one | Decrease the draft maximum by 10 percentage points | Ignored |
+| Rocker center | Rearm G/H | Rearm G/H | Ignored |
+| Toggle/setup (J), short press | Toggle the water command | Save the maximum and return to operation | Restore normal operation and the prior on/off state |
+| Toggle/setup (J), 1.5-second hold | Enter maximum-opening setup | Save the maximum and enter full-open cleaning | Remain in cleaning |
+| Machine power | Start with water commanded off | Discard an unsaved maximum on power loss | Clear cleaning; restart with water commanded off |
 
 G/H produces one adjustment per activation. Holding a rocker direction does not repeat. A reversal passes through center and rearms the input.
 
@@ -47,17 +47,23 @@ During maximum-opening setup, the simulated valve holds its current position. On
 
 For example, level 4 with a 100% maximum represents 40% opening. Reducing the maximum to 50% selects level 8 and retains 40% opening. Changing it to 60% selects level 7 and moves to 42% opening.
 
+Full-open cleaning temporarily commands 100% ball opening, regardless of the saved maximum. From maximum setup, release J and hold it again for 1.5 seconds. This saves any draft maximum using the same nearest-step calculation. A short J press then restores the previous normal on/off state and the resulting saved opening. G/H is locked during cleaning. A continuous hold cannot skip through multiple modes.
+
 ## Indicator behavior
 
 | State | Indication |
 | :--- | :--- |
 | Water commanded on | Blue bar representing the selected level |
-| Water paused | White bar representing the saved level |
+| Water paused | White saved-level bar with a persistent maximum marker: blue/off above the bar, blue/white within it |
 | Opening or closing | Fill or drain animation between white and blue |
 | Maximum-opening setup | One lamp alternates blue and white; its index represents 10–100% maximum opening |
-| Startup | Saved level in white with the maximum lamp alternating blue and white for 3.6 seconds |
+| Holding J to change mode | White lamps fill inward from both ends over 1.5 seconds |
+| Full-open cleaning | White pairs ripple outward across a blue bar |
+| Startup | Water commanded off; the standard paused indication appears once closing finishes |
 | Diagnostic preview | White lamp at the diagnostic index |
 | Machine power off | All lamps off |
+
+For example, with a 70% maximum, lamp 7 alternates blue/off at level 4 and blue/white at level 7 or higher. This marker remains active throughout the paused state; there is no separate startup animation. Reduced-motion preferences substitute steady markers.
 
 The ten levels represent commanded valve opening, not measured GPM. The water animation is illustrative. A non-return motorized valve may remain open after electrical power is removed.
 
@@ -89,7 +95,7 @@ npm ci
 npm run check
 ```
 
-Edit `simulator/source.html`, then run `npm run build`. The build extracts the simulator into the committed HTML, CSS, and JavaScript under `docs/`. The 46 deterministic tests include all 200 initial-level/new-maximum combinations across running and paused operation, gesture boundaries, interrupted motion, and 4,000 seeded stress actions. GitHub Actions runs them on Node.js 22 and 24, checks build reproducibility, and runs 12 real-browser cases across desktop Chromium, mobile Chromium, and mobile WebKit. Browser reports and failure traces are retained as workflow artifacts.
+Edit `simulator/source.html`, then run `npm run build`. The build extracts the simulator into the committed HTML, CSS, and JavaScript under `docs/`. The 58 deterministic tests include all 200 initial-level/new-maximum combinations across running and paused operation, all 100 paused-indicator combinations, cleaning-mode restoration and interruption, gesture boundaries, and 4,000 seeded stress actions. GitHub Actions runs them on Node.js 22 and 24, checks build reproducibility, and runs 18 real-browser cases across desktop Chromium, mobile Chromium, and mobile WebKit. Browser reports and failure traces are retained as workflow artifacts.
 
 To run browser checks locally:
 
