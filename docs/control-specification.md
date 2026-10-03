@@ -1,6 +1,6 @@
 # Control Specification
 
-Revision 0.3 · Design baseline
+Revision 0.4 · Reviewed 2026-10-03
 
 ## State variables
 
@@ -22,7 +22,7 @@ The opening scale represents actuator travel. It does not imply linear water flo
 
 ## Normal operation
 
-G and H increment or decrement the level once per activation, within 1–10. A direction remains latched until the rocker returns to center or reverses. A reversal is interpreted as passage through center. Holding a direction produces no autorepeat. While J is being held before entry into setup, normal G/H adjustment is ignored.
+G and H increment or decrement the level once per activation, within 1–10. A direction remains latched until the rocker returns to center or reverses. A reversal is interpreted as passage through center. Holding a direction produces no autorepeat. While J is being held, G/H movement is tracked physically but cannot adjust a setting. That activation is consumed; it is not replayed after J is released.
 
 A J press shorter than 500 ms toggles the water command on release. Releasing at 500–1,499 ms cancels without action. A 1,500 ms hold changes mode. Classify release by elapsed time even if a timer callback is delayed. The on target is the saved resume opening; the paused target is fully closed. A long press must not produce a subsequent short-press toggle.
 
@@ -56,7 +56,7 @@ Level zero is reserved for the off command and is not a selectable running level
 
 ## Flush
 
-From maximum setup, a second 1.5-second J hold commits the draft maximum and quantizes the saved resume opening using the calculation above. It then records the prior normal on/off command and commands 100% actuator opening. This temporarily bypasses the saved maximum without changing that maximum or rescaling the saved level from the cleaning position. G/H adjustments are ignored; the actual rocker latch is retained. A Flush hold started while an OFF command is still closing is ineligible for that entire press; a fresh hold is required after closure.
+From maximum setup, a second 1.5-second J hold commits the draft maximum and quantizes the saved resume opening using the calculation above. It then records the prior normal on/off command and commands 100% actuator opening. This temporarily bypasses the saved maximum without changing that maximum or rescaling the saved level from the cleaning position. G/H adjustments are ignored, but the physical rocker state is updated. A direction engaged during Flush cannot replay on exit; center/re-engage or reverse for a new adjustment. A Flush hold started while an OFF command is still closing is ineligible for that entire press; a fresh hold is required after closure.
 
 Any fresh J press returns immediately, on press-down, to Normal: move to the saved resume opening if previously on, or close if previously paused. Return is available while the valve is still opening. The exit press is consumed; continuing to hold or releasing it cannot toggle water or enter another mode. The original entry press must be released before exit is available. Each hold can cause only one mode change; J must be released before another hold can advance a mode.
 
@@ -80,9 +80,11 @@ Idle blinking uses one scheduled timeout per color change. Reduced-motion mode u
 
 ## Startup and power interruption
 
-On machine power-up, the water command is paused and the valve is commanded closed. Saved level and maximum are retained. All opening commands are locked until closure/reference completes, J is released, and G/H is centered. Inputs received while locked are discarded. Once closed, the standard persistent paused maximum indication applies. There is no separate startup display or startup timer.
+On controller power-up, the water command is paused and the valve is commanded closed. Saved level and maximum are retained. All opening commands are locked until closure/reference completes, then J is released and G/H is centered continuously for 100 ms. Input states are observed even while power is off, closing is underway, or faults inhibit commands. Activations while locked are consumed, not queued. Any control activity restarts neutral qualification. A held J cannot enter setup or toggle on release, and a held G/H cannot edit settings or arm operation. A fresh activation is required after arming. Once closed, the standard persistent paused maximum indication applies. There is no separate startup lamp animation. The 100 ms qualification verifies stable neutral controls; it is not a display delay.
 
 Removing power extinguishes all lamps, cancels motor motion at the current simulated position, discards an unsaved draft, and clears the water command. The simulated actuator is non-return: electrical power loss does not mechanically shut off water. On the next power-up, closing is commanded again.
+
+The reference installation uses a constant-hot feed. A machine key cycle does not necessarily interrupt controller power or reset its mode; ignition sensing and a master disconnect are not implemented.
 
 Settings persist across the simulator's power switch within the current page session. Reloading the page resets the model. Physical firmware will require versioned nonvolatile settings and a power-up position-reference procedure.
 
@@ -95,6 +97,7 @@ Settings persist across the simulator's power switch within the current page ses
 | Maximum-mode J threshold | 1.5 seconds |
 | Paused/setup color-change interval | 600 ms |
 | Hold-feedback delay | 500 ms |
+| Startup/recovery neutral qualification | 100 ms |
 | Hold-progress inward pair interval | 200 ms |
 | Cleaning outward pair interval | 180 ms |
 
@@ -109,3 +112,11 @@ The browser models a stopped actuator after faults. The physical proportional ac
 ## Planned flow calibration
 
 The current simulator remains an actuator-opening model. The approved next hardware step is a measured flow lookup curve, described in [Flow calibration](flow-calibration.md). With a validated curve, Set Max will cap calibrated flow and the ten levels will divide that flow cap. Before changing the simulator's percentage meaning, provide the measured data; no invented valve curve is used here.
+
+## Input timing and simulator limits
+
+Switch controls remain operable when commands are inhibited so held-startup and fault cases can be reproduced. This does not grant those inputs permission to move the valve. G and H represent one mutually exclusive physical rocker; wiring faults that assert both are represented by injected fault 7. Electrical debounce and simultaneous-input detection remain firmware work.
+
+The stuck-J duration counts powered time for the current press, restarting on an actual simulated power cycle. Both timed callbacks and release handling check elapsed time, so a delayed browser callback cannot bypass fault 10 or enter Flush first. A fault-reset hold requires G/H centered throughout; moving the rocker cancels it even if re-centered before three seconds. Release J and start a fresh acknowledgement.
+
+Pointer cancellation, matching capture loss, page hiding and window focus loss cancel a browser gesture without producing a tap. These browser events are not substitutes for sampling physical switches in firmware. Another pointer, a secondary mouse-button release, unrelated key release, or key-repeat event must not complete or duplicate J.

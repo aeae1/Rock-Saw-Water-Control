@@ -1,72 +1,6 @@
-const { readFileSync } = require('node:fs');
-const { resolve } = require('node:path');
-const vm = require('node:vm');
 const assert = require('node:assert/strict');
 const { test } = require('node:test');
-const { parseHTML } = require('linkedom');
-
-function simulator({ reducedMotion = false } = {}) {
-  const { document, window } = parseHTML(readFileSync(resolve(__dirname, '../docs/index.html'), 'utf8'));
-  let clock = 0, id = 0;
-  const jobs = new Map();
-  const media = { matches: reducedMotion, addEventListener: (_, listener) => { media.onchange = listener; } };
-  const schedule = (fn, ms, raf = false) => { jobs.set(++id, { fn, at: clock + ms, raf }); return id; };
-  vm.runInNewContext(readFileSync(resolve(__dirname, '../docs/assets/simulator.js'), 'utf8'), {
-    document,
-    window: { matchMedia: () => media, addEventListener: window.addEventListener.bind(window) },
-    performance: { now: () => clock },
-    setTimeout: (fn, ms) => schedule(fn, ms), clearTimeout: id => jobs.delete(id),
-    requestAnimationFrame: fn => schedule(fn, 16, true), cancelAnimationFrame: id => jobs.delete(id)
-  });
-  const stage = document.querySelector('.sa-stage');
-  const q = name => stage.querySelector('[data-' + name + ']');
-  function emit(el, type, props = {}) {
-    const e = new window.Event(type, { bubbles: true, cancelable: true });
-    Object.assign(e, props); el.dispatchEvent(e);
-  }
-  function advance(ms) {
-    const end = clock + ms; let count = 0;
-    while (true) {
-      const job = [...jobs].sort((a, b) => a[1].at - b[1].at)[0];
-      if (!job || job[1].at > end) break;
-      clock = job[1].at; jobs.delete(job[0]);
-      job[1].raf ? job[1].fn(clock) : job[1].fn();
-      if (++count > 10000) throw Error('Runaway frame loop');
-    }
-    clock = end;
-  }
-  // Model a suspended browser delivering overdue callbacks at its current time.
-  function resumeAfter(ms) {
-    clock += ms;
-    const overdue = [...jobs].filter(([, job]) => job.at <= clock);
-    for (const [key, job] of overdue) {
-      if (!jobs.delete(key)) continue;
-      job.raf ? job.fn(clock) : job.fn();
-    }
-  }
-  const click = key => emit(q(key), 'click');
-  const power = value => { q('power').checked = value; emit(q('power'), 'change'); };
-  const down = () => emit(q('j'), 'pointerdown', { pointerType: 'touch', pointerId: 1, button: 0 });
-  const up = () => { emit(q('j'), 'pointerup', { pointerType: 'touch', pointerId: 1, button: 0 }); click('j'); };
-  const tap = () => { down(); advance(100); up(); };
-  const hold = () => { down(); advance(1501); up(); };
-  function draft(cap) {
-    assert.equal(stage.dataset.mode, 'max', 'draft edits require maximum setup');
-    let attempts = 0;
-    while (Number(stage.dataset.draft) !== cap) {
-      assert.ok(++attempts <= 10, 'draft adjustment must make bounded progress');
-      click('center'); click(Number(stage.dataset.draft) > cap ? 'h' : 'g');
-    }
-  }
-  // LinkeDOM exposes a read-only select.value; select the option as the UI does.
-  const fault = value => {
-    q('fault').querySelector('option[value="' + value + '"]').selected = true;
-    emit(q('fault'), 'change');
-  };
-  const pos = () => Number(stage.dataset.position);
-  const setReducedMotion = value => { media.matches = value; media.onchange?.(); };
-  return { stage, q, emit, advance, resumeAfter, setReducedMotion, click, power, down, up, tap, hold, draft, fault, pos, document, window, pendingJobs: () => jobs.size, pendingFrames: () => [...jobs.values()].filter(job => job.raf).length };
-}
+const { simulator } = require('./helpers/simulator.cjs');
 
 test('startup is off and keeps the paused maximum marker indefinitely', () => {
   const s = simulator();
@@ -164,7 +98,7 @@ test('power interruption stops travel, retains settings, and discards draft', ()
   s.advance(3000); assert.equal(s.pos(), stopped);
   assert.equal(s.stage.dataset.colors, Array(10).fill('off').join(','));
   s.power(true); assert.equal(s.stage.dataset.on, 'false');
-  s.advance(2000); s.click('center'); assert.equal(s.pos(), 0);
+  s.advance(2000); s.click('center'); s.advance(100); assert.equal(s.pos(), 0);
   assert.equal(s.stage.dataset.setting, '8'); assert.equal(s.stage.dataset.maximum, '50');
   s.hold(); s.draft(20); s.power(false); s.power(true);
   assert.equal(s.stage.dataset.maximum, '50'); assert.equal(s.stage.dataset.mode, 'normal');
@@ -182,12 +116,12 @@ test('canceled gestures do not toggle and keyboard long hold enters setup', () =
 test('fault stops movement and inhibits controls until cleared', () => {
   const s = simulator(); s.power(true); s.tap(); s.advance(800);
   s.fault('driver'); const stopped = s.pos(); s.advance(3000);
-  assert.equal(s.pos(), stopped); assert.equal(s.q('j').disabled, true);
+  assert.equal(s.pos(), stopped); assert.equal(s.q('j').dataset.commandEnabled, 'false');
   assert.equal(s.stage.dataset.colors, 'off,off,off,white,off,off,off,off,off,off');
   s.click('g'); assert.equal(s.stage.dataset.setting, '4');
   s.fault('input'); assert.equal(s.stage.dataset.colors.split(',')[3], 'white');
   assert.equal(s.stage.dataset.latchedFaults, 'driver,input');
-  s.fault('normal'); s.click('reset-fault'); s.advance(2500); assert.equal(s.pos(), 0); assert.equal(s.q('j').disabled, false);
+  s.fault('normal'); s.click('center'); s.click('reset-fault'); s.advance(2500); assert.equal(s.pos(), 0); assert.equal(s.q('j').dataset.commandEnabled, 'true');
 });
 
 test('reduced motion uses a steady maximum marker', () => {
@@ -232,7 +166,7 @@ test('power loss during a held J cancels the pending long press', () => {
 test('a fault during a held J cancels setup and cannot produce a release toggle', () => {
   const s = simulator(); s.power(true); s.down(); s.advance(1400); s.fault('driver'); s.advance(6000); s.up();
   assert.equal(s.stage.dataset.mode, 'normal'); assert.equal(s.stage.dataset.on, 'false');
-  assert.equal(s.q('j').disabled, true);
+  assert.equal(s.q('j').dataset.commandEnabled, 'false');
 });
 
 for (const cancellation of ['lostpointercapture', 'blur', 'visibilitychange']) {
@@ -241,7 +175,7 @@ for (const cancellation of ['lostpointercapture', 'blur', 'visibilitychange']) {
     if (cancellation === 'blur') s.emit(s.window, 'blur');
     else if (cancellation === 'visibilitychange') {
       Object.defineProperty(s.document, 'hidden', { value: true }); s.emit(s.document, 'visibilitychange');
-    } else s.emit(s.q('j'), cancellation);
+    } else s.emit(s.q('j'), cancellation, { pointerId: 1 });
     s.advance(6000);
     assert.equal(s.stage.dataset.mode, 'normal'); assert.equal(s.stage.dataset.on, 'false');
   });
@@ -276,13 +210,13 @@ test('cleaning restores the quantized running opening and locks G/H against acci
   s.hold(); s.draft(60); s.hold(); s.advance(6000);
   assert.equal(s.pos(), 100); assert.equal(s.stage.dataset.setting, '7'); assert.equal(s.stage.dataset.runOpening, '42');
   for (const key of ['g', 'h']) {
-    assert.equal(s.q(key).disabled, true); s.click(key);
+    assert.equal(s.q(key).dataset.commandEnabled, 'false'); s.click(key);
   }
   assert.equal(s.stage.dataset.setting, '7'); assert.equal(s.stage.dataset.maximum, '60');
   s.down(); assert.equal(s.stage.dataset.mode, 'normal');
   s.advance(6000); s.up();
   assert.equal(s.stage.dataset.mode, 'normal'); assert.equal(s.stage.dataset.on, 'true');
-  assert.equal(s.pos(), 42); assert.equal(s.q('g').disabled, false);
+  assert.equal(s.pos(), 42); assert.equal(s.q('g').dataset.commandEnabled, 'true');
 });
 
 test('second-hold boundary is 1.5 seconds, and its release never exits cleaning', () => {
@@ -418,7 +352,7 @@ test('maximum cannot be adjusted beyond either bound', () => {
 test('fault clearing closes the valve; a power cycle alone does not clear the fault', () => {
   const s = simulator(); s.power(true); s.tap(); s.advance(2500); s.fault('driver');
   s.power(false); s.power(true); s.advance(4000);
-  assert.equal(s.pos(), 40); assert.equal(s.q('j').disabled, true);
+  assert.equal(s.pos(), 40); assert.equal(s.q('j').dataset.commandEnabled, 'false');
   s.fault('normal'); s.click('reset-fault'); s.advance(2500); assert.equal(s.pos(), 0); assert.equal(s.stage.dataset.on, 'false');
 });
 
@@ -559,14 +493,14 @@ test('startup closes fully and requires released J and centered rocker; nothing 
   assert.equal(s.stage.dataset.recovering, 'true'); assert.equal(s.stage.dataset.inputsReady, 'false');
   s.advance(7000); assert.equal(s.pos(), 0); assert.equal(s.stage.dataset.inputsReady, 'false');
   s.up(); assert.equal(s.stage.dataset.inputsReady, 'false');
-  s.click('center'); assert.equal(s.stage.dataset.inputsReady, 'true'); assert.equal(s.stage.dataset.on, 'false');
+  s.click('center'); s.advance(100); assert.equal(s.stage.dataset.inputsReady, 'true'); assert.equal(s.stage.dataset.on, 'false');
   assert.equal(s.stage.dataset.mode, 'normal'); s.tap(); assert.equal(s.stage.dataset.on, 'true');
 });
 
 test('J commands during recovery are discarded until release even after closing finishes', () => {
   const s = simulator(); s.power(true); s.tap(); s.advance(6000); s.power(false); s.power(true);
   s.down(); s.advance(6000); assert.equal(s.stage.dataset.inputsReady, 'false');
-  s.up(); assert.equal(s.stage.dataset.inputsReady, 'true'); assert.equal(s.stage.dataset.on, 'false');
+  s.up(); s.advance(100); assert.equal(s.stage.dataset.inputsReady, 'true'); assert.equal(s.stage.dataset.on, 'false');
   s.tap(); assert.equal(s.stage.dataset.on, 'true');
 });
 
@@ -597,7 +531,7 @@ test('fault reset requires neutral controls, accepts a fresh 3-second J hold, an
   s.up(); assert.equal(s.stage.dataset.fault, 'driver');
   s.down(); s.advance(3000); assert.equal(s.stage.dataset.fault, 'normal');
   s.advance(6000); assert.equal(s.stage.dataset.inputsReady, 'false');
-  s.up(); assert.equal(s.stage.dataset.inputsReady, 'true'); assert.equal(s.stage.dataset.on, 'false');
+  s.up(); s.advance(100); assert.equal(s.stage.dataset.inputsReady, 'true'); assert.equal(s.stage.dataset.on, 'false');
   s.tap(); assert.equal(s.stage.dataset.on, 'true');
 });
 

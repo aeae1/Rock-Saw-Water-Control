@@ -7,9 +7,11 @@ The controller has three modes: **Normal**, **Set Max**, and **Flush**. Most ope
 ## Start here
 
 1. Center G/H and release J.
-2. Turn machine power on. The controller closes the valve before accepting commands. Water starts off.
+2. Turn controller power on. It commands the valve closed before accepting operation. Wait for closing to finish; a previously open valve may pass water while closing.
 3. Tap J to turn water on. Tap again to turn it off.
 4. Press G for more water or H for less. There are ten levels. Center the rocker before pressing the same direction again; reversing direction also passes through center.
+
+If a control was held during startup, release J and center G/H. After closing, keep them neutral for one tenth of a second, then make a fresh command. Releasing a startup-held J does not turn water on.
 
 Holding G or H makes only one change. The selected level is remembered when water is off.
 
@@ -58,12 +60,14 @@ A numbered white lamp identifies the fault; the simulator also shows its name. F
 3. **Hold J for 3 seconds** to acknowledge, then release. In the simulator, the **Reset fault** button performs the same acknowledgement.
 4. Wait for the closing/reference cycle. Water remains off. Tap J only when ready to resume.
 
-In the simulator, select **No active fault cause** after injecting a fault, then reset it. Removing the cause or cycling machine power alone does not acknowledge a latched fault. A new fault interrupts recovery. Invalid saved settings restore level 4 and a 100% maximum when acknowledged.
+In the simulator, select **No active fault cause** after injecting a fault, then reset it. Removing the cause or cycling machine power alone does not acknowledge a latched fault. A new fault interrupts recovery. Moving G/H during the three-second reset hold cancels it; release J and start again. Invalid saved settings restore level 4 and a 100% maximum when acknowledged.
 
 ## Power and simulator notes
 
 The simulated power switch retains saved settings and latched faults, but discards an unfinished maximum edit. Reloading the page starts a new simulation. Physical settings storage is a firmware requirement, not a browser feature.
 
-Removing electrical power does not guarantee that a motorized ball valve closes. On restart, opening commands remain locked until closing completes and the controls are released/centered. Commands made during recovery are discarded.
+Removing electrical power does not guarantee that a motorized ball valve closes. On restart, opening commands remain locked until closing completes and the controls remain released/centered for 0.1 seconds. Commands made during recovery are discarded.
 
 For keyboard operation, focus J and use Space or Enter. Reduced-motion settings replace flashing patterns with steady markers. The animated water and valve position are modeled; they are not measurements from a real machine.
+
+The simulator buttons can be operated with power off or while commands are locked. This lets you test held-switch behavior. The physical reference installation uses constant power from its connector: switching the machine key off may leave the controller, lamps and valve powered. Its key-off behavior must be measured before installation.

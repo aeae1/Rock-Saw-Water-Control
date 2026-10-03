@@ -6,7 +6,29 @@
 
 A configurable attachment water controller for machines that provide three independent operator-control outputs. The proposed system adjusts a motorized water valve and presents operating status on ten blue/white indicator lamps. Typical applications include rock saws and other attachments supplied from a pressurized water hose.
 
-**Project status:** interactive simulator and engineering specification. Controller selection, electrical design, actuator characterization, and machine integration remain open. No hardware-ready firmware is included in this revision.
+**Project status:** interactive simulator and engineering specification. The Arduino Nano Every is the selected controller; final electrical design, component procurement, actuator characterization, and machine integration remain open. No hardware-ready firmware is included in this revision.
+
+## Assembly concept
+
+![Open assembly concept showing ten blue/white lamps, an Arduino Nano Every, three prebuilt high-side lamp-driver boards, a four-channel input module, command and feedback modules, and a stainless proportional valve powered through the reused machine connector](docs/assets/hardware/assembly-concept-arduino-prebuilt.png)
+
+*Current component direction, reviewed 2026-10-03. This AI-generated illustration shows the equipment spread out for identification. Component details, terminal placement, dimensions, and cable routing are indicative; it is not a wiring schematic or construction drawing. The illustrated temperature probe represents planned sensing; its exact part and circuit are not yet selected.*
+
+| Function | Current component direction |
+| :--- | :--- |
+| Main controller | [Arduino Nano Every](https://store-usa.arduino.cc/products/nano-every), supplied through VIN from the machine's nominal 12 V supply |
+| Operator inputs | Prebuilt four-channel optocoupler module with suitable 12 V inputs and 5 V logic outputs; three channels used for G/H/J, one spare. Exact module and input range require verification. |
+| Lamp switching | Three [Serial Wombat PCB0046 HSD](https://www.serialwombat.com/p46) prebuilt high-side boards: 24 outputs, 20 used, four spare. Current price and availability have not been verified. |
+| Indicators | Ten common-negative 12 V blue/white lamps; each color has its own switched positive lead |
+| Valve command | [DFRobot DFR1229](https://wiki.dfrobot.com/dfr1229/) configured for 4–20 mA current output |
+| Valve feedback | [DFRobot SEN0262](https://wiki.dfrobot.com/sen0262/) converts position feedback to a voltage for the Nano's analog input; this receiver is not an I²C device |
+| Water valve | [U.S. Solid USS-MSV50030](https://ussolid.com/products/1-2-proportional-motorized-ball-valve-stainless-steel-dc-9-24v-4-20ma-control-5-wire-ip67-full-port), 1/2-inch stainless proportional ball valve with integrated actuator |
+
+The reference installation reuses its existing 14-pin connector for the constant 12 V supply, wired ground return, and three control signals. Power is distributed inside the controller; the selected layout relies on the existing machine fuse and includes no additional fuse block or separate power source. This is an installation-specific arrangement, not a universal connector pinout. Whether the supply remains live with the ignition off must be verified: startup behavior follows controller power-up or reset, not necessarily the machine's key cycle.
+
+The valve has **one five-conductor cable from its actuator housing**. The motor and position-control electronics are inside that housing; there are no electrical connections to the stainless valve body or water hoses. The [manufacturer's wiring table](https://file.ussolid.com/content/JFMSV/Manual-5003X.pdf) identifies red as power positive, black as power negative, green as command positive, white as signal common, and yellow as position-feedback positive.
+
+The electronics require a suitable weatherproof enclosure in the installed assembly. The illustration intentionally leaves them exposed. Final wiring, power budgets, fault handling, and environmental suitability require bench verification. The [build guide](docs/build-guide.md), connection diagrams and BOM have been reconciled with this component direction. Open engineering questions and software verification are recorded in the [2026-10-03 audit](docs/audit-2026-10-03.md).
 
 ## Simulator
 
@@ -40,7 +62,7 @@ The illustration shows the reference machine controls schematically. It is not a
 | **Set Max** | Choose what level 10 means | Hold J for 1.5 seconds from Normal, then release. G/H changes the cap from 10–100%. Tap J to save and return. |
 | **Flush** | Temporarily open the valve fully | In Set Max, release J and hold it again for 1.5 seconds. A fresh J press returns immediately to the previous Normal on/off state. |
 
-Start with G/H centered and J released. Startup closes the valve and leaves water off. G/H makes one change per activation; center or reverse to rearm. A tap is shorter than 0.5 seconds. Releasing J between 0.5 and 1.5 seconds cancels the hold without changing anything.
+Start with G/H centered and J released. Startup commands closing, then requires released/centered controls for 0.1 seconds before accepting a fresh command. A held startup input cannot trigger an action on release. G/H makes one change per activation; center or reverse to rearm. A tap is shorter than 0.5 seconds. Releasing J between 0.5 and 1.5 seconds cancels the hold without changing anything.
 
 In Set Max, running water holds its current valve opening while the cap is edited. An existing OFF command continues closing. Saving selects the nearest repeatable opening under the new cap: 40% opening becomes level 8 at a 50% maximum, or level 7 at a 60% maximum (42% opening). Flush temporarily bypasses the cap and locks G/H.
 
@@ -52,22 +74,23 @@ The current simulator uses valve-opening percentages. The planned hardware will 
 
 ## Architecture
 
-The preferred bench architecture uses an Arduino Nano Every, protected machine inputs and power, a wired proportional valve with 4–20 mA command and feedback, and twenty independently switched lamp channels. The valve includes its motor, gearbox, and motor controller; it needs no separate motor or H-bridge.
+The current bench direction is the [assembly concept](#assembly-concept): an Arduino Nano Every, conditioned machine inputs, prebuilt high-side lamp drivers, and a wired proportional valve with 4–20 mA command and feedback. Ten dual-color lamps require twenty independently switched power channels. The valve includes its motor, gearbox, and motor controller; it needs no separate motor or H-bridge.
 
-The [build guide](docs/build-guide.md) provides a priced prototype list, enclosure plan, conceptual wiring, and programming sequence. The [valve-control research](docs/valve-control-research.md) retains the cheaper reversing-valve and Tuya alternatives. Local Tuya percentage control has not been verified for the candidate smart valve.
+The [build guide](docs/build-guide.md) describes the current component list, partial pricing, wiring relationships, enclosure plan and programming sequence. The complete cost remains open because driver-board pricing and several assembly choices are unverified. The [valve-control research](docs/valve-control-research.md) retains the cheaper reversing-valve and Tuya alternatives. Local Tuya percentage control has not been verified for the candidate smart valve.
 
 ## Documentation
 
 | Document | Purpose |
 | :--- | :--- |
 | [Operator guide](docs/operator-guide.md) | Plain-language instructions for Normal, Set Max, Flush, and recovery |
-| [Build and wiring guide](docs/build-guide.md) | Purchase candidates, costs, enclosures, wiring, and programming sequence |
+| [Build and wiring guide](docs/build-guide.md) | Current component direction, partial pricing, wiring and enclosure plan |
+| [Audit and remaining work](docs/audit-2026-10-03.md) | Verified fixes, test evidence and hardware acceptance gaps |
 | [Fault reference](docs/faults.md) | Ten latched fault codes, acknowledgement, and detection requirements |
 | [Control specification](docs/control-specification.md) | State transitions, timing, rounding, and retention rules |
 | [Connection diagrams](docs/connections.md) | Conceptual power, signal, lamp, and water connections |
 | [Hardware candidates](docs/hardware.md) | Candidate components and unresolved selection criteria |
 | [Valve-control research](docs/valve-control-research.md) | Wired proportional control, Tuya feasibility, prices, and bench investigation |
-| [Planning BOM](docs/bom.csv) | Quantities and procurement status |
+| [Planning BOM](docs/bom.csv) | Current quantities, dated prices and unresolved procurement items |
 | [Validation plan](docs/validation.md) | Simulator coverage and hardware acceptance work |
 | [Firmware integration](firmware/README.md) | Required hardware interfaces and implementation scope |
 | [Artwork swatches](docs/artwork.md) | Four banner directions and corresponding color palettes |
@@ -81,7 +104,7 @@ npm ci
 npm run check
 ```
 
-Edit `simulator/source.html`, then run `npm run build`. The build extracts the simulator into the committed HTML, CSS, and JavaScript under `docs/`. The 79 deterministic tests include all 200 initial-level/new-maximum combinations across running and paused operation, all 100 paused-indicator combinations, Flush restoration and interruption, ten fault codes, reset interlocks, startup neutral requirements, gesture boundaries, and 4,000 seeded stress actions. GitHub Actions runs them on Node.js 22 and 24, checks build reproducibility, and runs 24 real-browser cases across desktop Chromium, mobile Chromium, and mobile WebKit. Browser reports and failure traces are retained as workflow artifacts.
+Edit `simulator/source.html`, then run `npm run build`. The build extracts the simulator into the committed HTML, CSS, and JavaScript under `docs/`. The 138 deterministic tests include all 2,000 old-cap/new-cap/level/on-off remapping combinations, 100 paused-indicator combinations, all 90 ordered fault pairs, 4,000 seeded stress actions, and startup/recovery/gesture regressions. The check command also validates local documentation links and the assembly image. GitHub Actions runs the suite on Node.js 22 and 24, checks build reproducibility, and runs 42 real-browser cases across desktop Chromium, mobile Chromium and mobile WebKit. Browser reports and failure traces are retained as workflow artifacts. See the [audit](docs/audit-2026-10-03.md) for results and limits.
 
 To run browser checks locally:
 
@@ -95,5 +118,7 @@ The test suite covers the simulator. Physical controller firmware will need its 
 ## Scope and attribution
 
 This is an independent project and is not affiliated with Takeuchi or the component manufacturers. The original machine artwork was supplied for this project. The selected red-stripe banner contains an unchanged, native-size copy of the original artwork. Four earlier AI-assisted banner studies are retained as superseded design swatches; they are not technical representations of the machine.
+
+The separate assembly illustration is AI-generated concept art informed by the linked component documentation. It does not reproduce verified circuit connections or constitute manufacturer-approved installation guidance.
 
 No project-wide redistribution license has been selected. Third-party product names and marks retain their respective ownership.

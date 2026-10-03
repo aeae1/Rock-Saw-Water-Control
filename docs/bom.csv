@@ -1,18 +1,15 @@
-Category,Quantity,Unit,Candidate or requirement,Status,Unit price USD,Notes
-Controller,1,board,Arduino Nano Every ABX00028,Bench candidate,12.90,2026-10-01 listed price; protected 12V to VIN
-Valve,1,assembly,U.S. Solid USS-MSV50033,Bench candidate,99.99,1/2 inch proportional; integrated motor and controller
-Current output,1,board,DFRobot DFR1229 GP8600,Bench candidate,15.90,3.3-5V supply; verify current-mode load and startup output
-Position receiver,1,board,DFRobot SEN0262,Bench candidate,4.90,Protected installation required
-ADC,1,board,Adafruit ADS1115 1085,Bench candidate,14.95,Position feedback conversion
-Output expansion,2,board,Adafruit MCP23017 5346,Bench candidate,5.95,32 logic channels; 20 used for colors
-Lamp switches,3,IC,Toshiba TBD62783APG,Conditional bench candidate,2.45,8 source channels each; verify common-negative lamps and thermal current limits; add protection
-Regulated supply,1,board,Pololu S18V20F12 2577,Conditional bench candidate,29.95,Not a complete automotive transient-protection front end
-Indicator lamps,10,lamp,12 V blue/white common-negative lamps,Brand-neutral requirement,,BJZ B0CT8G71TW or Nilight TL-248BW examples; Nilight ten-pack 25.99 USD; verify current and mounting size
-Enclosure,1,box,Hammond 1554VA2GY,Candidate allowance,,45-65 USD; UV polycarbonate
-Carrier,1,set,PCB terminals passives standoffs,Design pending allowance,,15-25 USD
-Protection and inputs,1,set,Power frontend three protected inputs watchdog inhibit,Design pending allowance,,50-90 USD
-Sensing,1,set,Protected voltage current and temperature sensing,Design pending allowance,,20-35 USD
-Machine harness,1,set,Verified connector and breakout,Verification pending allowance,,35-100 USD; preserve hydraulic-function independence
-Wiring and seals,1,set,Wire sealed connectors glands vent,Layout pending allowance,,35-60 USD
-Plumbing,1,set,Manual shutoff strainer adapters hose,Layout pending allowance,,25-50 USD
-Display housing,1,assembly,Ten-lamp housing and hood if separate,Layout pending allowance,,20-40 USD; may combine with controller box
+Category,Quantity,Unit,Current part or requirement,Status,Unit price USD,Price date,Notes
+Controller,1,board,Arduino Nano Every ABX00028,Selected,12.9,2026-10-03,Nominal 12 V to VIN; 5 V logic; peripheral current/heat verification pending
+Valve,1,assembly,U.S. Solid USS-MSV50030 / JFMSV50030,Selected,105.29,2026-10-03,1/2 inch stainless; integrated actuator; 4-20 mA command and feedback
+Current command,1,board,DFRobot DFR1229 GP8600,Selected,15.9,2026-10-03,3.3-5 V supply; current scale and loop compliance require bench verification
+Feedback receiver,1,board,DFRobot SEN0262,Selected,4.9,2026-10-03,Analog output to Nano A0; no external ADC currently selected
+Lamp switching,3,board,Serial Wombat PCB0046 HSD,Selected direction; price/availability pending,,,24 outputs; 20 color leads used; address pairs 0x60/61 0x62/63 0x64/65
+Machine inputs,1,board,Four-channel optocoupler 12 V inputs to 5 V logic,Exact SKU pending,,,Three channels for G/H/J; one spare; check thresholds polarity and returns
+Indicators,1,ten-pack,12 V blue/white common-negative marker lamps,Brand-neutral requirement,,,Ten lamps; historical Nilight pack price 25.99 USD on 2026-10-01; recheck quote
+Machine connector,1,existing assembly,Existing 14-pin connector,Reuse,0,,No new connector or separate power source; verify cavity assignments
+Enclosure,1,box,Opaque UV-resistant enclosure with plate,Size/quote pending,,,Hammond 1554VA2GY example; fit all boards and wiring before purchase
+Assembly,1,set,Distribution terminals wire glands sealed connectors standoffs labels,Layout/quote pending,,,Reference installation uses existing machine fuse; no added fuse block
+Display mounting,1,assembly,Ten-lamp bar housing or shared enclosure face,Layout/quote pending,,,Depends on measured lamp dimensions and desired spacing
+Plumbing,1,set,Manual shutoff strainer hose/NPT adapters and removable fittings,Inventory/quote pending,,,Reuse suitable existing parts; no electrical wires to hoses
+Fault inhibition,1,circuit,Characterized actuator/output inhibit and supervision,Design unresolved,,,Required to realize the specified freeze/fault response; not supplied by illustration
+Additional sensing,1,set,Supply voltage actuator current and temperature sensing,Design unresolved,,,Needed for physical faults 1 2 and 9; lamp current sensing is not actuator sensing

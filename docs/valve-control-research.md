@@ -1,10 +1,10 @@
 # Valve Control Research
 
-Reviewed 2026-10-01. These are candidate interfaces, not validated hardware configurations.
+Historical comparison reviewed 2026-10-01; current selection updated 2026-10-03. Alternative prices below are dated observations. Use the [build guide](build-guide.md) for the current stainless-valve design and budget.
 
 ## Recommendation
 
-Evaluate the **U.S. Solid USS-MSV50033 wired proportional valve** before modifying a smart valve. It provides a documented percentage-control input and position-feedback output. The **USS-MSV00012 reversing valve** remains the lowest-cost candidate when estimated opening is sufficient. The Tuya route is feasible to investigate, but compatibility with a current production unit has not been demonstrated.
+The current selection is the **U.S. Solid USS-MSV50030, 1/2-inch stainless wired proportional valve**. The brass USS-MSV50033 below is a historical comparison. Use the wired interface before considering a smart-valve modification. It provides a documented percentage-control input and position-feedback output. The **USS-MSV00012 reversing valve** remains the lowest-cost candidate when estimated opening is sufficient. The Tuya route is feasible to investigate, but compatibility with a current production unit has not been demonstrated.
 
 All three assemblies include the actuator motor and gearbox. No additional mechanical motor is required. Each alternative needs its own electrical interface; the external H-bridge applies only to the reversing valve.
 
@@ -14,7 +14,7 @@ The current pricing basis is **1/2 inch**, with 3/8 inch retained as an option i
 
 A [3/8-inch U.S. Solid listing](https://ussolid.com/products/38-3-way-brass-motorized-ball-valve-2-wire-9-24v-acdc-l-type-standard-port-with-manual-function-ip67) is $69.67, but it is a three-way L-port routing valve, not the two-way proportional candidate needed here. A suitable 3/8-inch two-way U.S. Solid percentage-control model was not verified in this review. The 1/2-inch range currently offers a clearer selection.
 
-The newer [build guide](build-guide.md) selects DFR1229 ($15.90, 3.3–5 V supply) as the next current-output bench candidate and SEN0262 plus ADS1115 for feedback. The older DFR0972 comparison below is retained for reference. The [flow-calibration plan](flow-calibration.md) defines the intended measured lookup curve.
+The newer [build guide](build-guide.md) selects DFR1229 ($15.90, 3.3–5 V supply) as the next current-output bench candidate and SEN0262 to the Nano onboard ADC for feedback. The older DFR0972 comparison below is retained for reference. The [flow-calibration plan](flow-calibration.md) defines the intended measured lookup curve.
 
 ## Component price comparison
 
@@ -99,4 +99,4 @@ For either interface, test repeated partial moves under water pressure, directio
 
 ## Selection outcome
 
-The wired proportional model is the preferred **next bench candidate** when repeatable percentage settings matter. The reversing model remains the economy option. The Tuya serial path is a credible development project for an owner comfortable with soldering, with the decisive unknowns being the current board design, protocol, actual-position reporting, and stop behavior.
+The stainless USS-MSV50030 wired proportional model is the selected **next bench candidate** when repeatable percentage settings matter. The reversing model remains the economy option. The Tuya serial path is a credible development project for an owner comfortable with soldering, with the decisive unknowns being the current board design, protocol, actual-position reporting, and stop behavior.

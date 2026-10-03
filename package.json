@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node --test tests/*.test.cjs",
-    "check": "npm run build && npm test",
+    "check": "npm run build && node scripts/check-docs.mjs && npm test",
     "test:browser": "playwright test"
   },
   "engines": {

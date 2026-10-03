@@ -1,164 +1,116 @@
 # Build and Wiring Plan
 
-Reviewed 2026-10-01 · Bench candidates and estimated field-completion costs
+Reviewed 2026-10-03 · Current prebuilt-board design · Bench verification required
 
-This plan uses a **1/2-inch U.S. Solid wired proportional valve**, an **Arduino Nano Every**, and **ten separately controlled blue/white lamps**. The valve includes its motor, gearbox, and motor controller. No additional motor, reversing H-bridge, Tuya account, Wi-Fi access point, or permanent flow meter is required for this approach.
+The selected direction is an **Arduino Nano Every**, a **1/2-inch stainless U.S. Solid USS-MSV50030 proportional valve**, and **ten common-negative 12 V blue/white lamps**. Three prebuilt Serial Wombat PCB0046 HSD boards supply the twenty lamp color channels. This document supersedes the earlier brass-valve, MCP23017/TBD62783, external-ADC arrangement.
 
-The simulator and its fault policy are implemented. Flashable machine firmware, the protected carrier PCB, and a construction-ready machine pinout are not yet supplied. Buy the bench parts first; choose the harness and finalize the carrier after measurements.
+The simulator is implemented. Machine firmware, final terminal-level wiring, and a tested hardware fault-inhibit circuit are not yet supplied. The [audit](audit-2026-10-03.md) distinguishes completed software checks from outstanding bench work.
 
-## Core bench parts
+## Parts and current budget
 
-Listed prices are USD before shipping and tax. They are observed supplier prices, not an assembly quotation. A starred item is conditional on the lamp/valve bench results.
+Prices below are manufacturer prices reviewed on 2026-10-03, in USD before tax and shipping. Blank prices are unresolved, not zero-cost components.
 
-| Quantity | Component | Purpose | Extended price |
+| Quantity | Part | Function | Extended price |
 | ---: | :--- | :--- | ---: |
-| 1 | [Arduino Nano Every ABX00028](https://store-usa.arduino.cc/products/nano-every) | Runs the controls, calibration lookup, faults, and lights | $12.90 |
-| 1 | [U.S. Solid USS-MSV50033](https://ussolid.com/products/1-2-proportional-motorized-ball-valve-brass-dc-9-24v-4-20ma-control-5-wire-ip67-full-port) | 1/2-inch proportional valve with command and feedback | $99.99 |
-| 1 | [DFRobot DFR1229 / GP8600](https://www.dfrobot.com/product-3073.html)* | I²C to current command; verify loop load and startup behavior | $15.90 |
-| 1 | [DFRobot SEN0262](https://www.dfrobot.com/product-1755.html) | Converts valve feedback current into a readable voltage | $4.90 |
-| 1 | [Adafruit ADS1115 #1085](https://www.adafruit.com/product/1085) | Reads feedback with better resolution/reference stability than the onboard ADC | $14.95 |
-| 2 | [Adafruit MCP23017 #5346](https://www.adafruit.com/product/5346) | 32 logic outputs; 20 used for the lamp colors | $11.90 |
-| 3 | [Toshiba TBD62783APG](https://www.mouser.com/en/c/?q=TBD62783A)* | 24 high-side power channels; 20 used, if lamps are common-negative | $7.35 |
-| 1 | [Pololu S18V20F12 #2577](https://www.pololu.com/product/2577)* | Regulated 12 V bench/assembly rail; field input protection still required | $29.95 |
-| | **Core parts subtotal** | Does not include lamps, protection, enclosure or wiring | **$197.84** |
+| 1 | [Arduino Nano Every ABX00028](https://store-usa.arduino.cc/products/nano-every) | Controls inputs, valve requests, lamp patterns and faults | $12.90 |
+| 1 | [U.S. Solid USS-MSV50030 / JFMSV50030](https://ussolid.com/products/1-2-proportional-motorized-ball-valve-stainless-steel-dc-9-24v-4-20ma-control-5-wire-ip67-full-port) | 1/2-inch stainless proportional valve; integrated motor/controller | $105.29 |
+| 1 | [DFRobot DFR1229 / GP8600](https://www.dfrobot.com/product-3073.html) | I²C to current command | $15.90 |
+| 1 | [DFRobot SEN0262](https://www.dfrobot.com/product-1755.html) | Current feedback to analog voltage | $4.90 |
+| 3 | [Serial Wombat PCB0046 HSD](https://www.serialwombat.com/p46) | Prebuilt high-side lamp drivers and output expansion | Price/availability unverified |
+| 1 | Four-channel 12 V-input, 5 V-output optocoupler board | G/H/J conversion; one spare channel | Exact board unselected |
+| 10 | Common-negative 12 V blue/white marker lamps | Ten-position display | Brand/quote unconfirmed |
+| 1 | Opaque UV-resistant enclosure and mounting plate | Houses controller and boards | Layout/quote pending |
+| 1 set | Distribution terminals, wire, glands, sealed connectors, standoffs, labels | Electrical assembly | Layout/quote pending |
+| 1 set | Manual shutoff, strainer, hose/NPT adapters, removable fittings | Plumbing and service | Reuse existing items where suitable |
+| 1 | Existing machine connector | Power, ground and three control lines | Reused; no new 14-pin connector |
 
-A laptop, Micro-B USB data cable, current-limited 12 V bench supply, multimeter, soldering equipment, temporary rocker/button controls, and bench wiring are also needed. Budget another $20–40 for small bench accessories if the tools and supply are already available. Do not run the valve or twelve-volt lamps through a solderless breadboard power rail for field use.
+The four verified core items total **$138.99**. This is not a complete project total. If the previously observed $25.99 lamp pack is still available, that subtotal becomes **$164.98**, leaving only $35.02 under $200 for all three driver boards, inputs, enclosure and assembly materials. The current prebuilt design has **not** been shown to fit a $200 complete-build budget. Do not add the historical prototype budget to this list; it described different hardware.
 
-The Nano Every is an economical, sufficient controller for this state machine. Its manufacturer specifies 7–21 V VIN and 5 V logic. Feed VIN from the protected, regulated 12 V rail. Use its 5 V output for small logic modules only after checking their combined current and regulator temperature; otherwise provide a separate regulated 5 V peripheral branch without tying two regulator outputs together. USB is for bench programming/service. The entire installed assembly needs environmental qualification; a chip temperature rating is not a completed controller rating.
+A [LaskaKit four-channel 12 V-to-5 V PC817 module](https://www.laskakit.cz/en/4-kanalovy-modul-optoizolatoru-pc817-12v-na-5v/) illustrates the input-board category. It is not a released part selection: input thresholds across the machine voltage range, polarity, shared returns, pull-ups, and temperature rating still need confirmation. An optocoupler on a board does not guarantee complete system isolation when grounds are shared.
 
-The newer [DFR1229 documentation](https://wiki.dfrobot.com/dfr1229/) specifies a 3.3–5 V supply and a current-output mode. This replaces the earlier DFR0972 candidate that needs 18–24 V. Use I²C, set the current-output range explicitly, and establish 4 mA before enabling valve power. Its raw current scale is documented as 0–20 mA; zero raw output is **not** the 4 mA closed command. Check actual current at 4, 12, and 20 mA into the valve, along with reset/bus-loss behavior. Software library availability does not establish compatibility with the valve's input impedance or a safe startup output.
+## Connect the system in this order
 
-## The complete lamp controller
+1. **Machine connector to distribution.** Use the reference machine's existing constant-hot 12 V and wired ground. Feed the Nano VIN and the boards' 12 V load connections from this distribution. The installation relies on the existing machine fuse, assumes clean nominal 12 V as specified for this project, and adds no fuse block or separate power source. Record the existing fuse, wiring and connector ratings rather than assuming their values.
+2. **Machine controls to input board.** G/H/J go into three 12 V input channels. The conditioned outputs go to Nano D2/D3/D4. Connect the input and logic returns according to the actual board. Raw machine voltage never connects directly to a Nano I/O pin.
+3. **Nano to the local I²C bus.** A4/SDA and A5/SCL connect to the command module and three lamp boards. Connect their logic supply and logic ground. Keep this bus inside the enclosure; do not extend it across the attachment. Account for every board's pull-ups rather than enabling all of them automatically.
+4. **Lamp boards to lamps.** Each blue and white positive lead gets its own high-side output. All ten lamp negatives return to the distribution ground. Lamp current comes from the 12 V branch, not from Nano pins or its 5 V rail.
+5. **Nano to valve command.** Configure DFR1229 for current output, then command 4 mA for closed. Its OUT goes to the valve's green wire; output return goes to valve signal common after confirming the supplied unit's common connections.
+6. **Valve feedback to Nano.** Valve yellow feeds SEN0262 current input; white supplies signal return. SEN0262 voltage output goes to Nano A0. This is an analog input, not I²C. The module needs its specified low-voltage supply and ground.
+7. **Valve power.** Red goes to the actuator 12 V branch; black goes to power return. A field build still needs a verified method of inhibiting continued actuation if the controller or command interface fails. That circuit is an open design item, not a feature already supplied by the picture.
+8. **Water fittings.** Garden hose, manual shutoff, strainer, valve and saw spray plumbing form a separate hydraulic path. There are no electrical connections to the stainless valve body or the hoses.
 
-The lamp requirement is brand-neutral: **ten 12 V blue/white lamps with a common negative and separately powered positive color leads**. The user-supplied [BJZ B0CT8G71TW](https://www.amazon.com/BJZ-Trailer-Marker-Clearance-Indicator/dp/B0CT8G71TW/) and [Nilight B0F7XP3QZB](https://www.amazon.com/Nilight-Clearance-Indicator-Trailer-Warranty/dp/B0F7XP3QZB) are examples; compatible replacements are acceptable. A twelve-volt ready lamp contains its own LED current-limiting arrangement. The external parts below are electronic **on/off switches**, not an extra constant-current LED power supply.
+The [connection diagrams](connections.md) show these relationships. The illustration in the README identifies parts; terminal placement and drawn cable routing are not construction instructions.
 
-The [Nilight TL-248BW manufacturer listing](https://www.nilight.com/products/3-4inch-dual-color-marker-light-10pcs-blue-to-white-auxiliary-side-marker-bullet-clearance-indicator-lights-3-plug-connector-ip68-waterproof-for-trailer-truck-pickup-camper-rv-atv-utv-van-bus) identifies black as negative, blue as blue-positive, and white as white-positive. It lists 12 V operation, an approximately 0.78-inch mounting hole, potted IP68 lamps, and a **$25.99 ten-pack** as reviewed on 2026-10-01. Per-color current and temperature limits were not specified in the retrieved listing. Confirm current, polarity, daylight visibility and fit on the supplied units before finalizing the output bank. The lamp body's ingress claim does not establish a sealed panel penetration or sealed bullet connectors.
+## Lamp channel allocation
 
-These are twelve-volt lamp assemblies, so the I/O expanders provide commands and the power drivers provide lamp current. For the expected common-negative wiring, the architecture is:
+Use only **off**, **blue**, or **white** per lamp. Turn the old color off before enabling the replacement. The following allocation keeps each lamp's colors adjacent and leaves four outputs spare.
 
-```mermaid
-flowchart TD
-    C["Nano Every"] -->|"SDA / SCL"| E["Two MCP23017 expanders"]
-    E -->|"20 logic signals"| D["Three 8-channel source drivers"]
-    P["Fused regulated 12 V"] --> K["Lamp power inhibit"]
-    K --> D
-    D -->|"10 blue + 10 white leads"| L["Ten dual-color lamps"]
-    L --> R["Lamp return to power ground"]
-    W["Reset / watchdog supervision"] --> K
-```
+| Board | Output-control address | Diagnostic address | Local outputs | Lamp leads |
+| :--- | :--- | :--- | :--- | :--- |
+| HSD 1 | 0x60 | 0x61 | 0/1, 2/3, 4/5, 6/7 | Blue/white for lamps 1, 2, 3, 4 |
+| HSD 2 | 0x62 | 0x63 | 0/1, 2/3, 4/5, 6/7 | Blue/white for lamps 5, 6, 7, 8 |
+| HSD 3 | 0x64 | 0x65 | 0/1, 2/3 | Blue/white for lamps 9, 10 |
+| HSD 3 | 0x64 | 0x65 | 4–7 | Spare; keep off until assigned |
 
-The [Toshiba datasheet](https://toshiba.semicon-storage.com/info/docget.jsp?did=30523) and [application note](https://toshiba.semicon-storage.com/info/docget.jsp?did=35900) describe source-type outputs. These are **high-side** switches. A ULN2803 sink board is not a substitute for a common-negative lamp. If the supplied lamps instead share positive, use a suitable sink-driver design and revise the wiring. Verify the actual color leads rather than relying on insulation colors from an advertisement.
+Each PCB0046 contains two addressed devices. Set distinct address pairs with its jumpers and identify all six devices during initialization. The manufacturer documents separate load and 3.3–5 V logic connections, current feedback, and bank fault signals. Its published tested load is 2.4 A per four-output bank; qualify actual lamp loads and enclosed temperature. The default inrush limit is not a steady-state current limit, and board faults are not latched by default. Firmware must retain a diagnosed fault until acknowledged. See the [manufacturer's guide](https://www.serialwombat.com/p46) for jumper and terminal details.
 
-A proposed mapping, suitable for a labeled carrier board:
+A single PCA9685 is not a replacement: it has sixteen low-voltage outputs, whereas this display needs twenty switched 12 V color leads. Its [datasheet](https://www.nxp.com/docs/en/data-sheet/PCA9685.pdf) requires external drivers for higher-voltage loads. Prebuilt HSD boards combine the expansion and power-switch functions.
 
-| Expander | Outputs | Driver channels | Lamp leads |
-| :--- | :--- | :--- | :--- |
-| MCP #1, address 0x20 | Port A 0–7 | Driver #1, 1–8 | Blue 1–8 |
-| MCP #1, address 0x20 | Port B 0–7 | Driver #2, 1–8 | White 1–8 |
-| MCP #2, address 0x21 | Port A 0–3 | Driver #3, 1–4 | Blue 9, White 9, Blue 10, White 10 |
-| MCP #2 | Remaining pins | Unused/reserved | Keep unused driver inputs low |
+If the display is remote from its drivers, it needs twenty switched conductors plus a return sized for the total lamp load. Locating the controller immediately behind the lamp bar avoids that bulky cable. The lamp body's water rating does not establish sealing around a drilled mounting hole or its connectors.
 
-Each lamp needs blue, white, and common. Joining commons inside the bar means the cable between a remote driver box and the bar needs **20 switched conductors plus a suitably sized return**. Use a connector with enough contacts and adequate common-return current capacity. Putting the controller/driver board directly behind the lamps substantially simplifies this wiring. If the two assemblies must be several feet apart, either use the multicore lamp harness or a properly designed differential display link; do not run bare I²C across the machine.
+## Valve cable and analog scaling
 
-Implement off/blue/white as the only allowed per-lamp states. Turn an old color off before enabling its replacement. Initialize expander output latches low before configuring outputs, add defined input pull-downs and local decoupling, and keep lamp supply inhibited during controller reset. Verify the no-flash sequence with hardware: an I²C expander can retain outputs while the MCU reboots.
+The actuator has **one five-wire cable**. The [5003X manual](https://file.ussolid.com/content/JFMSV/Manual-5003X.pdf) gives the following functions; verify the actual unit before wiring.
 
-The TBD62783 is an inexpensive bench candidate, **not a protected automotive output bank**. It lacks internal overcurrent/overvoltage protection and per-channel diagnostics. Use branch protection and design the carrier's power inhibit; do not rely on a large upstream fuse to protect a small driver from a short. Calculate total package dissipation with the measured lamp currents and hot-box temperature. If the lamps are too demanding, use higher-current protected high-side switches instead. The 500 mA absolute maximum is not permission to run every channel at that current. A final short-circuit-tolerant field design may cost more than the bare-chip allowance.
-
-All current animations use on/off color switching, so hardware PWM is unnecessary. If adjustable dimming becomes a requirement, select PWM-capable drivers or a separate dimming stage at that point.
-
-## Valve wiring
-
-The wire colors below are from the [U.S. Solid 5003X manual](https://file.ussolid.com/content/JFMSV/Manual-5003X.pdf); verify the supplied unit and revision before connecting it.
-
-| Valve wire | Function | Proposed connection |
+| Valve wire | Function | Connection direction |
 | :--- | :--- | :--- |
-| Red | DC power positive | Fused, supervised regulated 12 V actuator branch |
-| Black | DC power negative | Actuator power return |
-| Green | 4–20 mA command positive | DFR1229 OUT in current mode |
-| White | Command/feedback signal negative | DAC output GND and receiver signal return, per confirmed loop/common design |
-| Yellow | 4–20 mA position feedback positive | SEN0262 current input positive |
+| Red | DC power positive | 12 V actuator branch |
+| Black | DC power negative | Power return |
+| Green | Current command positive | DFR1229 OUT |
+| White | Command/feedback signal common | Command return and receiver input return |
+| Yellow | Position feedback positive | SEN0262 current input |
 
-SEN0262's voltage output goes to ADS1115 A0. Its current-input return joins valve signal common; its logic-side ground joins the controller analog ground as specified by the module wiring. Check continuity/common relationships before tying signal and power returns; neither module provides assumed galvanic isolation. Keep actuator/lamp current out of the analog return trace. The receiver is not a connector-short protection circuit: protect feedback against accidental power injection.
+The motor, gearbox and position controller are already inside the actuator. No additional motor or reversing H-bridge is required. Confirm the relationship between black and white before joining returns; neither interface module should be assumed isolated. Route load returns separately from the analog signal return to the distribution point.
 
-For physical opening `p` in percent, command current is `4 + 0.16 × p` mA. J-off requests 4 mA. The planned flow lookup translates requested flow to `p` first. Feedback measures reported position, not water flow. Characterize whether feedback actually follows shaft position during a jam.
+For opening `p` percent, the target command is `4 + 0.16 × p` mA. The [DFR1229 specification](https://wiki.dfrobot.com/dfr1229/) describes a raw 0–20 mA scale: raw zero is not closed. At that scale, 4 mA is code 13107 and 20 mA is 65535. Confirm the library's selected range, measured output and valve input load at 4, 12 and 20 mA before enabling actuation. Current-loop compliance, startup glitches, and retained output after MCU reset remain bench questions.
 
-The manual lists no manual override, a maximum working current of 500 mA, and up to eight seconds for travel. Characterize inrush and travel under the real hose pressure before choosing branch protection, stall thresholds, and motion timeout. Do not reuse the simulator's five-second stroke as firmware timing.
+[SEN0262](https://wiki.dfrobot.com/sen0262/) nominally converts 0–25 mA into 0–3 V. Therefore 4–20 mA corresponds to approximately **0.48–2.40 V**, not 0–5 V. At a nominal 5 V, 10-bit ADC reference, useful feedback spans about 393 counts, or 0.25% travel per count before noise/reference error. This arithmetic is not a claim of valve accuracy. Calibrate closed/full-open feedback and reference voltage; decide whether an external ADC is justified only after measuring noise and repeatability.
 
-## Machine power and controls
+Do not add a parallel 250-ohm shunt while retaining SEN0262: it changes the received current. A shunt-only receiver would be a different circuit, with ADC protection, load-compliance and voltage-headroom checks. The prebuilt receiver remains selected.
 
-1. Identify the machine connector, cavity numbering viewed from the correct side, ground, switched supply, G, H, and J. Compare the correct machine/harness documentation and meter readings. Do not assume that the G/H/J control labels prove the connector cavity assignments.
-2. Use a dedicated fused branch at the tap, reverse-polarity protection, coordinated surge suppression/disconnection, input filtering, and regulated supplies. The Pololu module alone is not a load-dump-rated vehicle power front end. Its recommended input ceiling is 30 V. Clamp/disconnect design must protect the lowest-rated downstream part under actual pulses, not merely carry a “12 V” label.
-3. Bring G/H/J through three protected input channels with current limiting, reverse/transient protection, filtering and clean logic thresholds, preferably optocoupler or suitable industrial input receivers. Feed conditioned logic to Nano D2/D3/D4. Never feed raw machine voltage into GPIO or an expander.
-4. Use a documented pass-through/breakout harness that preserves the required attachment functions. Confirm that sensing these lines cannot energize or backfeed any hydraulic solenoid. If a selected output already drives a hydraulic function, the electrical routing must be deliberately resolved before using it for water.
-5. Provide an independent watchdog/supervisor with an output-inhibit path. The installed design must define what happens if the DAC holds its last value while the MCU freezes. Removing actuator power may stop motion but is not guaranteed closure.
+## Nano connections and firmware prerequisites
 
-Fuse ratings, wire gauges, TVS/surge-controller parts and optocoupler resistor values depend on measured voltage, lamp load, harness length and connector ratings. Those are the remaining electrical design inputs, not missing software features. Observe cranking, alternator operation and attachment switching; a steady multimeter reading alone cannot characterize voltage spikes.
-
-## Suggested low-voltage pin allocation
-
-This is a proposed controller map, not the fourteen-pin machine map.
-
-| Nano connection | Use |
+| Nano connection | Proposed use |
 | :--- | :--- |
-| VIN / GND | Protected regulated 12 V / logic power return |
+| VIN / GND | Connector's nominal 12 V / wired ground |
 | D2 / D3 / D4 | Conditioned G / H / J |
-| A4 SDA / A5 SCL | Local I²C: DAC 0x58, ADC 0x48, expanders 0x20 and 0x21 |
-| D5 | Watchdog heartbeat, supervised independently |
-| D6 | Actuator enable request through protected hardware; default disabled |
-| D7 | Lamp enable request through protected hardware; default disabled |
-| A0 | Protected divided rail-voltage measurement |
-| A1 | Conditioned actuator-current measurement |
-| A2 | Conditioned enclosure temperature measurement |
-| A3 | Optional actuator-region temperature or spare |
-| USB | Programming and wired service log |
+| A4 / A5 | Local SDA / SCL; DFR1229 0x58 and HSD address pairs above |
+| A0 | SEN0262 position voltage |
+| A1 / A2 / A3 | Reserved for voltage, actuator-current and temperature sensing; circuits not selected |
+| D5 / D6 / D7 | Reserved for supervision/enable functions; hardware not finalized |
+| USB | Programming and service |
 
-Voltage division, current-sense and temperature circuits require their own protection, reference scaling and fault detection. Reserve inputs now so those functions do not require replacing the controller later. Keep I²C short inside the enclosure, calculate combined pull-up resistance, and use bounded bus timeouts; a failed lamp expander must not hang valve control.
+The [Nano Every documentation](https://docs.arduino.cc/resources/datasheets/ABX00028-datasheet.pdf) specifies 5 V logic and a VIN regulator using an MPM3610 buck converter. Do not apply the classic Nano's linear-regulator heat calculation to this board. Measure the complete 5 V peripheral load and regulator temperature before relying on its rail for every module. Avoid tying together independently regulated 5 V outputs during service.
 
-## Enclosures and mounting
+Always initialize lamp outputs off and establish the closed command before allowing valve motion. Disconnecting USB, resetting only the Nano, losing the I²C bus, or rebooting a lamp board must not leave an unnoticed stale command. Serial Wombat documents a [watchdog mode](https://broadwellconsultinginc.github.io/SerialWombatArdLib/class_serial_wombat_watchdog.html); its suitability for this board's installed firmware and the desired inhibit path must be demonstrated, not assumed from the API name. A spare HSD output alone is not an independent safety shutdown.
 
-A useful main-box candidate is the gray UV-stabilized polycarbonate **[Hammond 1554VA2GY](https://www.hammfg.com/part/1554VA2GY)**, 240 × 160 × 90 mm, with a removable internal plate. Allow approximately $45–65 for the box; price is an allowance, not a fixed quotation. Use the polycarbonate version: the [1554 series specification](https://www.hammfg.com/electronics/small-case/plastic/1554) identifies its ABS versions as indoor products. The enclosure's environmental rating does not automatically transfer to holes added for lamps, connectors, or glands.
+Fault 2 requires actuator-current sensing; lamp-driver current feedback does not measure a separately powered actuator. Fault 9 needs a temperature sensor. Supply diagnostics, feedback electrical limits, bank diagnostics and timeout thresholds require actual acquisition code and measurements. The [fault table](faults.md) records what the browser only injects.
 
-Place electronics on standoffs or a secured carrier, with locking connectors, strain relief and service labels. Fit correctly sized sealed cable glands, a suitable hydrophobic pressure-equalization vent, and a drip loop. Place the lid/connector entries away from direct wash spray and debris. Use a light-colored shade/hood and locate the enclosure away from the engine, exhaust and hot hydraulic lines. Check the sealed operating temperature in full sun; a box that survives heat does not necessarily keep the electronics cool. Conformal coating can help after validation, but keep it off contacts and service connectors.
+## Constant power, heat and enclosure
 
-The ten-lamp bar may need its own longer housing, depending on measured lamp diameter and desired spacing. Measure the lamps before ordering that housing or drilling a lid. A shallow sun hood and dark label face improve contrast. Provide mounting depth for lamp bodies, bending radius and strain relief. If one larger box can sit in a visible protected location, putting the board behind the lamps avoids a bulky twenty-one-conductor display cable.
+**The simulated power switch represents controller power, not necessarily the ignition key.** With a truly constant-hot connector, turning off the engine does not trigger startup, cancel Flush or close an already open valve. Measure key-off behavior and parked current. A master disconnect or ignition-sense input could address this, but neither is selected or shown as existing hardware.
 
-The valve has the tighter environmental limit: its manual gives an ambient ceiling of **50°C / 122°F** and warns against excessive vibration. Mount it in a shaded, protected location with its actuator upright, independently supported plumbing and flexible hose sections. Avoid direct attachment vibration where feasible. Confirm that the location remains within the valve limits; otherwise this inexpensive valve is not the right field part. Drain/freezing and parked-machine sun exposure also need a practical plan. IP67 does not mean unrestricted pressure washing, UV durability or vibration qualification.
+Use an opaque, light-colored, UV-resistant enclosure with a mounting plate, standoffs, strain relief, serviceable connectors and appropriately rated glands. [Hammond 1554VA2GY](https://www.hammfg.com/part/1554VA2GY), approximately 240 × 160 × 90 mm, is one candidate; fit all three HSD boards and wiring bend radii on a scale layout before choosing a size. The lamp bar may require a separate longer housing. Mount away from exhaust, hydraulics, impact and direct sun where possible. Enclosure ingress ratings apply to the finished penetrations only when installed accordingly.
 
-## Plumbing and calibration supplies
+The valve manual specifies ambient −15 to 50°C, liquid 2 to 90°C, up to eight seconds travel and no manual override. Its listing also quotes 11 W, while the manual quotes up to 500 mA; these do not define a single measured 12 V startup load. Characterize inrush, running and idle current. The listing contains generic normally-closed language alongside warnings that only auto-return models return on power loss. Do not infer a return mechanism from that label. Confirm the supplied model's actual power-loss and broken-signal behavior.
 
-Use garden-hose supply → manual shutoff → strainer → motorized valve → actual spray hose/manifold/nozzles. Add removable unions or quick connections so replacement does not require rewiring the assembly. Match hose-thread/NPT adapters explicitly; 3/4-inch garden-hose thread and NPT are different. Support hose pull separately from the actuator.
+Measure regulator, lamp-driver, enclosure-air and actuator temperatures during a hot soak with representative load. Use shade and practical drainage/freezing provisions. Leave the first build serviceable. Conformal coating after validation is preferable to immediately encapsulating it; mask connectors, USB, switches and service points. Potting compounds can trap heat, stress parts and prevent repairs. Pot only a proven design using a compatible electronics-grade compound and a repeated thermal test.
 
-For the [flow calibration](flow-calibration.md), use the actual downstream nozzle restrictions, a pressure gauge, a measured container/scale and timing method. A temporary inline flow meter is optional. A regulator can improve consistency if incoming pressure always leaves adequate margin; it cannot restore pressure that the supply lacks.
+## Assembly and acceptance sequence
 
-## Field-completion budget
-
-These allowances include categories that often disappear from a cheap board-only estimate. They are not exact product quotes and may change after load/mounting measurements.
-
-| Additional item | Allowance |
-| :--- | ---: |
-| Main polycarbonate enclosure | $45–65 |
-| Carrier PCB, terminals, passive components and mounting | $15–25 |
-| Input protection, power protection and watchdog/inhibit circuitry | $50–90 |
-| Voltage/current/temperature sensing components | $20–35 |
-| Machine connector/breakout harness | $35–100 |
-| Wire, sealed connectors, glands and vent | $35–60 |
-| Manual shutoff, strainer, adapters and hose connections | $25–50 |
-| Separate lamp housing/hood if required | $20–40 |
-| **Additional parts allowance** | **$245–465** |
-| **Core parts plus completion allowance** | **$442.84–662.84** |
-
-Budget approximately **$445–665 plus the lamps, shipping, tax and labor** for this more complete prototype. Tools, a purchased bench supply, a permanent flow meter, independent fail-close valve, professional harness/PCB assembly and redesigns are excluded. If the lamps are already owned, do not buy them again. Combining controller and lamp housings can remove the separate-display allowance. A higher-capacity or protected output stage may increase the budget.
-
-Using the example $25.99 Nilight pack brings the core parts plus lamps to **$223.83**, or approximately **$470–690** for the more complete prototype before shipping, tax and labor. This is an example price, not a brand requirement.
-
-## Programming and assembly sequence
-
-1. **Bench bring-up:** USB-program the Nano, use temporary G/H/J switches, confirm input polarity/debounce and all ten lamp colors through the driver bank. Use a current-limited supply. Verify default-off lamp outputs through power sequencing and disconnected I²C.
-2. **Valve characterization:** prove 4/12/20 mA and feedback scaling, repeat partial moves, reversals, stop-at-position behavior, unpowered behavior, broken command/feedback and startup. Keep water isolated during initial electrical work. Confirm an independent way to inhibit continued motion after a controller freeze.
-3. **Firmware port:** implement a nonblocking C++ state machine matching the simulator. Separate inputs, gestures, modes, calibration, valve command/feedback, diagnostics, lamps and persistent storage. Use bounded I²C calls, integer/fixed-point scaling where practical, wrap-safe time comparisons and no animation delays in the main control loop.
-4. **Storage and recovery:** version and checksum calibration/settings; write only committed changes with a wear-aware redundant record. Startup is OFF, closes/references, then requires neutral controls. Brownout/watchdog and fault records must prevent silent run resumption.
-5. **Flow curve:** gather measured data, validate and load a monotone lookup table, then test every level/cap combination. Calibrated-flow percentages become the operator scale only after this data is installed.
-6. **Field carrier and harness:** replace temporary wiring with secured soldered/connectorized construction. Finalize measured load, fuse, driver heat, pinout and input protection. Label cables, valve wires, connector views, board revision and firmware version.
-7. **Acceptance:** run the firmware's own unit tests and hardware fault-injection tests, including corrupted settings, timer wrap, sensor disconnection, shorts within a controlled test setup, low voltage, restart with held controls, heat, vibration and repeated wet operation. Simulator CI is useful but cannot certify the finished hardware.
-
-Arduino C++ is appropriate here; the controller does not need Linux or cloud software. The Nano can be serviced over USB from a laptop. Keep a known-good firmware release and, once the design is validated, a spare programmed controller/valve for service.
+1. Identify connector cavities with the correct machine/harness documentation and measurements. Record viewing direction and confirm that sensing G/H/J cannot backfeed or command existing hydraulics.
+2. On a current-limited bench supply, verify input polarity, normal/held startup, all twenty lamp outputs, board addresses, current readings and reset states.
+3. Prove valve command/feedback scaling without water first, then under hose pressure. Test closed, full-open, adjacent small steps, reversals, hold-at-current-position, jam/no-progress and broken signal wires.
+4. Implement the [firmware contract](../firmware/README.md): bounded input/bus work, startup closure, neutral qualification, latched faults, persistence and watchdog recovery. Bench-test the inhibit circuit with the MCU deliberately stopped.
+5. Measure the [flow curve](flow-calibration.md) through the real nozzles. The simulator currently displays opening percentage; do not silently substitute an invented flow curve.
+6. Test actual key/power cycles, hot soak, vibration-resistant mounting, leak-free fittings and all fault-recovery paths. Record results in the [acceptance plan](validation.md) before field use.
