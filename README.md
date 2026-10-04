@@ -2,7 +2,7 @@
 
 # Rock Saw Water Control
 
-**[▶ Open Live Simulator](https://aeae1.github.io/Rock-Saw-Water-Control/)** · **[Operator guide](docs/operator-guide.md)** · [Build and wiring guide](docs/build-guide.md) · **[Audited schematic PDF](docs/assets/hardware/water-controller-audit-rev-c.pdf)**
+**[▶ Open Live Simulator](https://aeae1.github.io/Rock-Saw-Water-Control/)** · **[Operator guide](docs/operator-guide.md)** · [Build and wiring guide](docs/build-guide.md) · **[Audited schematic PDF](docs/assets/hardware/water-controller-audit-rev-c.pdf)** · [Shopping and enclosures](docs/shopping-guide.md)
 
 A configurable attachment water controller for machines that provide three independent operator-control outputs. The proposed system adjusts a motorized water valve and presents operating status on ten blue/white indicator lamps. Typical applications include rock saws and other attachments supplied from a pressurized water hose.
 
@@ -78,7 +78,7 @@ The current simulator uses valve-opening percentages. The planned hardware will 
 
 The current bench direction is the [electrical overview](#electrical-overview): an Arduino Nano Every, conditioned machine inputs, prebuilt high-side lamp drivers, and a wired proportional valve with 4–20 mA command and feedback. Ten dual-color lamps require twenty independently switched power channels. The valve includes its motor, gearbox, and motor controller; it needs no separate motor or H-bridge.
 
-The [build guide](docs/build-guide.md) describes the current component list, partial pricing, wiring relationships, enclosure plan and programming sequence. The complete cost remains open because driver-board pricing and several assembly choices are unverified. The [valve-control research](docs/valve-control-research.md) retains the cheaper reversing-valve and Tuya alternatives. Local Tuya percentage control has not been verified for the candidate smart valve.
+The [build guide](docs/build-guide.md) describes wiring relationships and the programming sequence. The [procurement guide](docs/shopping-guide.md) and [editable shopping workbook](docs/assets/procurement/shopping-list.xlsx) provide dated prices, explicit allowances, enclosure choices and a battery-first test plan. The complete quoted cost remains open because driver-board pricing and several assembly choices are unverified. The [valve-control research](docs/valve-control-research.md) retains the cheaper reversing-valve and Tuya alternatives. Local Tuya percentage control has not been verified for the candidate smart valve.
 
 ## Documentation
 
@@ -86,6 +86,8 @@ The [build guide](docs/build-guide.md) describes the current component list, par
 | :--- | :--- |
 | [Operator guide](docs/operator-guide.md) | Plain-language instructions for Normal, Set Max, Flush, and recovery |
 | [Build and wiring guide](docs/build-guide.md) | Current component direction, partial pricing, wiring and enclosure plan |
+| [Shopping and enclosure guide](docs/shopping-guide.md) | Dated prices, purchase holds, enclosure/coating choices, optional bench supplies and staged battery testing |
+| [Editable shopping workbook](docs/assets/procurement/shopping-list.xlsx) | Quantities, price assumptions, tax/shipping calculations and alternatives |
 | [Audit and remaining work](docs/audit-2026-10-03.md) | Verified fixes, test evidence and hardware acceptance gaps |
 | [Fault reference](docs/faults.md) | Ten latched fault codes, acknowledgement, and detection requirements |
 | [Control specification](docs/control-specification.md) | State transitions, timing, rounding, and retention rules |

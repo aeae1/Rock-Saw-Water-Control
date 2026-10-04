@@ -37,10 +37,12 @@ The detailed audit includes component pin numbers, relay bottom-view orientation
 
 ## Budget status
 
-The historical 3 October 2026 quotations were $12.90 for the Nano Every, $105.29 for the valve, $15.90 for DFR1229 and $4.90 for SEN0262, totaling $138.99. With the previously observed $25.99 lamp pack, that becomes $164.98. These are dated partial costs, not a current complete quote.
+The [4 October procurement guide](shopping-guide.md) and [editable workbook](assets/procurement/shopping-list.xlsx) supersede earlier partial estimates for purchasing. The conservative buy-everything budget is approximately $747 including estimated tax, shipping and fees, but excluding a bench supply and additional tools. It includes $339 in merchandise allowances, including $90 for unpriced driver boards; it is not a checkout quotation. Reuse of suitable wiring, fittings and supplies can reduce purchases.
 
-Three HSD boards, two input boards, the meter, relay/regulator, sensors, passive components, weatherproof enclosure, connectors and assembly materials are additional. **The current design has not been demonstrated to fit a $200 complete-build budget.** Unpriced items in [the budget BOM](bom.csv) are not free. The [Rev C parts schedule](../hardware/rev-c/bom.csv) controls circuit values; prices need a separate procurement pass.
+**The current design does not fit a $200 complete-build budget.** Driver availability, meter sealing adapters and the enclosure layout must be established before placing a complete order. Unpriced items in [the budget BOM](bom.csv) are not free. The [Rev C parts schedule](../hardware/rev-c/bom.csv) controls circuit values; [shopping data](shopping-data.json) distinguishes observed prices from estimates.
 
 Use a serviceable UV-resistant enclosure and strain-relieved connections. Qualify the complete enclosure temperature before coating or potting; the valve's 50 C ambient limit remains relevant. A truly constant supply keeps the controller alive with the key off and draws parked power. The current design does not add ignition sensing or a master switch implicitly.
+
+The preferred enclosure planning size is the opaque polycarbonate Hammond 1554VA2GY with 1554VAPL mounting plate. Confirm actual fit before drilling. The procurement guide covers a smaller alternative, cable glands, separate lamp/meter protection and removable coated electronics. It also describes the limited checks possible with an existing 12 V battery and multimeter; an adjustable current-limited supply is optional for starting assembly, while the full hardware acceptance sequence remains unverified.
 
 The [firmware contract](../firmware/README.md), [fault policy](faults.md) and [validation plan](validation.md) remain requirements to implement and test, not evidence that physical protection already runs on an Arduino.
