@@ -25,7 +25,7 @@ for (const file of markdownFiles(root)) {
 }
 const readme = readFileSync(resolve(root, 'README.md'), 'utf8');
 if (!readme.slice(0, 600).includes('https://aeae1.github.io/Rock-Saw-Water-Control/')) errors.push('README simulator link must remain near the top.');
-const png = readFileSync(resolve(root, 'docs/assets/hardware/assembly-concept-arduino-prebuilt.png'));
-if (png.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') errors.push('Assembly illustration must be a PNG, not an error response.');
+const png = readFileSync(resolve(root, 'docs/assets/hardware/water-controller-wiring-flow.png'));
+if (png.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') errors.push('Current wiring overview must be a PNG, not an error response.');
 if (errors.length) throw new Error(errors.join('\n'));
 console.log(`Documentation checks passed: ${checked} local links, prominent simulator link, PNG signature.`);

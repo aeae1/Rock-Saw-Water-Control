@@ -1,6 +1,6 @@
 # Fault Detection and Recovery
 
-Revision 0.4 · Simulator behavior and proposed firmware contract
+Revision 0.5 · Simulator behavior and proposed firmware contract
 
 ## Common response
 
@@ -33,9 +33,11 @@ Removing a cause does not clear a latch. Require all causes absent, G/H centered
 
 The simulator retains latches through its machine-power switch, not a page reload. Firmware must use a bounded, integrity-checked persistent fault record or reset-cause handling so power cycling cannot silently resume a previously faulted run. Persist only state changes and use redundant records; do not write flash/EEPROM on every loop or animation frame.
 
+For Revision C hardware, opening the inhibit relay also removes position feedback. Recovery must first check independently observable preconditions, then permit one deliberate, bounded closing attempt to requalify powered feedback/current/closure. Keep actuator-dependent checks marked pending and retain the fault record until that attempt passes. Requiring valid powered feedback before supplying actuator power would deadlock recovery. The simulator's injected-cause controls are a proxy for these checks; they are not the hardware sequence. See the [electrical audit](hardware-audit-2026-10-04.md) for the proposed recovery contract.
+
 ## Limits and additional protections
 
-- No flow/pressure sensor is specified. Empty supply, blocked nozzle, hose leak, or an open valve with no water cannot be diagnosed from position alone. Add actual sensing if these diagnoses become requirements.
+- Revision C specifies a flow meter, but no pressure sensor. Flow can support no-flow and flow-while-closed diagnostics after characterization; it cannot uniquely distinguish an empty supply, blocked nozzle, disconnected sensor or leak. The browser does not implement this physical acquisition.
 - A disconnected trigger can look exactly like a released trigger with simple digital inputs. Detecting open wires requires supervised inputs and compatible end-of-line hardware.
 - Lamp open-circuit detection needs diagnostic drivers or channel-current measurement. A software pattern test only checks commanded colors.
 - Hardware brownout handling and an independent watchdog/output-inhibit path must work if firmware freezes. A watchdog reboot is not itself a guaranteed water shutoff.
@@ -44,6 +46,8 @@ The simulator retains latches through its machine-power switch, not a page reloa
 
 ## Detection coverage of the current hardware direction
 
-The current BOM has position feedback and lamp-bank diagnostic capability. It does not yet include selected actuator-current, supply-voltage or temperature sensing circuits, nor completed acquisition firmware. Therefore codes 1, 2 and 9 cannot be claimed as implemented physical detection. Lamp current is not valve-motor current. Code 3 requires bounded communication and initialization checks; an analog feedback wire has no I²C acknowledgement and must be checked by range, plausibility and progress instead.
+The [Revision C circuit](hardware-audit-2026-10-04.md) specifies HSD supply measurement, a supervised actuator branch with current measurement, position feedback, a flow meter and two temperature sensors. It has no completed acquisition firmware or physical qualification. Therefore none of these is claimed as implemented hardware protection. The actuator-branch current includes the relay/regulator baseline. Code 3 requires bounded communication and initialization checks; analog feedback has no I2C acknowledgement and must be checked by range, plausibility and progress instead.
+
+For the proposed metered firmware, code 8 can carry measurement subcodes distinguishing position and flow-interface errors; code 5 can carry a characterized failure-to-establish/stop-flow subcode. These are firmware requirements, not newly implemented simulator behavior. A disconnected open-drain meter wire can look inactive. The [logging specification](hardware-audit-2026-10-04.md#does-the-arduino-log-faults) records how detailed causes can be retained without adding more indicator lamps.
 
 A fault affecting the display board or bus may prevent the fault lamp from lighting. The display must never be the mechanism that enforces valve inhibition. The physical inhibit response, feedback independence and output states during reset remain acceptance requirements in the [audit](audit-2026-10-03.md).

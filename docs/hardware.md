@@ -1,8 +1,8 @@
 # Hardware Selection
 
-Reviewed 2026-10-03 · Current direction, not a construction release
+Reviewed 2026-10-04 · Revision C bench design, not a construction release
 
-The [build guide](build-guide.md) is the current component and wiring reference. The [audit](audit-2026-10-03.md) records remaining hardware questions. Earlier prototype costs and pin assignments have been superseded.
+The [Revision C electrical audit](hardware-audit-2026-10-04.md) is the current terminal-level reference. The [build guide](build-guide.md) summarizes it. Earlier prototype costs, diagrams and pin assignments have been superseded.
 
 | Function | Selected direction | Outstanding evidence |
 | :--- | :--- | :--- |
@@ -11,10 +11,11 @@ The [build guide](build-guide.md) is the current component and wiring reference.
 | Command / feedback | DFR1229 current output / SEN0262 analog receiver to Nano A0 | Loop compliance, electrical limits and ADC calibration |
 | Lamps | Ten common-negative 12 V blue/white indicators | Exact unit, color current, visibility and sealing |
 | Lamp interface | Three Serial Wombat PCB0046 HSD boards | Price/availability, addresses, output defaults and diagnostics |
-| Operator inputs | Prebuilt four-channel 12 V-to-5 V optocoupler board | Exact SKU, thresholds, polarity and temperature range |
+| Operator inputs | Two SparkFun BOB-09118 boards; 1 kohm series resistors and reverse diodes | Actual machine thresholds and part qualification |
 | Power | Reused connector constant 12 V and wired ground; existing machine fuse | Key-off behavior, current capacity and parked draw |
 | Housing | Opaque UV-resistant enclosure, glands and mounting plate | Fit, finished sealing and hot-soak temperature |
-| Fault inhibition / extra sensing | Not finalized | Controller freeze response; supply, actuator-current and temperature sensing |
+| Fault inhibition / extra sensing | HSD3 ch4 watchdog, TQ2-5V signal relay, L7805ABV coil supply, two DS18B20 sensors | Proposed circuit specified in Rev C; firmware and bench tests pending |
+| Flow sensing | ScioSense UFM-02-03NP4, four-wire pulse interface | Correct variant, pulse/error interpretation, weather protection and actual flow range |
 
 The current layout uses no new 14-pin connector, separate battery feed, extra fuse block, external ADC, separate GPIO expanders, or reversing motor driver. Three HSD boards provide both output expansion and lamp power switching. A bare PCA9685 does not directly replace them for twenty 12 V color leads.
 

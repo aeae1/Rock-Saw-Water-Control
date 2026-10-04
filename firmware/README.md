@@ -1,8 +1,19 @@
 # Firmware Integration Contract
 
-Revision 0.4 · Reviewed 2026-10-03
+Revision 0.5 · Reviewed 2026-10-04
 
-No flashable firmware is supplied. The browser simulator is an executable operator-interface reference, not Arduino firmware. The current hardware direction is Nano Every, DFR1229 command, SEN0262 feedback to A0, and three PCB0046 lamp boards. See the [build guide](../docs/build-guide.md) for proposed pins and unresolved circuits.
+No flashable firmware is supplied. The browser simulator is an executable operator-interface reference, not Arduino firmware. The current hardware direction is Nano Every, DFR1229 command, SEN0262 feedback to A0, three PCB0046 boards, a four-wire flow meter and two temperature sensors. See the [Revision C electrical audit](../docs/hardware-audit-2026-10-04.md) for the complete proposed circuit and release holds.
+
+## Revision C hardware integration requirements
+
+- D2/D3/D4 are active-high G/H/J inputs after the selected opto boards. D7 is the powered 1-Wire temperature bus; D8/D9 are meter flow/error inputs. Error is a toggling output, not an assumed static fault level.
+- HSD3 channel 4 is reserved for a local SW8B watchdog controlling valve power and a signal-disconnect relay. It must never be included in lamp animation writes. Channels 5-7 remain OFF. The proposed 500 ms timeout/100 ms refresh requires physical validation.
+- The reviewed DFRobot GP8XXX driver discards ordinary I2C write return codes. Use a checked, bounded driver. Check both SW8B watchdog configuration packets; its convenience initialization also returns no status. Prove latched timeout, reset and partially completed initialization behavior before allowing opening.
+- Current feedback from HSD3 channel 4 includes the actuator and the relay/regulator baseline. Use proper channel selection/settling and measured thresholds. HSD VIN uses the default 11:1 divider. Temperature reads require sensor identity, CRC, freshness and nonblocking conversion handling.
+- A0's 1 kohm series resistor and 100 kohm pull-down introduce a 100/101 nominal attenuation. Calibrate the complete chain. Do not use a 0-5 V feedback assumption.
+- Meter faults need subcodes and qualified no-flow/flow-while-closed timeouts. A disconnected pulse wire can look inactive; no-flow does not establish a unique mechanical cause. Never silently substitute unmetered operation when calibrated flow control requires a meter.
+- The audit's fault-logging section specifies a bounded RAM history and a small redundant EEPROM last-fault/reset summary. Neither exists as running firmware. No external log memory or real-time clock is in the circuit.
+- Recovery must distinguish independent healthy preconditions from checks requiring powered actuation. With K1 open, absent position feedback is expected and remains unqualified. A fresh acknowledgement may authorize one bounded closing/requalification attempt after supply, bus, temperature and input checks; retain the fault history/latch until that attempt passes. Do not deadlock recovery by requiring powered feedback before enabling power, and do not treat zero unpowered current as proof a jam was repaired. Failure inhibits drive again without automatic retry.
 
 ## Processing order
 
@@ -42,6 +53,6 @@ Use unsigned subtraction for elapsed durations and test around the 32-bit millis
 
 Measure the DAC's reset/power-loss/retained-output behavior. A Nano reset does not necessarily reset the separately powered DAC or lamp boards. Never assume a disconnected command means close. Current-output compliance into the valve, feedback load/common connections and fault-inhibit behavior remain open hardware tests.
 
-Fault 2 needs actuator-current acquisition; lamp-board diagnostics do not provide it on the separate actuator feed. Fault 9 requires a temperature sensor. A failed display or I²C bus must not disable valve inhibition. The physical response for each code must be implemented and observed, not inferred from a simulator lamp.
+Fault 2 needs acquisition of the newly specified HSD3 channel-4 actuator branch, including its relay/regulator baseline. Fault 9 uses the two specified temperature sensors. A failed display or I2C bus must not disable valve inhibition. The physical response for each code must be implemented and observed, not inferred from a simulator lamp.
 
 Before field release, compile for the exact Nano Every/core/library revisions, record flash/RAM use, test all inputs and bus failures with hardware, stop the MCU deliberately, interrupt settings writes, exercise repeated power cycles and perform hot-soak and motion tests. Record results in [Validation](../docs/validation.md). No board firmware is represented as ready until those checks pass.

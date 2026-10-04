@@ -1,5 +1,11 @@
 # Validation Plan
 
+## Revision C electrical-document checks
+
+On 4 October 2026, the existing 138 simulator tests passed locally. The Rev C hardware-netlist suite adds 18 passing checks, including terminal completeness, separated supply domains, correct lamp channels, input-resistor ratings, current/voltage calculations, relay contact/polarity checks and deliberately corrupted connections. The final configured suite therefore contains 156 deterministic tests. These checks run automatically in the existing Node 22/24 GitHub workflow. They do not energize hardware, validate firmware timing or establish field reliability.
+
+The 24-page [electrical audit and circuit package](assets/hardware/water-controller-audit-rev-c.pdf) was rendered and visually reviewed. Its [138-connection schedule](../hardware/rev-c/connections.csv) is generated from the [endpoint netlist](../hardware/rev-c/netlist.json). Five physical release holds remain explicit. Use the staged acceptance procedure in the [audit](hardware-audit-2026-10-04.md), including partial watchdog initialization and recovery with initially unpowered feedback.
+
 Browser CI uses the version-pinned official Playwright container, which includes browser binaries and system libraries. This avoids installing operating-system packages on every run. Keep its version aligned with the locked Playwright package. The test server uses Node.js and listens only on loopback. See [Playwright's container guidance](https://playwright.dev/docs/docker).
 
 ## Simulator verification

@@ -3,13 +3,15 @@ Controller,1,board,Arduino Nano Every ABX00028,Selected,12.9,2026-10-03,Nominal 
 Valve,1,assembly,U.S. Solid USS-MSV50030 / JFMSV50030,Selected,105.29,2026-10-03,1/2 inch stainless; integrated actuator; 4-20 mA command and feedback
 Current command,1,board,DFRobot DFR1229 GP8600,Selected,15.9,2026-10-03,3.3-5 V supply; current scale and loop compliance require bench verification
 Feedback receiver,1,board,DFRobot SEN0262,Selected,4.9,2026-10-03,Analog output to Nano A0; no external ADC currently selected
-Lamp switching,3,board,Serial Wombat PCB0046 HSD,Selected direction; price/availability pending,,,24 outputs; 20 color leads used; address pairs 0x60/61 0x62/63 0x64/65
-Machine inputs,1,board,Four-channel optocoupler 12 V inputs to 5 V logic,Exact SKU pending,,,Three channels for G/H/J; one spare; check thresholds polarity and returns
+Lamp switching,3,board,Serial Wombat PCB0046 HSD V2,Selected direction; price/availability pending,,,20 lamp outputs plus HSD3 ch4 valve watchdog; address pairs 0x60/61 0x62/63 0x64/65
+Machine inputs,2,board,SparkFun BOB-09118 v1.2,Rev C bench selection,,,Three channels used; external 1k resistors and diodes; HV supplied with 5 V
 Indicators,1,ten-pack,12 V blue/white common-negative marker lamps,Brand-neutral requirement,,,Ten lamps; historical Nilight pack price 25.99 USD on 2026-10-01; recheck quote
 Machine connector,1,existing assembly,Existing 14-pin connector,Reuse,0,,No new connector or separate power source; verify cavity assignments
 Enclosure,1,box,Opaque UV-resistant enclosure with plate,Size/quote pending,,,Hammond 1554VA2GY example; fit all boards and wiring before purchase
 Assembly,1,set,Distribution terminals wire glands sealed connectors standoffs labels,Layout/quote pending,,,Reference installation uses existing machine fuse; no added fuse block
 Display mounting,1,assembly,Ten-lamp bar housing or shared enclosure face,Layout/quote pending,,,Depends on measured lamp dimensions and desired spacing
 Plumbing,1,set,Manual shutoff strainer hose/NPT adapters and removable fittings,Inventory/quote pending,,,Reuse suitable existing parts; no electrical wires to hoses
-Fault inhibition,1,circuit,Characterized actuator/output inhibit and supervision,Design unresolved,,,Required to realize the specified freeze/fault response; not supplied by illustration
-Additional sensing,1,set,Supply voltage actuator current and temperature sensing,Design unresolved,,,Needed for physical faults 1 2 and 9; lamp current sensing is not actuator sensing
+Fault inhibition,1,circuit,HSD3 ch4 watchdog plus Panasonic TQ2-5V and ST L7805ABV,Rev C bench proposal,,,Circuit specified; firmware and physical response unqualified; does not guarantee water closure
+Temperature,2,sensor,DS18B20+ TO-92,Rev C bench selection,,,Powered three-wire interface; protected external sensor termination required
+Flow meter,1,meter,ScioSense UFM-02-03NP4,Rev C bench selection,,,3/8 NPS four-wire pulse variant; protect electronics from weather; qualify flow range
+Passive components,1,set,Rev C resistors diodes and capacitors,Values specified,,,See hardware/rev-c/bom.csv for every reference and value

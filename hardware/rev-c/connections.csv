@@ -1,0 +1,139 @@
+id,net,from,to,note
+W001,MACHINE_12V,TB12.rail,X1.1,Existing fused machine supply; H1/H2 unresolved
+W002,MACHINE_12V,TB12.rail,U1.VIN,Existing fused machine supply; H1/H2 unresolved
+W003,MACHINE_12V,TB12.rail,HSD1.VIN,Existing fused machine supply; H1/H2 unresolved
+W004,MACHINE_12V,TB12.rail,HSD2.VIN,Existing fused machine supply; H1/H2 unresolved
+W005,MACHINE_12V,TB12.rail,HSD3.VIN,Existing fused machine supply; H1/H2 unresolved
+W006,0V,TB0.rail,X1.2,Separate load and signal returns to distribution; V1 WHITE requires H4
+W007,0V,TB0.rail,U1.GND1,Separate load and signal returns to distribution; V1 WHITE requires H4
+W008,0V,TB0.rail,U2.GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W009,0V,TB0.rail,U3.GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W010,0V,TB0.rail,HSD1.LOAD_GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W011,0V,TB0.rail,HSD2.LOAD_GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W012,0V,TB0.rail,HSD3.LOAD_GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W013,0V,TB0.rail,O1.INPUT_GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W014,0V,TB0.rail,O1.HV_GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W015,0V,TB0.rail,O2.INPUT_GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W016,0V,TB0.rail,O2.HV_GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W017,0V,TB0.rail,V1.BLACK,Separate load and signal returns to distribution; V1 WHITE requires H4
+W018,0V,TB0.rail,V1.WHITE,Separate load and signal returns to distribution; V1 WHITE requires H4
+W019,0V,TB0.rail,U3.I-,Separate load and signal returns to distribution; V1 WHITE requires H4
+W020,0V,TB0.rail,FM1.BLACK,Separate load and signal returns to distribution; V1 WHITE requires H4
+W021,0V,TB0.rail,U4.2,Separate load and signal returns to distribution; V1 WHITE requires H4
+W022,0V,TB0.rail,K1.10,Separate load and signal returns to distribution; V1 WHITE requires H4
+W023,0V,TB0.rail,TS1.1,Separate load and signal returns to distribution; V1 WHITE requires H4
+W024,0V,TB0.rail,TS2.1,Separate load and signal returns to distribution; V1 WHITE requires H4
+W025,LOGIC_5V,TB5.rail,U1.5V,Only Nano regulator sources this rail; measure load
+W026,LOGIC_5V,TB5.rail,U2.VCC,Only Nano regulator sources this rail; measure load
+W027,LOGIC_5V,TB5.rail,U3.VCC,Only Nano regulator sources this rail; measure load
+W028,LOGIC_5V,TB5.rail,HSD1.V,Only Nano regulator sources this rail; measure load
+W029,LOGIC_5V,TB5.rail,HSD2.V,Only Nano regulator sources this rail; measure load
+W030,LOGIC_5V,TB5.rail,HSD3.V,Only Nano regulator sources this rail; measure load
+W031,LOGIC_5V,TB5.rail,O1.HV,Only Nano regulator sources this rail; measure load
+W032,LOGIC_5V,TB5.rail,O2.HV,Only Nano regulator sources this rail; measure load
+W033,LOGIC_5V,TB5.rail,FM1.RED,Only Nano regulator sources this rail; measure load
+W034,LOGIC_5V,TB5.rail,TS1.3,Only Nano regulator sources this rail; measure load
+W035,LOGIC_5V,TB5.rail,TS2.3,Only Nano regulator sources this rail; measure load
+W036,SDA,U1.A4,U2.SDA,100 kHz local bus; only DAC onboard pull-up
+W037,SDA,U1.A4,HSD1.D,100 kHz local bus; only DAC onboard pull-up
+W038,SDA,U1.A4,HSD2.D,100 kHz local bus; only DAC onboard pull-up
+W039,SDA,U1.A4,HSD3.D,100 kHz local bus; only DAC onboard pull-up
+W040,SCL,U1.A5,U2.SCL,100 kHz local bus; only DAC onboard pull-up
+W041,SCL,U1.A5,HSD1.C,100 kHz local bus; only DAC onboard pull-up
+W042,SCL,U1.A5,HSD2.C,100 kHz local bus; only DAC onboard pull-up
+W043,SCL,U1.A5,HSD3.C,100 kHz local bus; only DAC onboard pull-up
+W044,MACHINE_G,X1.3,R1.1,
+W045,OPTO_G,R1.2,O1.IN1,
+W046,OPTO_G,R1.2,D1.K,
+W047,0V,O1.INPUT_GND,D1.A,Diode band faces IN terminal
+W048,G_LOGIC,O1.OUT1,U1.D2,
+W049,MACHINE_H,X1.4,R2.1,
+W050,OPTO_H,R2.2,O1.IN2,
+W051,OPTO_H,R2.2,D2.K,
+W052,0V,O1.INPUT_GND,D2.A,Diode band faces IN terminal
+W053,H_LOGIC,O1.OUT2,U1.D3,
+W054,MACHINE_J,X1.5,R3.1,
+W055,OPTO_J,R3.2,O2.IN1,
+W056,OPTO_J,R3.2,D3.K,
+W057,0V,O2.INPUT_GND,D3.A,Diode band faces IN terminal
+W058,J_LOGIC,O2.OUT1,U1.D4,
+W059,0V,O2.INPUT_GND,O2.IN2,Unused input held inactive
+W060,L1_BLUE,HSD1.CH0,L1.BLUE,
+W061,L1_WHITE,HSD1.CH1,L1.WHITE,
+W062,0V,TB0.rail,L1.BLACK,Rated lamp-return harness; do not route through Nano
+W063,L2_BLUE,HSD1.CH2,L2.BLUE,
+W064,L2_WHITE,HSD1.CH3,L2.WHITE,
+W065,0V,TB0.rail,L2.BLACK,Rated lamp-return harness; do not route through Nano
+W066,L3_BLUE,HSD1.CH4,L3.BLUE,
+W067,L3_WHITE,HSD1.CH5,L3.WHITE,
+W068,0V,TB0.rail,L3.BLACK,Rated lamp-return harness; do not route through Nano
+W069,L4_BLUE,HSD1.CH6,L4.BLUE,
+W070,L4_WHITE,HSD1.CH7,L4.WHITE,
+W071,0V,TB0.rail,L4.BLACK,Rated lamp-return harness; do not route through Nano
+W072,L5_BLUE,HSD2.CH0,L5.BLUE,
+W073,L5_WHITE,HSD2.CH1,L5.WHITE,
+W074,0V,TB0.rail,L5.BLACK,Rated lamp-return harness; do not route through Nano
+W075,L6_BLUE,HSD2.CH2,L6.BLUE,
+W076,L6_WHITE,HSD2.CH3,L6.WHITE,
+W077,0V,TB0.rail,L6.BLACK,Rated lamp-return harness; do not route through Nano
+W078,L7_BLUE,HSD2.CH4,L7.BLUE,
+W079,L7_WHITE,HSD2.CH5,L7.WHITE,
+W080,0V,TB0.rail,L7.BLACK,Rated lamp-return harness; do not route through Nano
+W081,L8_BLUE,HSD2.CH6,L8.BLUE,
+W082,L8_WHITE,HSD2.CH7,L8.WHITE,
+W083,0V,TB0.rail,L8.BLACK,Rated lamp-return harness; do not route through Nano
+W084,L9_BLUE,HSD3.CH0,L9.BLUE,
+W085,L9_WHITE,HSD3.CH1,L9.WHITE,
+W086,0V,TB0.rail,L9.BLACK,Rated lamp-return harness; do not route through Nano
+W087,L10_BLUE,HSD3.CH2,L10.BLUE,
+W088,L10_WHITE,HSD3.CH3,L10.WHITE,
+W089,0V,TB0.rail,L10.BLACK,Rated lamp-return harness; do not route through Nano
+W090,VALVE_12V,HSD3.CH4,V1.RED,"Watchdog controlled, steady DC; not lamp PWM"
+W091,VALVE_12V,HSD3.CH4,U4.1,"Watchdog controlled, steady DC; not lamp PWM"
+W092,RELAY_5V,U4.3,K1.1,Separate from LOGIC_5V
+W093,RELAY_5V,U4.3,D4.K,Separate from LOGIC_5V
+W094,RELAY_5V,U4.3,C5.1,Separate from LOGIC_5V
+W095,0V,K1.10,D4.A,Flyback diode band faces coil positive
+W096,0V,U4.2,C5.2,Local regulator bypass return
+W097,0V,U4.2,C4.2,Local regulator bypass return
+W098,VALVE_12V,U4.1,C4.1,330 nF close to regulator IN
+W099,DAC_OUT,U2.OUT,K1.3,Potential about 15 V; never ADC
+W100,VALVE_COMMAND,K1.4,V1.GREEN,
+W101,VALVE_FEEDBACK,V1.YELLOW,K1.7,
+W102,FEEDBACK_IN,K1.8,U3.I+,
+W103,POSITION_RAW,U3.SIGNAL,R4.1,
+W104,POSITION_ADC,U1.A0,R4.2,
+W105,POSITION_ADC,U1.A0,R5.1,
+W106,POSITION_ADC,U1.A0,C1.1,
+W107,0V,U1.GND1,R5.2,Local ADC return; no load current
+W108,0V,U1.GND1,C1.2,Local ADC return; no load current
+W109,LOGIC_5V,FM1.RED,R6.1,
+W110,FLOW_RAW,FM1.YELLOW,R6.2,
+W111,FLOW_RAW,FM1.YELLOW,R8.1,
+W112,FLOW_LOGIC,R8.2,U1.D8,
+W113,LOGIC_5V,FM1.RED,R7.1,
+W114,FLOW_ERROR_RAW,FM1.WHITE,R7.2,
+W115,FLOW_ERROR_RAW,FM1.WHITE,R9.1,
+W116,FLOW_ERROR_LOGIC,R9.2,U1.D9,
+W117,LOGIC_5V,FM1.RED,C2.1,Near protected meter termination
+W118,0V,FM1.BLACK,C2.2,
+W119,LOGIC_5V,TB5.rail,R10.1,
+W120,ONEWIRE,U1.D7,R10.2,
+W121,ONEWIRE,U1.D7,TS1.2,
+W122,ONEWIRE,U1.D7,TS2.2,
+W123,LOGIC_5V,TS1.3,C3.1,Local sensor bypass
+W124,0V,TS1.1,C3.2,
+W125,LOGIC_5V,TS2.3,C6.1,Local sensor bypass
+W126,0V,TS2.1,C6.2,
+W127,MACHINE_12V,HSD1.VIN,C7.+,Local load-supply bypass; electrolytic + to VIN
+W128,MACHINE_12V,HSD1.VIN,C10.1,Local load-supply bypass; electrolytic + to VIN
+W129,0V,HSD1.LOAD_GND,C7.-,
+W130,0V,HSD1.LOAD_GND,C10.2,
+W131,MACHINE_12V,HSD2.VIN,C8.+,Local load-supply bypass; electrolytic + to VIN
+W132,MACHINE_12V,HSD2.VIN,C11.1,Local load-supply bypass; electrolytic + to VIN
+W133,0V,HSD2.LOAD_GND,C8.-,
+W134,0V,HSD2.LOAD_GND,C11.2,
+W135,MACHINE_12V,HSD3.VIN,C9.+,Local load-supply bypass; electrolytic + to VIN
+W136,MACHINE_12V,HSD3.VIN,C12.1,Local load-supply bypass; electrolytic + to VIN
+W137,0V,HSD3.LOAD_GND,C9.-,
+W138,0V,HSD3.LOAD_GND,C12.2,

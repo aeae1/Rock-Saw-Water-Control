@@ -2,33 +2,35 @@
 
 # Rock Saw Water Control
 
-**[▶ Open Live Simulator](https://aeae1.github.io/Rock-Saw-Water-Control/)** · **[Operator guide](docs/operator-guide.md)** · [Build and wiring guide](docs/build-guide.md)
+**[▶ Open Live Simulator](https://aeae1.github.io/Rock-Saw-Water-Control/)** · **[Operator guide](docs/operator-guide.md)** · [Build and wiring guide](docs/build-guide.md) · **[Audited schematic PDF](docs/assets/hardware/water-controller-audit-rev-c.pdf)**
 
 A configurable attachment water controller for machines that provide three independent operator-control outputs. The proposed system adjusts a motorized water valve and presents operating status on ten blue/white indicator lamps. Typical applications include rock saws and other attachments supplied from a pressurized water hose.
 
-**Project status:** interactive simulator and engineering specification. The Arduino Nano Every is the selected controller; final electrical design, component procurement, actuator characterization, and machine integration remain open. No hardware-ready firmware is included in this revision.
+**Project status:** interactive simulator and Revision C electrical bench design. The [connection audit](docs/hardware-audit-2026-10-04.md) includes circuit sheets, 138 individual connections, parts, tests and power-up checks. Machine harness verification, protection coordination, actual component qualification, actuator characterization and firmware/bench testing remain release holds. No hardware-ready firmware is included.
 
-## Assembly concept
+## Electrical overview
 
-![Open assembly concept showing ten blue/white lamps, an Arduino Nano Every, three prebuilt high-side lamp-driver boards, a four-channel input module, command and feedback modules, and a stainless proportional valve powered through the reused machine connector](docs/assets/hardware/assembly-concept-arduino-prebuilt.png)
+![Revision C electrical overview showing the machine connector, Nano Every, input boards, lamp drivers, command and feedback modules, supervised valve-power branch, flow meter and temperature sensors](docs/assets/hardware/water-controller-wiring-flow.png)
 
-*Current component direction, reviewed 2026-10-03. This AI-generated illustration shows the equipment spread out for identification. Component details, terminal placement, dimensions, and cable routing are indicative; it is not a wiring schematic or construction drawing. The illustrated temperature probe represents planned sensing; its exact part and circuit are not yet selected.*
+*Reviewed 4 October 2026. This overview groups conductors by function. Use the [six detailed circuit sheets and audit](docs/assets/hardware/water-controller-audit-rev-c.pdf), [connection schedule](hardware/rev-c/connections.csv) and [parts schedule](hardware/rev-c/bom.csv) for terminal details. The package remains a bench design with explicit hardware release holds.*
 
 | Function | Current component direction |
 | :--- | :--- |
 | Main controller | [Arduino Nano Every](https://store-usa.arduino.cc/products/nano-every), supplied through VIN from the machine's nominal 12 V supply |
-| Operator inputs | Prebuilt four-channel optocoupler module with suitable 12 V inputs and 5 V logic outputs; three channels used for G/H/J, one spare. Exact module and input range require verification. |
-| Lamp switching | Three [Serial Wombat PCB0046 HSD](https://www.serialwombat.com/p46) prebuilt high-side boards: 24 outputs, 20 used, four spare. Current price and availability have not been verified. |
+| Operator inputs | Two SparkFun BOB-09118 two-channel opto boards with three external 1 kohm input resistors and reverse-voltage diodes; their HV terminals receive regulated 5 V |
+| Lamp switching | Three [Serial Wombat PCB0046 HSD](https://www.serialwombat.com/p46) V2 boards: twenty lamp outputs, one proposed valve-watchdog output, three unused. Current price and availability have not been verified. |
 | Indicators | Ten common-negative 12 V blue/white lamps; each color has its own switched positive lead |
 | Valve command | [DFRobot DFR1229](https://wiki.dfrobot.com/dfr1229/) configured for 4–20 mA current output |
 | Valve feedback | [DFRobot SEN0262](https://wiki.dfrobot.com/sen0262/) converts position feedback to a voltage for the Nano's analog input; this receiver is not an I²C device |
 | Water valve | [U.S. Solid USS-MSV50030](https://ussolid.com/products/1-2-proportional-motorized-ball-valve-stainless-steel-dc-9-24v-4-20ma-control-5-wire-ip67-full-port), 1/2-inch stainless proportional ball valve with integrated actuator |
+| Flow meter | ScioSense UFM-02-03NP4 four-wire pulse meter; regulated 5 V, separate flow/error inputs |
+| Supervision and temperature | Proposed local HSD watchdog, TQ2-5V signal relay with dedicated L7805ABV regulator, and two powered DS18B20 sensors; physical qualification required |
 
 The reference installation reuses its existing 14-pin connector for the constant 12 V supply, wired ground return, and three control signals. Power is distributed inside the controller; the selected layout relies on the existing machine fuse and includes no additional fuse block or separate power source. This is an installation-specific arrangement, not a universal connector pinout. Whether the supply remains live with the ignition off must be verified: startup behavior follows controller power-up or reset, not necessarily the machine's key cycle.
 
 The valve has **one five-conductor cable from its actuator housing**. The motor and position-control electronics are inside that housing; there are no electrical connections to the stainless valve body or water hoses. The [manufacturer's wiring table](https://file.ussolid.com/content/JFMSV/Manual-5003X.pdf) identifies red as power positive, black as power negative, green as command positive, white as signal common, and yellow as position-feedback positive.
 
-The electronics require a suitable weatherproof enclosure in the installed assembly. The illustration intentionally leaves them exposed. Final wiring, power budgets, fault handling, and environmental suitability require bench verification. The [build guide](docs/build-guide.md), connection diagrams and BOM have been reconciled with this component direction. Open engineering questions and software verification are recorded in the [2026-10-03 audit](docs/audit-2026-10-03.md).
+The electronics require a suitable weatherproof enclosure. Power budgets, fault behavior and environmental suitability require bench verification. The current [electrical audit](docs/hardware-audit-2026-10-04.md) supersedes earlier wiring concepts; the [2026-10-03 audit](docs/audit-2026-10-03.md) remains the historical software review. Automated wiring checks validate the documented topology, not physical field reliability.
 
 ## Simulator
 
@@ -74,7 +76,7 @@ The current simulator uses valve-opening percentages. The planned hardware will 
 
 ## Architecture
 
-The current bench direction is the [assembly concept](#assembly-concept): an Arduino Nano Every, conditioned machine inputs, prebuilt high-side lamp drivers, and a wired proportional valve with 4–20 mA command and feedback. Ten dual-color lamps require twenty independently switched power channels. The valve includes its motor, gearbox, and motor controller; it needs no separate motor or H-bridge.
+The current bench direction is the [electrical overview](#electrical-overview): an Arduino Nano Every, conditioned machine inputs, prebuilt high-side lamp drivers, and a wired proportional valve with 4–20 mA command and feedback. Ten dual-color lamps require twenty independently switched power channels. The valve includes its motor, gearbox, and motor controller; it needs no separate motor or H-bridge.
 
 The [build guide](docs/build-guide.md) describes the current component list, partial pricing, wiring relationships, enclosure plan and programming sequence. The complete cost remains open because driver-board pricing and several assembly choices are unverified. The [valve-control research](docs/valve-control-research.md) retains the cheaper reversing-valve and Tuya alternatives. Local Tuya percentage control has not been verified for the candidate smart valve.
 
@@ -104,7 +106,7 @@ npm ci
 npm run check
 ```
 
-Edit `simulator/source.html`, then run `npm run build`. The build extracts the simulator into the committed HTML, CSS, and JavaScript under `docs/`. The 138 deterministic tests include all 2,000 old-cap/new-cap/level/on-off remapping combinations, 100 paused-indicator combinations, all 90 ordered fault pairs, 4,000 seeded stress actions, and startup/recovery/gesture regressions. The check command also validates local documentation links and the assembly image. GitHub Actions runs the suite on Node.js 22 and 24, checks build reproducibility, and runs 42 real-browser cases across desktop Chromium, mobile Chromium and mobile WebKit. Browser reports and failure traces are retained as workflow artifacts. See the [audit](docs/audit-2026-10-03.md) for results and limits.
+Edit `simulator/source.html`, then run `npm run build`. The build extracts the simulator into the committed HTML, CSS, and JavaScript under `docs/`. The 138 deterministic simulator tests include all 2,000 old-cap/new-cap/level/on-off remapping combinations, 100 paused-indicator combinations, all 90 ordered fault pairs, 4,000 seeded stress actions, and startup/recovery/gesture regressions. Eighteen additional wiring checks validate the Rev C netlist and deliberately reject damaging connection/value changes, for 156 tests total. The check command also validates local documentation links and the current diagram image. GitHub Actions runs the suite on Node.js 22 and 24, checks simulator build reproducibility, and runs 42 real-browser cases across desktop Chromium, mobile Chromium and mobile WebKit. Browser reports and failure traces are retained as workflow artifacts. See the [software audit](docs/audit-2026-10-03.md) and [electrical audit](docs/hardware-audit-2026-10-04.md) for results and limits.
 
 To run browser checks locally:
 
@@ -113,12 +115,12 @@ npx playwright install --with-deps chromium webkit
 npm run test:browser
 ```
 
-The test suite covers the simulator. Physical controller firmware will need its own fault-injection and hardware acceptance tests before field deployment.
+The test suite covers simulator behavior and the documented circuit topology. Physical controller firmware still needs fault-injection and hardware acceptance tests before field deployment.
 
 ## Scope and attribution
 
 This is an independent project and is not affiliated with Takeuchi or the component manufacturers. The original machine artwork was supplied for this project. The selected red-stripe banner contains an unchanged, native-size copy of the original artwork. Four earlier AI-assisted banner studies are retained as superseded design swatches; they are not technical representations of the machine.
 
-The separate assembly illustration is AI-generated concept art informed by the linked component documentation. It does not reproduce verified circuit connections or constitute manufacturer-approved installation guidance.
+An earlier assembly illustration is retained as AI-generated concept art. The current Rev C diagrams are programmatically drawn circuit documentation with explicit physical qualification holds; neither constitutes manufacturer-approved installation guidance.
 
 No project-wide redistribution license has been selected. Third-party product names and marks retain their respective ownership.
