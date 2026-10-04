@@ -24,19 +24,19 @@ test.afterEach(async ({ page }) => {
   expect(page.simulatorErrors).toEqual([]);
 });
 
-test('startup sweeps both colors, consumes held inputs, and restores the paused bar', async ({ page }) => {
+test('startup shows all white then all blue, consumes held inputs, and restores the paused bar', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-10-04T12:00:00Z') });
   await page.clock.pauseAt(new Date('2026-10-04T12:00:01Z'));
   const stage = page.locator('.sa-stage'), trigger = stage.locator('button[data-j]');
   await stage.locator('input[data-power]').check();
   await trigger.focus(); await page.keyboard.down('Space');
-  for (let step = 0; step < 20; step++) {
-    const expected = Array(10).fill('off'); expected[step % 10] = step < 10 ? 'blue' : 'white';
+  for (const color of ['white', 'blue']) {
+    const expected = Array(10).fill(color);
     await expect(stage).toHaveAttribute('data-colors', expected.join(','));
     await expect(stage).toHaveAttribute('data-on', 'false');
     await expect(stage).toHaveAttribute('data-position', '0');
     await expect(stage).toHaveAttribute('data-inputs-ready', 'false');
-    await page.clock.runFor(100);
+    await page.clock.runFor(1000);
   }
   await expect(stage).toHaveAttribute('data-lamp-test', 'false');
   await expect(stage).toHaveAttribute('data-mode', 'normal');
@@ -53,9 +53,9 @@ test('reduced-motion lamp test checks both colors and yields immediately to a fa
   await page.clock.pauseAt(new Date('2026-10-04T12:00:01Z'));
   const stage = page.locator('.sa-stage');
   await stage.locator('input[data-power]').check();
-  await expect(stage).toHaveAttribute('data-colors', Array(10).fill('blue').join(','));
-  await page.clock.runFor(1000);
   await expect(stage).toHaveAttribute('data-colors', Array(10).fill('white').join(','));
+  await page.clock.runFor(1000);
+  await expect(stage).toHaveAttribute('data-colors', Array(10).fill('blue').join(','));
   await stage.locator('select[data-fault]').selectOption('driver');
   await expect(stage).toHaveAttribute('data-lamp-test', 'false');
   await expect(stage).toHaveAttribute('data-colors', 'off,off,off,white,off,off,off,off,off,off');

@@ -161,7 +161,7 @@
   const buttons = Object.fromEntries(['g','h','center','j'].map(k => [k,q(k)]));
   const media = typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : {matches:false};
   const HOLD_MS = 1500, HOLD_FEEDBACK_MS = 500, RESET_MS = 3000, STUCK_MS = 30000, NEUTRAL_MS = 100, BLINK_MS = 600, RIPPLE_MS = 180, STROKE_MS = 5000;
-  const LAMP_STEP_MS = 100, LAMP_TEST_MS = 20 * LAMP_STEP_MS;
+  const LAMP_PHASE_MS = 1000, LAMP_TEST_MS = 2 * LAMP_PHASE_MS;
   let power = false, on = false, level = 4, maximum = 100, draft = 100;
   let runOpening = 40, position = 0, target = 0, motion = null;
   let mode = 'normal', reference = 40, heldPosition = 0, fault = 'normal', faultCause = 'normal';
@@ -246,10 +246,9 @@
     if (power) {
       if (fault !== 'normal') colors[faultCodes[fault]-1]='white';
       else if (testingLamps()) {
-        const step=clamp(Math.floor((now-lampTestStart)/LAMP_STEP_MS),0,19);
-        const color=step<10?'blue':'white';
-        // Explicitly ten lamps / twenty color outputs; never test auxiliary outputs.
-        if(media.matches)colors.fill(color);else colors[step%10]=color;
+        // All ten white for 1 s, then all ten blue for 1 s, in either motion preference.
+        // Lamp outputs only; auxiliary/valve outputs are never part of this test.
+        colors.fill(now-lampTestStart<LAMP_PHASE_MS?'white':'blue');
       }
       else if (holdingForMode()) {
         // Symmetric inward white fill is reserved for deliberate mode changes.
@@ -345,8 +344,8 @@
     } else if(testingLamps()){
       status='Startup · lamp test';
       detail=recovering?'Valve closing · opening commands locked':'Water command off · checking both colors';
-      helper='Blue, then white · release J and center G / H';
-      label='Startup lamp test. '+(media.matches?'All lamps blue, then all white.':'Each lamp blue from left to right, then each lamp white.')+' Opening commands inhibited.';
+      helper='White, then blue · release J and center G / H';
+      label='Startup lamp test. All ten lamps white for one second, then all ten blue for one second. Operator commands inhibited.';
     } else if(recovering){
       status='Startup / recovery · closing valve';
       detail='Opening commands locked until the valve is closed';
@@ -402,7 +401,7 @@
     if(flashTimer!==null){clearTimeout(flashTimer);flashTimer=null;}
     // Startup and idle lamps need one wakeup per color change, not a frame loop.
     if(frame===null&&testingLamps()){
-      const interval=media.matches?LAMP_TEST_MS/2:LAMP_STEP_MS;
+      const interval=LAMP_PHASE_MS;
       const delay=interval-((performance.now()-lampTestStart)%interval);
       flashTimer=setTimeout(()=>{flashTimer=null;render();},Math.max(1,delay));
     }else if(frame===null&&!media.matches&&flashingLights()){

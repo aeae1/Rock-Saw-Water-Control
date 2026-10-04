@@ -7,13 +7,13 @@ The controller has three modes: **Normal**, **Set Max**, and **Flush**. Most ope
 ## Start here
 
 1. Center G/H and release J.
-2. Turn controller power on. Watch the two-second lamp check: each lamp lights blue, then each lights white. It commands the valve closed at the same time. Wait for the test and closing to finish; a previously open valve may pass water while closing.
+2. Turn controller power on. Watch the two-second lamp check: all ten lamps light white for one second, then all ten light blue for one second. Operator commands are ignored during the test. It commands the valve closed at the same time. Wait for the test and closing to finish; a previously open valve may pass water while closing.
 3. Tap J to turn water on. Tap again to turn it off.
 4. Press G for more water or H for less. There are ten levels. Center the rocker before pressing the same direction again; reversing direction also passes through center.
 
 If a control was held during startup, release J and center G/H. After the lamp test and closing, keep them neutral for one tenth of a second, then make a fresh command. Releasing a startup-held J does not turn water on.
 
-Check that all ten lamps show both colors during startup; a missing color needs inspection. A fault replaces the test immediately. With reduced motion enabled in the simulator, all ten lamps show blue for one second, then white for one second. The test follows controller power-up, so a machine key cycle will not repeat it if the controller remains powered from constant hot.
+Check that all ten lamps show both colors during startup; a missing color needs inspection. A fault replaces the test immediately. The same sequence applies with reduced motion enabled. The test follows controller power-up, so a machine key cycle will not repeat it if the controller remains powered from constant hot.
 
 Holding G or H makes only one change. The selected level is remembered when water is off.
 
