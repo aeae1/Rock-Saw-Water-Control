@@ -67,7 +67,7 @@ test('every fault cancels startup testing immediately and acknowledgement never 
     const s = simulator(); s.power(true, false); s.advance(700); s.fault(cause);
     const expected = Array(10).fill('off'); expected[index] = 'white';
     assert.equal(s.stage.dataset.lampTest, 'false');
-    assert.deepEqual(colors(s), expected); s.advance(2200);
+    assert.deepEqual(colors(s), expected); s.advance(2400);
     assert.deepEqual(colors(s), expected); paused(s);
     s.fault('normal'); s.click('reset-fault'); s.advance(100);
     assert.equal(s.stage.dataset.lampTest, 'false');
@@ -139,7 +139,7 @@ test('startup lamp testing preserves a saved cap and level without changing the 
 
 test('a fault at the test deadline takes precedence over neutral qualification and lamp rendering', () => {
   const s = simulator(); s.power(true, false); s.jump(2000); s.fault('driver');
-  s.resumeAfter(1000);
+  s.resumeAfter(1200);
   assert.equal(s.stage.dataset.lampTest, 'false');
   assert.equal(s.stage.dataset.inputsReady, 'false');
   assert.equal(s.stage.dataset.colors, 'off,off,off,white,off,off,off,off,off,off');

@@ -55,14 +55,16 @@ G/H does not change settings in Flush. Keeping J held after an exit cannot enter
 
 ## If a fault appears
 
-A numbered white lamp identifies the fault; the simulator also shows its name. Faults stop further valve movement, so **water may still be flowing**. Use the upstream manual shutoff when necessary.
+Each fault lights its own numbered lamp. **Blinking white means the cause is still active. Blinking blue means it has cleared but still needs acknowledgement.** Several faults can be shown together; all must be cleared before reset. Faults stop further valve movement, so **water may still be flowing**. Use the upstream manual shutoff when necessary.
 
-1. Correct the cause using the [fault reference](faults.md).
+1. Correct every active cause using the [fault reference](faults.md).
 2. Release J and center G/H.
-3. **Hold J for 3 seconds** to acknowledge, then release. In the simulator, the **Reset fault** button performs the same acknowledgement.
-4. Wait for the closing/reference cycle. Water remains off. Tap J only when ready to resume.
+3. **Hold J for 3 seconds.** Fault lamps stay blue while the remaining lamps fill white from left to right. Release after acknowledgement.
+4. Wait for closing and 0.1 seconds of released/centered controls. The blue code lamps then give way to the normal paused display. Tap J when ready to resume.
 
-In the simulator, select **No active fault cause** after injecting a fault, then reset it. Removing the cause or cycling machine power alone does not acknowledge a latched fault. A new fault interrupts recovery. Moving G/H during the three-second reset hold cancels it; release J and start again. Invalid saved settings restore level 4 and a 100% maximum when acknowledged.
+In the simulator, turn fault toggles ON to activate causes and OFF to remove them. Try several at once. OFF does not erase a latched code. **Reset now · sim shortcut** skips the hold; use J to see its progress lights.
+
+If reset is blocked, the row shows staggered blue/white. At three seconds, a brief faster blue/white warning indicates refusal. Correct the causes, release J and try again; clearing a cause midway through a hold cannot make that hold valid. Moving G/H or a new fault interrupts a reset hold. A new fault also interrupts recovery. Cycling power alone does not acknowledge faults. Invalid saved settings restore level 4 and a 100% maximum when acknowledged. Reduced-motion preferences use steady colors and text instead of flashing.
 
 ## Power and simulator notes
 

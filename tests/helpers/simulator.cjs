@@ -60,14 +60,14 @@ function simulator({ reducedMotion = false } = {}) {
       click('center'); click(Number(stage.dataset.draft) > cap ? 'h' : 'g');
     }
   }
-  // LinkeDOM exposes a read-only select.value; select the option as the UI does.
-  const fault = value => {
-    q('fault').querySelector('option[value="' + value + '"]').selected = true;
-    emit(q('fault'), 'change');
+  const faultToggle = (cause, value) => {
+    const toggle=stage.querySelector('[data-fault-toggle="'+cause+'"]');
+    toggle.checked=value;emit(toggle,'change');
   };
+  const fault = value => value==='normal'?click('clear-causes'):faultToggle(value,true);
   const pos = () => Number(stage.dataset.position);
   const setReducedMotion = value => { media.matches = value; media.onchange?.(); };
-  return { stage, q, emit, advance, jump, resumeAfter, setReducedMotion, click, power, down, up, tap, hold, draft, fault, pos, document, window, pendingJobs: () => jobs.size, pendingFrames: () => [...jobs.values()].filter(job => job.raf).length };
+  return { stage, q, emit, advance, jump, resumeAfter, setReducedMotion, click, power, down, up, tap, hold, draft, fault, faultToggle, pos, document, window, pendingJobs: () => jobs.size, pendingFrames: () => [...jobs.values()].filter(job => job.raf).length };
 }
 
 

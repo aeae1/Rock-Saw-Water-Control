@@ -9,8 +9,11 @@
   const LAMP_PHASE_MS = 1000, LAMP_TEST_MS = 2 * LAMP_PHASE_MS;
   let power = false, on = false, level = 4, maximum = 100, draft = 100;
   let runOpening = 40, position = 0, target = 0, motion = null;
-  let mode = 'normal', reference = 40, heldPosition = 0, fault = 'normal', faultCause = 'normal';
-  const latchedFaults = new Set();
+  let mode = 'normal', reference = 40, heldPosition = 0, fault = 'normal';
+  const latchedFaults = new Set(), injectedCauses = new Set();
+  const faultRows = [...stage.querySelectorAll('[data-fault-entry]')];
+  const WARNING_MS = 1500, WARNING_STEP_MS = 250;
+  let faultWarningStart = null, resetDisplayCodes = [];
   let resumeOn = false, triggerCause = false, triggerTimer = null;
   let rocker = 'center', armed = true;
   let recovering = false, inputsReady = false, positionKnown = false, jInput = null;
@@ -31,7 +34,13 @@
   const holdingForMode = () => !!press?.feedback && !press.long && !press.consumed && press.holdEligible;
   const flashingLights = () => power && fault==='normal' && (mode==='max' || mode==='clean' || pausedMarker());
 
-  const causeActive = () => faultCause!=='normal'||triggerCause;
+  const activeCause = cause => injectedCauses.has(cause)||(cause==='trigger'&&triggerCause);
+  const causeActive = () => injectedCauses.size>0||triggerCause;
+  const faultSignal = () => !power?'off':resetDisplayCodes.length?'recovery':fault==='normal'?'none':faultWarningStart!==null?'rejected':press?.reset&&!press.consumed?(press.resetAllowed?'holding':'blocked'):causeActive()?'active':'cleared';
+  function expireFaultWarning(now){
+    if(faultWarningStart===null||now-faultWarningStart<WARNING_MS)return false;
+    faultWarningStart=null;flashOrigin=now;return true;
+  }
   const canResetFault = () => power&&fault!=='normal'&&!causeActive()&&rocker==='center';
 
   function updatePosition(now) {
@@ -89,7 +98,29 @@
   function paintLights(now) {
     const colors=Array(10).fill('off');
     if (power) {
-      if (fault !== 'normal') colors[faultCodes[fault]-1]='white';
+      if (fault !== 'normal') {
+        const signal=faultSignal();
+        if(signal==='rejected'||signal==='blocked'){
+          const origin=signal==='rejected'?faultWarningStart:press.start;
+          const interval=signal==='rejected'?WARNING_STEP_MS:BLINK_MS;
+          const phase=Math.floor((now-origin)/interval)%2;
+          for(let i=0;i<10;i++)colors[i]=media.matches?'white':(phase+(signal==='blocked'?i:0))%2?'white':'blue';
+        }else if(signal==='holding'){
+          const free=[];
+          for(let i=0;i<10;i++){
+            if([...latchedFaults].some(cause=>faultCodes[cause]-1===i))colors[i]='blue';
+            else free.push(i);
+          }
+          // Preserve every blue code lamp; fill only the remaining lamps in order.
+          const filled=media.matches?0:Math.floor(clamp((now-press.start)/RESET_MS,0,1)*free.length);
+          for(let i=0;i<filled;i++)colors[free[i]]='white';
+        }else if(media.matches||Math.floor((now-flashOrigin)/BLINK_MS)%2===0){
+          for(const cause of latchedFaults)colors[faultCodes[cause]-1]=activeCause(cause)?'white':'blue';
+        }
+      }
+      else if(resetDisplayCodes.length){
+        for(const code of resetDisplayCodes)colors[code-1]='blue';
+      }
       else if (testingLamps()) {
         // All ten white for 1 s, then all ten blue for 1 s, in either motion preference.
         // Lamp outputs only; auxiliary/valve outputs are never part of this test.
@@ -118,7 +149,6 @@
     colors.forEach((color,i)=>{
       lamps[i].classList.toggle('sa-blue',color==='blue');
       lamps[i].classList.toggle('sa-white',color==='white');
-      lamps[i].classList.toggle('sa-fault',power&&fault!=='normal'&&color==='white');
       lamps[i].dataset.color=color;
     });
     stage.dataset.colors=colors.join(',');
@@ -150,6 +180,8 @@
     updatePosition(now);
     updateLampTest(now);
     tryArmInputs();
+    expireFaultWarning(now);
+    if(ready())resetDisplayCodes=[];
     const failed=fault!=='normal';
     q('power').checked=power;
     setText(q('power-state'),power?'ON':'OFF');
@@ -159,7 +191,13 @@
       b.disabled=false;
       b.dataset.commandEnabled=String(key==='center'||(key==='j'?(failed?canResetFault():ready()):ready()&&mode!=='clean'&&!jInput));
     });
-    q('fault').disabled=!power;
+    for(const row of faultRows){
+      const cause=row.dataset.faultEntry, active=activeCause(cause);
+      const toggle=row.querySelector('[data-fault-toggle]');
+      toggle.disabled=!power;toggle.checked=injectedCauses.has(cause);
+      setText(row.querySelector('[data-cause-status]'),active?(cause==='trigger'&&triggerCause?'Cause active · release J'+(injectedCauses.has(cause)?' and remove injected cause':''):'Cause active · reset blocked'):latchedFaults.has(cause)?'Cause cleared · reset pending':resetDisplayCodes.includes(faultCodes[cause])?'Acknowledged · recovery pending':'Not latched');
+    }
+    q('clear-causes').disabled=!power||injectedCauses.size===0;
     q('reset-fault').disabled=!canResetFault()||!!jInput;
     buttons.g.setAttribute('aria-pressed',String(rocker==='g'));
     buttons.h.setAttribute('aria-pressed',String(rocker==='h'));
@@ -167,11 +205,11 @@
     buttons.j.setAttribute('aria-pressed',String(!!jInput));
     setText(buttons.j.querySelector('small'),failed?'Hold 3 s: reset':mode==='clean'?'Press: return':mode==='max'?'Tap: save & exit':on?'Tap: water off':'Tap: water on');
     buttons.j.setAttribute('aria-label',failed?'J: remove fault cause, center G/H, then hold for 3 seconds to reset':mode==='clean'?'J: press to immediately leave Flush and restore normal operation':mode==='max'?'J: tap to save maximum; hold for 1.5 seconds for Flush':'J: tap to toggle water; hold for 1.5 seconds to enter Set Max');
-    setText(q('mode-label'),!power?'POWER OFF':testingLamps()?'LAMP TEST':holdingForMode()?(mode==='max'?'HOLD → FLUSH':'HOLD → SET MAX'):mode==='clean'?'FLUSH · 100%':mode==='max'?'SET MAX':'NORMAL');
+    setText(q('mode-label'),!power?'POWER OFF':failed?'FAULT · '+faultSignal().toUpperCase():resetDisplayCodes.length?'RESET · RECOVERY':testingLamps()?'LAMP TEST':holdingForMode()?(mode==='max'?'HOLD → FLUSH':'HOLD → SET MAX'):mode==='clean'?'FLUSH · 100%':mode==='max'?'SET MAX':'NORMAL');
     setText(q('scale-start'),mode==='clean'?'FULL OPEN':mode==='max'?'10% OPEN':'LESS');
     setText(q('scale-end'),mode==='clean'?'100%':mode==='max'?'100% OPEN':'MORE');
-    setText(q('blue-key'),testingLamps()?'Blue lamp check':mode==='clean'?'Full-open command':mode==='max'?'One lamp: maximum':pausedMarker()?'Maximum marker':'On command');
-    setText(q('white-key'),testingLamps()?'White lamp check':holdingForMode()?'Hold progress':mode==='clean'?(media.matches?'Flush marker':'Outward ripple: Flush'):mode==='max'?'Lamp 5 = 50%':'Paused / saved level');
+    setText(q('blue-key'),failed?'Cause cleared / reset hold':resetDisplayCodes.length?'Reset acknowledged':testingLamps()?'Blue lamp check':mode==='clean'?'Full-open command':mode==='max'?'One lamp: maximum':pausedMarker()?'Maximum marker':'On command');
+    setText(q('white-key'),failed?(faultSignal()==='holding'?'Reset progress':'Active cause / blocked reset'):resetDisplayCodes.length?'Normal display resumes when ready':testingLamps()?'White lamp check':holdingForMode()?'Hold progress':mode==='clean'?(media.matches?'Flush marker':'Outward ripple: Flush'):mode==='max'?'Lamp 5 = 50%':'Paused / saved level');
     let status='', detail='', helper='', label='';
     if(!power){
       status='Controller power off';
@@ -182,10 +220,10 @@
       const code=faultCodes[fault];
       status='Fault '+code+' · '+faultNames[fault];
       detail='Motor command stopped · position unconfirmed';
-      helper=causeActive()?'Remove fault cause before reset':press?.reset?'Hold J for 3 seconds to reset':jInput||rocker!=='center'?'Release J and center G / H before reset':'Cause removed · Hold J 3 s or use Reset fault';
+      helper=faultSignal()==='rejected'?'Reset refused · remove all causes, release J and center G / H':faultSignal()==='blocked'?'Reset blocked · this hold cannot clear faults':faultSignal()==='holding'?'Keep holding 3 s · blue codes stay visible as white progress fills':causeActive()?'White = cause active · blue = cause cleared · remove all causes before reset':jInput||rocker!=='center'?'Release J and center G / H before a fresh reset hold':'Causes cleared · hold J 3 s to reset';
       if(latchedFaults.has('settings'))detail+=' · Reset restores level 4 / max 100%';
       if(latchedFaults.size>1)detail+=' · '+latchedFaults.size+' faults latched';
-      label='Fault '+code+'. Lamp '+code+' white.';
+      label=[...latchedFaults].map(cause=>'Fault '+faultCodes[cause]+'. '+(activeCause(cause)?'Cause active.':'Cause cleared; reset pending.')).join(' ')+' '+helper;
     } else if(testingLamps()){
       status='Startup · lamp test';
       detail=recovering?'Valve closing · opening commands locked':'Water command off · checking both colors';
@@ -225,7 +263,7 @@
     }
     setText(q('status'),status);setText(q('target'),detail);setText(q('switch-state'),helper);
     q('panel').setAttribute('aria-label',label);
-    setText(q('hold-caption'),!power?'Power on to operate':failed?(press?.reset?'Keep holding · reset at 3 s':'Remove cause · center G/H · hold J 3 s'):testingLamps()?'Testing lamps · water command off':!ready()?'Waiting for closing / neutral':press?.long||press?.consumed?'Release J to rearm':holdingForMode()?'Keep holding…':mode==='clean'?'Press J to return':mode==='max'?(!on&&motion?'Closing before Flush':'Hold 1.5 s for full open'):'Hold 1.5 s to set max');
+    setText(q('hold-caption'),!power?'Power on to operate':failed?(faultSignal()==='rejected'?'Reset refused · release J':faultSignal()==='blocked'?'Blocked hold · release and correct cause':faultSignal()==='holding'?'White fills left to right · reset at 3 s':causeActive()?'Remove causes · center G/H · hold J 3 s':'Center G/H · fresh J hold 3 s'):testingLamps()?'Testing lamps · water command off':!ready()?'Waiting for closing / neutral':press?.long||press?.consumed?'Release J to rearm':holdingForMode()?'Keep holding…':mode==='clean'?'Press J to return':mode==='max'?(!on&&motion?'Closing before Flush':'Hold 1.5 s for full open'):'Hold 1.5 s to set max');
     if(!press||(!press.feedback&&!press.reset)||press.consumed||mode==='clean')q('hold-progress').style.width='0%';
     else if(press.long)q('hold-progress').style.width='100%';
     stage.dataset.power=String(power);stage.dataset.on=String(on);stage.dataset.setting=String(level);
@@ -235,7 +273,8 @@
     stage.dataset.inputsReady=String(inputsReady);stage.dataset.recovering=String(recovering);stage.dataset.positionKnown=String(positionKnown);
     stage.dataset.lampTest=String(testingLamps());
     stage.dataset.rocker=rocker;stage.dataset.triggerHeld=String(!!jInput);
-    stage.dataset.fault=fault;stage.dataset.faultCause=faultCause;stage.dataset.latchedFaults=[...latchedFaults].join(',');
+    stage.dataset.fault=fault;stage.dataset.faultCause=[...injectedCauses][0]||'normal';stage.dataset.latchedFaults=[...latchedFaults].join(',');
+    stage.dataset.activeFaults=Object.keys(faultCodes).filter(activeCause).join(',');stage.dataset.faultSignal=faultSignal();
     paintLights(now);drawValve(now);ensureFrame();
   }
   function needsFrame(){
@@ -245,7 +284,14 @@
     if(frame===null&&needsFrame())frame=requestAnimationFrame(tick);
     if(flashTimer!==null){clearTimeout(flashTimer);flashTimer=null;}
     // Startup and idle lamps need one wakeup per color change, not a frame loop.
-    if(frame===null&&testingLamps()){
+    if(frame===null&&power&&fault!=='normal'&&(faultWarningStart!==null||!media.matches)){
+      const now=performance.now();
+      const interval=faultWarningStart!==null?WARNING_STEP_MS:BLINK_MS;
+      const origin=faultWarningStart??flashOrigin;
+      const next=interval-((now-origin)%interval);
+      const delay=faultWarningStart!==null?Math.min(media.matches?WARNING_MS:next,WARNING_MS-(now-faultWarningStart)):next;
+      flashTimer=setTimeout(()=>{flashTimer=null;render();},Math.max(1,delay));
+    }else if(frame===null&&testingLamps()){
       const interval=LAMP_PHASE_MS;
       const delay=interval-((performance.now()-lampTestStart)%interval);
       flashTimer=setTimeout(()=>{flashTimer=null;render();},Math.max(1,delay));
@@ -261,11 +307,12 @@
     frame=null;
     const ended=updatePosition(now);
     const testEnded=updateLampTest(now);
+    const warningEnded=expireFaultWarning(now);
     const feedbackStarted=press&&press.holdEligible&&!press.consumed&&!press.feedback&&!press.long&&now-press.start>=HOLD_FEEDBACK_MS;
     if(feedbackStarted)press.feedback=true;
     if(press?.reset)q('hold-progress').style.width=(clamp((now-press.start)/RESET_MS,0,1)*100)+'%';
     if(holdingForMode())q('hold-progress').style.width=(clamp((now-press.start-HOLD_FEEDBACK_MS)/(HOLD_MS-HOLD_FEEDBACK_MS),0,1)*100)+'%';
-    if(ended||testEnded||feedbackStarted)render();
+    if(ended||testEnded||feedbackStarted||warningEnded)render();
     else {paintLights(now);drawValve(now);ensureFrame();}
   }
   function enterMax(){
@@ -327,7 +374,14 @@
   }
   function activateHold(){
     if(checkStuckTrigger())return;
-    if(press?.reset){if(!press.consumed&&canResetFault()){press.consumed=true;resetFault(true);}return;}
+    if(press?.reset){
+      if(!press.consumed){
+        press.consumed=true;
+        if(press.resetAllowed&&canResetFault())resetFault(true);
+        else faultWarningStart=performance.now();
+      }
+      return;
+    }
     if(!press||press.long||press.consumed||!press.holdEligible||!ready())return;
     press.long=true;
     if(mode==='normal')enterMax();
@@ -337,8 +391,9 @@
     if(jInput)return;
     jInput={source,pointerId,key};
     armTriggerWatchdog();
-    if(canResetFault()){
-      press={source,pointerId,start:performance.now(),reset:true,consumed:false};
+    if(power&&fault!=='normal'){
+      faultWarningStart=null;
+      press={source,pointerId,start:performance.now(),reset:true,resetAllowed:canResetFault(),consumed:false};
       holdTimer=setTimeout(()=>{holdTimer=null;activateHold();render();},RESET_MS);
       render();return;
     }
@@ -366,7 +421,9 @@
     // Classify a delayed release against the real elapsed hold duration before
     // clearing its watchdog; an overdue timer must not turn a stuck input into a tap.
     checkStuckTrigger();
-    jInput=null;triggerCause=false;
+    jInput=null;
+    if(triggerCause)flashOrigin=performance.now();
+    triggerCause=false;
     if(triggerTimer!==null)clearTimeout(triggerTimer);triggerTimer=null;
     suppressClickUntil=performance.now()+500;
     endPress(allowTap);render();
@@ -374,6 +431,7 @@
   q('power').addEventListener('change',()=>{
     const wanted=q('power').checked;
     endPress(false);stopMotor();power=wanted;
+    faultWarningStart=null;resetDisplayCodes=[];flashOrigin=performance.now();
     if(triggerTimer!==null)clearTimeout(triggerTimer);triggerTimer=null;
     if(power&&jInput)armTriggerWatchdog();on=false;resumeOn=false;mode='normal';draft=maximum;
     armed=false;inputsReady=false;recovering=false;positionKnown=false;
@@ -425,20 +483,29 @@
   function latchFault(cause){
     if(!Object.hasOwn(faultCodes,cause))return;
     endPress(false);stopMotor();latchedFaults.add(cause);
+    faultWarningStart=null;resetDisplayCodes=[];flashOrigin=performance.now();
     fault=[...latchedFaults].sort((a,b)=>faultCodes[a]-faultCodes[b])[0];
     mode='normal';draft=maximum;
     on=false;resumeOn=false;armed=false;inputsReady=false;recovering=false;positionKnown=false;
     lampTestStart=null;
     render();
   }
-  q('fault').addEventListener('change',()=>{
+  for(const row of faultRows){
+    const cause=row.dataset.faultEntry, toggle=row.querySelector('[data-fault-toggle]');
+    toggle.addEventListener('change',()=>{
+      if(!power){render();return;}
+      if(toggle.checked){injectedCauses.add(cause);latchFault(cause);}
+      else {injectedCauses.delete(cause);flashOrigin=performance.now();render();}
+    });
+  }
+  q('clear-causes').addEventListener('click',()=>{
     if(!power)return;
-    faultCause=q('fault').value;
-    if(faultCause!=='normal')latchFault(faultCause);else render();
+    injectedCauses.clear();flashOrigin=performance.now();render();
   });
   function resetFault(fromHold=false){
     if(!canResetFault()||(!fromHold&&jInput))return;
     if(latchedFaults.has('settings')){level=4;maximum=100;runOpening=40;}
+    resetDisplayCodes=[...latchedFaults].map(cause=>faultCodes[cause]);faultWarningStart=null;
     latchedFaults.clear();fault='normal';draft=maximum;
     beginRecovery();render();
   }

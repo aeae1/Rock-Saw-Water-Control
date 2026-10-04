@@ -92,23 +92,57 @@
       <div class="sa-status" aria-live="polite" data-status>Controller power off</div>
       <div class="sa-target" aria-live="polite" data-target>Saved level 4/10 · Max 100%</div>
       <div class="sa-switch-state" aria-live="polite" data-switch-state>Power on starts with water off</div>
-      <div class="sa-preview">
-        <label for="sa-fill-fault">Fault preview</label>
-        <select id="sa-fill-fault" data-fault>
-          <option value="normal">No active fault cause</option>
-          <option value="supply">Fault 1 · supply / brownout</option>
-          <option value="stall">Fault 2 · valve jam / overcurrent</option>
-          <option value="communication">Fault 3 · valve / interface communication</option>
-          <option value="driver">Fault 4 · motor driver</option>
-          <option value="timeout">Fault 5 · motion timeout</option>
-          <option value="settings">Fault 6 · invalid saved settings</option>
-          <option value="input">Fault 7 · conflicting inputs</option>
-          <option value="position">Fault 8 · position unknown</option>
-          <option value="temperature">Fault 9 · controller overtemperature</option>
-          <option value="trigger">Fault 10 · stuck J trigger</option>
-        </select>
-        <button type="button" data-reset-fault style="width:auto;padding:8px 14px" disabled>Reset fault</button>
-      </div>
+      <section class="sa-preview" aria-labelledby="sa-fault-heading">
+        <h3 id="sa-fault-heading">Fault testing · simulator only</h3>
+        <p>Each toggle controls a fault cause: <strong>ON = active</strong>, <strong>OFF = removed</strong>. Turn on several to test simultaneous faults. Turning a toggle off leaves its code latched until reset.</p>
+        <div class="sa-fault-grid">
+          <div class="sa-fault-card" data-fault-entry="supply">
+            <label><input class="sa-power-toggle" type="checkbox" role="switch" data-fault-toggle="supply" aria-label="Fault 1: Supply / brownout" disabled><strong>1 · Supply / brownout</strong></label>
+            <span data-cause-status role="status">Not latched</span>
+          </div>
+          <div class="sa-fault-card" data-fault-entry="stall">
+            <label><input class="sa-power-toggle" type="checkbox" role="switch" data-fault-toggle="stall" aria-label="Fault 2: Valve jam / overcurrent" disabled><strong>2 · Valve jam / overcurrent</strong></label>
+            <span data-cause-status role="status">Not latched</span>
+          </div>
+          <div class="sa-fault-card" data-fault-entry="communication">
+            <label><input class="sa-power-toggle" type="checkbox" role="switch" data-fault-toggle="communication" aria-label="Fault 3: Interface communication" disabled><strong>3 · Interface communication</strong></label>
+            <span data-cause-status role="status">Not latched</span>
+          </div>
+          <div class="sa-fault-card" data-fault-entry="driver">
+            <label><input class="sa-power-toggle" type="checkbox" role="switch" data-fault-toggle="driver" aria-label="Fault 4: Motor driver" disabled><strong>4 · Motor driver</strong></label>
+            <span data-cause-status role="status">Not latched</span>
+          </div>
+          <div class="sa-fault-card" data-fault-entry="timeout">
+            <label><input class="sa-power-toggle" type="checkbox" role="switch" data-fault-toggle="timeout" aria-label="Fault 5: Motion timeout" disabled><strong>5 · Motion timeout</strong></label>
+            <span data-cause-status role="status">Not latched</span>
+          </div>
+          <div class="sa-fault-card" data-fault-entry="settings">
+            <label><input class="sa-power-toggle" type="checkbox" role="switch" data-fault-toggle="settings" aria-label="Fault 6: Invalid saved settings" disabled><strong>6 · Invalid saved settings</strong></label>
+            <span data-cause-status role="status">Not latched</span>
+          </div>
+          <div class="sa-fault-card" data-fault-entry="input">
+            <label><input class="sa-power-toggle" type="checkbox" role="switch" data-fault-toggle="input" aria-label="Fault 7: Conflicting inputs" disabled><strong>7 · Conflicting inputs</strong></label>
+            <span data-cause-status role="status">Not latched</span>
+          </div>
+          <div class="sa-fault-card" data-fault-entry="position">
+            <label><input class="sa-power-toggle" type="checkbox" role="switch" data-fault-toggle="position" aria-label="Fault 8: Position unknown" disabled><strong>8 · Position unknown</strong></label>
+            <span data-cause-status role="status">Not latched</span>
+          </div>
+          <div class="sa-fault-card" data-fault-entry="temperature">
+            <label><input class="sa-power-toggle" type="checkbox" role="switch" data-fault-toggle="temperature" aria-label="Fault 9: Overtemperature" disabled><strong>9 · Overtemperature</strong></label>
+            <span data-cause-status role="status">Not latched</span>
+          </div>
+          <div class="sa-fault-card" data-fault-entry="trigger">
+            <label><input class="sa-power-toggle" type="checkbox" role="switch" data-fault-toggle="trigger" aria-label="Fault 10: Stuck J trigger" disabled><strong>10 · Stuck J trigger</strong></label>
+            <span data-cause-status role="status">Not latched</span>
+          </div>
+        </div>
+        <div class="sa-fault-actions">
+          <button type="button" data-clear-causes disabled>Turn off all fault toggles</button>
+          <button type="button" data-reset-fault disabled>Reset now · sim shortcut</button>
+        </div>
+        <p>The shortcut skips the 3-second hold; use J to test the reset lights. An automatically detected stuck J requires releasing J.</p>
+      </section>
     </section>
   </div>
 
@@ -120,7 +154,8 @@
       <p><strong>Set Max:</strong> hold J for 1.5 seconds, then release. G/H changes the maximum from 10% to 100%; one blue/white lamp shows it. Tap J to save and return. Running water holds its opening while editing; an OFF command continues closing. Saving selects the nearest available level under the new cap.</p>
       <p><strong>Flush:</strong> in Set Max, release J and hold it again for 1.5 seconds. This saves the cap and opens fully. A fresh J press returns immediately to the previous Normal on/off state. G/H movement is tracked but cannot change settings in Flush. Wait for any earlier closing command to finish before starting the Flush hold.</p>
       <p><strong>Tap or hold:</strong> a tap is shorter than 0.5 seconds. Releasing between 0.5 and 1.5 seconds cancels the gesture. Hold feedback starts at 0.5 seconds with an inward white fill. Flush uses an outward white ripple.</p>
-      <p><strong>Fault recovery:</strong> select No active fault cause, release J and center G/H, then hold J for 3 seconds or use Reset fault. Keep G/H centered during the hold; moving it cancels reset. Wait for closing, then release J and center G/H for 0.1 seconds. Water remains off. Removing the cause or cycling power alone does not acknowledge a fault. A continuously held J faults after 30 seconds.</p>
+      <p><strong>Test faults:</strong> each toggle turns one cause ON or OFF; several can be active together. White blinking means active, blue blinking means removed but still latched. Turn every cause OFF, release J and center G/H, then hold J for 3 seconds. Fault lamps stay blue while the other lamps fill white left to right. After acknowledgement, blue codes remain until closing and 0.1 seconds of released/centered controls complete. Water stays off.</p>
+      <p><strong>Blocked reset:</strong> staggered blue/white means the hold cannot reset; a brief faster warning follows at 3 seconds. Correct the causes and start a fresh hold. Moving G/H or a new fault cancels reset. The Reset now shortcut skips the hold. Power cycling does not clear a latch. J held for 30 seconds triggers its own fault; release J to remove that cause.</p>
       <p>Settings and latched faults persist through the simulated power switch but reset on page reload. Power loss stops the modeled motor at its current position; it does not close the valve. The switch models controller power. A constant-hot machine connection may stay powered with the ignition off. Buttons remain operable during power-off and recovery so held-input cases can be tested.</p>
       <p>Keyboard: focus J and use Space or Enter. Reduced-motion preferences replace flashing with steady markers. <a href="https://github.com/aeae1/Rock-Saw-Water-Control/blob/main/docs/operator-guide.md">Full operator guide</a> · <a href="https://github.com/aeae1/Rock-Saw-Water-Control/blob/main/docs/faults.md">Fault codes</a></p>
     </details>

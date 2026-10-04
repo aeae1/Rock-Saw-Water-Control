@@ -50,7 +50,7 @@ test('running, drain, setup, fault, and power-off displays take priority over th
   assert.deepEqual([a, s.stage.dataset.colors.split(',')[6]].sort(), ['blue', 'off']);
   s.fault('driver'); s.advance(1200);
   assert.equal(s.stage.dataset.colors, 'off,off,off,white,off,off,off,off,off,off');
-  assert.equal(s.pendingJobs(), 0);
+  assert.equal(s.pendingFrames(), 0); assert.equal(s.pendingJobs(), 1); // Continuous fault blink.
   s.fault('normal'); s.power(false); s.advance(1200);
   assert.equal(s.stage.dataset.colors, Array(10).fill('off').join(',')); assert.equal(s.pendingJobs(), 0);
 });
@@ -427,7 +427,7 @@ for (const seed of [17, 103, 4099, 65537]) {
         case 3: s.click('g'); break;
         case 4: s.click('h'); break;
         case 5: s.click('center'); break;
-        case 6: if (!s.q('fault').disabled) s.fault(['normal', 'normal', 'driver', 'input', 'supply', 'stall', 'communication', 'timeout', 'settings', 'position', 'temperature', 'trigger'][next(12)]); break;
+        case 6: if (!s.q('fault-toggle').disabled) s.fault(['normal', 'normal', 'driver', 'input', 'supply', 'stall', 'communication', 'timeout', 'settings', 'position', 'temperature', 'trigger'][next(12)]); break;
         case 7: s.down(); s.advance(next(2600)); s.emit(s.q('j'), 'pointercancel', { pointerId: 1 }); break;
         case 8: s.fault('normal'); s.click('center'); s.click('reset-fault'); break;
         default: s.advance(next(7000));

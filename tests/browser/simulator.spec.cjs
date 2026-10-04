@@ -56,12 +56,12 @@ test('reduced-motion lamp test checks both colors and yields immediately to a fa
   await expect(stage).toHaveAttribute('data-colors', Array(10).fill('white').join(','));
   await page.clock.runFor(1000);
   await expect(stage).toHaveAttribute('data-colors', Array(10).fill('blue').join(','));
-  await stage.locator('select[data-fault]').selectOption('driver');
+  await stage.locator('[data-fault-toggle="driver"]').check();
   await expect(stage).toHaveAttribute('data-lamp-test', 'false');
   await expect(stage).toHaveAttribute('data-colors', 'off,off,off,white,off,off,off,off,off,off');
   await page.clock.runFor(2000);
   await expect(stage).toHaveAttribute('data-inputs-ready', 'false');
-  await stage.locator('select[data-fault]').selectOption('normal');
+  await stage.locator('button[data-clear-causes]').click();
   await stage.locator('button[data-reset-fault]').click(); await page.clock.runFor(100);
   await expect(stage).toHaveAttribute('data-inputs-ready', 'true');
   await expect(stage).toHaveAttribute('data-lamp-test', 'false');
@@ -157,18 +157,18 @@ test('second keyboard hold enters full-open cleaning and one tap restores paused
   await expect(stage).toHaveAttribute('data-run-opening', '40');
 });
 
-test('power interruption and real select controls stop and recover predictably', async ({ page }) => {
+test('power interruption and fault toggles stop and recover predictably', async ({ page }) => {
   const stage = page.locator('.sa-stage'), power = stage.locator('input[data-power]');
   await start(stage); await stage.locator('button[data-j]').click();
   await expect(stage).toHaveAttribute('data-position', '40');
-  await stage.locator('select[data-fault]').selectOption('driver');
+  await stage.locator('[data-fault-toggle="driver"]').check();
   await expect(stage.locator('button[data-j]')).toBeEnabled();
   await expect(stage.locator('button[data-j]')).toHaveAttribute('data-command-enabled', 'false');
   await expect(stage).toHaveAttribute('data-colors', 'off,off,off,white,off,off,off,off,off,off');
   await power.uncheck(); await expect(stage).toHaveAttribute('data-position', '40');
   await power.check(); await expect(stage.locator('button[data-j]')).toBeEnabled();
   await expect(stage.locator('button[data-j]')).toHaveAttribute('data-command-enabled', 'false');
-  await stage.locator('select[data-fault]').selectOption('normal');
+  await stage.locator('button[data-clear-causes]').click();
   await expect(stage).toHaveAttribute('data-fault', 'driver');
   await stage.locator('button[data-reset-fault]').click();
   await expect(stage).toHaveAttribute('data-position', '0');
@@ -215,8 +215,8 @@ test('fault acknowledgement from J closes and requires release before rearming',
   const stage = page.locator('.sa-stage'), trigger = stage.locator('button[data-j]');
   await start(stage); await trigger.click();
   await expect(stage).toHaveAttribute('data-position', '40');
-  await stage.locator('select[data-fault]').selectOption('position');
-  await stage.locator('select[data-fault]').selectOption('normal');
+  await stage.locator('[data-fault-toggle="position"]').check();
+  await stage.locator('button[data-clear-causes]').click();
   await page.clock.install();
   await trigger.focus(); await page.keyboard.down('Space');
   await page.clock.runFor(3000); await expect(stage).toHaveAttribute('data-fault', 'normal');
@@ -275,8 +275,8 @@ test('G/H changes during recovery remain visible and cannot arm or adjust the sa
 
 test('moving the rocker interrupts a reset hold until J is released and pressed again', async ({ page }) => {
   const stage = page.locator('.sa-stage'), trigger = stage.locator('button[data-j]'); await start(stage);
-  await stage.locator('select[data-fault]').selectOption('driver');
-  await stage.locator('select[data-fault]').selectOption('normal');
+  await stage.locator('[data-fault-toggle="driver"]').check();
+  await stage.locator('button[data-clear-causes]').click();
   await page.clock.install(); await trigger.focus(); await page.keyboard.down('Space');
   await page.clock.runFor(2000); await stage.locator('button[data-g]').click();
   await stage.locator('button[data-center]').click(); await page.clock.runFor(2000);
@@ -297,4 +297,59 @@ test('startup-held J reaches the stuck-trigger fault and cannot acknowledge itse
   await page.keyboard.up('Enter'); await stage.locator('button[data-reset-fault]').click();
   await page.clock.runFor(100); await expect(stage).toHaveAttribute('data-fault', 'normal');
   await expect(stage).toHaveAttribute('data-on', 'false');
+});
+
+test('independent fault toggles show mixed active and cleared codes and keep reset inhibited', async ({ page }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const stage=page.locator('.sa-stage');await start(stage);
+  await expect(stage.locator('[data-fault-toggle]')).toHaveCount(10);
+  await expect(stage.locator('select')).toHaveCount(0);
+  const driver=stage.locator('[data-fault-toggle="driver"]'), position=stage.locator('[data-fault-toggle="position"]');
+  await driver.check();await position.check();await driver.uncheck();
+  await expect(stage).toHaveAttribute('data-active-faults','position');
+  await expect(stage).toHaveAttribute('data-colors','off,off,off,blue,off,off,off,white,off,off');
+  await expect(stage.locator('[data-fault-entry="driver"] [data-cause-status]')).toHaveText('Cause cleared · reset pending');
+  await expect(stage.locator('[data-fault-entry="position"] [data-cause-status]')).toHaveText('Cause active · reset blocked');
+  await expect(stage.locator('[data-reset-fault]')).toBeDisabled();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await testInfo.attach('simultaneous-faults',{body:await page.screenshot({fullPage:true}),contentType:'image/png'});
+  await position.uncheck();await stage.locator('[data-reset-fault]').click();
+  await expect(stage).toHaveAttribute('data-inputs-ready','true');
+  await expect(stage).toHaveAttribute('data-on','false');
+});
+
+test('reset hold fills white around blue fault codes and retains blue through release', async ({ page }, testInfo) => {
+  await page.clock.install({time:new Date('2026-10-04T12:00:00Z')});
+  await page.clock.pauseAt(new Date('2026-10-04T12:00:01Z'));
+  const stage=page.locator('.sa-stage'),trigger=stage.locator('[data-j]');
+  await stage.locator('[data-power]').check();await page.clock.runFor(2100);
+  for(const cause of ['driver','position']){await stage.locator(`[data-fault-toggle="${cause}"]`).check();}
+  await stage.locator('[data-clear-causes]').click();
+  await trigger.focus();await page.keyboard.down('Space');await page.clock.runFor(1510);
+  await expect(stage).toHaveAttribute('data-colors','white,white,white,blue,white,off,off,blue,off,off');
+  await expect(stage).toHaveAttribute('data-fault-signal','holding');
+  await testInfo.attach('reset-progress',{body:await page.screenshot({fullPage:true}),contentType:'image/png'});
+  await page.clock.runFor(1490);await expect(stage).toHaveAttribute('data-fault','normal');
+  await expect(stage).toHaveAttribute('data-colors','off,off,off,blue,off,off,off,blue,off,off');
+  await page.clock.runFor(500);await expect(stage).toHaveAttribute('data-fault-signal','recovery');
+  await page.keyboard.up('Space');await page.clock.runFor(100);
+  await expect(stage).toHaveAttribute('data-fault-signal','none');await expect(stage).toHaveAttribute('data-on','false');
+});
+
+test('blocked reset warns once and clearing a toggle during the hold cannot acknowledge', async ({ page }) => {
+  await page.clock.install({time:new Date('2026-10-04T12:00:00Z')});
+  await page.clock.pauseAt(new Date('2026-10-04T12:00:01Z'));
+  const stage=page.locator('.sa-stage'),trigger=stage.locator('[data-j]');
+  await stage.locator('[data-power]').check();await page.clock.runFor(2100);
+  await stage.locator('[data-fault-toggle="driver"]').check();
+  await trigger.focus();await page.keyboard.down('Space');
+  await expect(stage).toHaveAttribute('data-colors','blue,white,blue,white,blue,white,blue,white,blue,white');
+  await page.clock.runFor(1000);await stage.locator('[data-fault-toggle="driver"]').uncheck();
+  await page.clock.runFor(2000);await expect(stage).toHaveAttribute('data-fault-signal','rejected');
+  await expect(stage).toHaveAttribute('data-colors',Array(10).fill('blue').join(','));
+  await page.clock.runFor(250);await expect(stage).toHaveAttribute('data-colors',Array(10).fill('white').join(','));
+  await page.clock.runFor(1250);await expect(stage).toHaveAttribute('data-fault-signal','cleared');
+  await expect(stage).toHaveAttribute('data-fault','driver');
+  await page.keyboard.up('Space');await trigger.focus();await page.keyboard.down('Space');await page.clock.runFor(3000);
+  await expect(stage).toHaveAttribute('data-fault','normal');await page.keyboard.up('Space');
 });

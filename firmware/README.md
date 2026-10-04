@@ -33,6 +33,12 @@ Use a monotonic, nonblocking main loop with explicit budgets. A recommended orde
 | Persistence | Version, checksum, bounds, redundant committed records and wear-conscious writes; never restore an ON or Flush command |
 | Supervision | Hardware watchdog and a characterized output-inhibit path; feeding a watchdog requires successful control-loop progress |
 
+## Fault display contract
+
+Implement independent active-cause and latched-code bitsets. Show all latched codes concurrently: white/off while active, blue/off after a cause clears (600 ms phases). A valid fresh three-second reset hold keeps every code lamp solid blue while remaining lamps fill white left to right. Skip occupied code lamps; ten codes leave no progress lamps. Keep acknowledged codes blue until closing/requalification and 100 ms of neutral controls complete. Do not interpret acknowledgement as verified hardware recovery; retain the actual fault record until requalification succeeds as specified above.
+
+Reset eligibility is captured at the start of the press. Clearing causes during a blocked hold cannot authorize it. Blocked holds stagger blue/white at 600 ms phases; reaching three seconds gives a 1.5-second warning with 250 ms phases, then resumes the normal fault indication without retrying. Any new fault or rocker movement cancels an eligible hold. A fault always outranks animation. See the [fault reference](../docs/faults.md) for the complete simulator contract, including reduced motion. This is a firmware requirement, not implemented Arduino code.
+
 ## Startup lamp test
 
 After successful output initialization, test only the twenty explicitly mapped lamp channels: all ten lamps white for one second, then all ten blue for one second. Clear all previous lamp-color channels before setting the next color; never energize both colors of a lamp simultaneously. HSD1/HSD2 channels 0–7 and HSD3 channels 0–3 are the lamp allowlist; HSD3 channel 4 remains owned exclusively by valve supervision, and channels 5–7 remain OFF. Never implement a sweep over every driver output or a bulk clear that changes valve power.

@@ -34,7 +34,7 @@ for (const running of [false, true]) {
   }
 }
 
-test('every ordered pair of distinct fault codes retains both and displays the lower code', () => {
+test('every ordered pair of distinct fault codes retains and displays both codes with the lower code in the heading', () => {
   const faults = ['supply', 'stall', 'communication', 'driver', 'timeout', 'settings', 'input', 'position', 'temperature', 'trigger'];
   for (let a = 0; a < faults.length; a++) {
     for (let b = 0; b < faults.length; b++) {
@@ -43,7 +43,7 @@ test('every ordered pair of distinct fault codes retains both and displays the l
       s.fault(faults[a]); s.fault(faults[b]);
       assert.equal(s.stage.dataset.fault, faults[Math.min(a, b)]);
       assert.deepEqual(s.stage.dataset.latchedFaults.split(',').sort(), [faults[a], faults[b]].sort());
-      assert.equal(s.stage.dataset.colors.split(',').filter(c => c !== 'off').length, 1);
+      assert.equal(s.stage.dataset.colors.split(',').filter(c => c !== 'off').length, 2);
       s.fault('normal'); assert.equal(s.stage.dataset.on, 'false');
       s.click('reset-fault'); s.advance(100);
       assert.equal(s.stage.dataset.fault, 'normal'); assert.equal(s.stage.dataset.on, 'false');
