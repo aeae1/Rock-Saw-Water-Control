@@ -161,6 +161,7 @@
   const buttons = Object.fromEntries(['g','h','center','j'].map(k => [k,q(k)]));
   const media = typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : {matches:false};
   const HOLD_MS = 1500, HOLD_FEEDBACK_MS = 500, RESET_MS = 3000, STUCK_MS = 30000, NEUTRAL_MS = 100, BLINK_MS = 600, RIPPLE_MS = 180, STROKE_MS = 5000;
+  const LAMP_STEP_MS = 100, LAMP_TEST_MS = 20 * LAMP_STEP_MS;
   let power = false, on = false, level = 4, maximum = 100, draft = 100;
   let runOpening = 40, position = 0, target = 0, motion = null;
   let mode = 'normal', reference = 40, heldPosition = 0, fault = 'normal', faultCause = 'normal';
@@ -169,6 +170,7 @@
   let rocker = 'center', armed = true;
   let recovering = false, inputsReady = false, positionKnown = false, jInput = null;
   let neutralSince = null, neutralTimer = null;
+  let lampTestStart = null;
   const faultCodes = {supply:1,stall:2,communication:3,driver:4,timeout:5,settings:6,input:7,position:8,temperature:9,trigger:10};
   const faultNames = {supply:'supply / brownout',stall:'valve jam / overcurrent',communication:'valve / interface communication',driver:'motor driver',timeout:'motion timeout',settings:'invalid saved settings',input:'conflicting inputs',position:'position unknown',temperature:'controller overtemperature',trigger:'stuck J trigger'};
   let flashOrigin = 0, flashTimer = null;
@@ -178,7 +180,8 @@
   const fmt = n => String(Math.round(n * 10) / 10);
   const nearest = (opening,cap) => clamp(Math.round(opening * 10 / cap),1,10);
   const setText = (el,text) => { if (el.textContent !== text) el.textContent = text; };
-  const pausedMarker = () => power && fault==='normal' && mode==='normal' && !on && !motion;
+  const testingLamps = () => power && fault==='normal' && lampTestStart!==null;
+  const pausedMarker = () => power && fault==='normal' && !testingLamps() && mode==='normal' && !on && !motion;
   const ready = () => power && fault==='normal' && !recovering && positionKnown && inputsReady;
   const holdingForMode = () => !!press?.feedback && !press.long && !press.consumed && press.holdEligible;
   const flashingLights = () => power && fault==='normal' && (mode==='max' || mode==='clean' || pausedMarker());
@@ -212,7 +215,7 @@
     ensureFrame();
   }
   function tryArmInputs(){
-    const eligible=power&&fault==='normal'&&!recovering&&positionKnown&&!inputsReady&&rocker==='center'&&!jInput;
+    const eligible=power&&fault==='normal'&&!testingLamps()&&!recovering&&positionKnown&&!inputsReady&&rocker==='center'&&!jInput;
     if(!eligible){
       neutralSince=null;
       if(neutralTimer!==null)clearTimeout(neutralTimer);
@@ -233,10 +236,21 @@
     moveTo(0,'boot');
     if(!motion){recovering=false;positionKnown=true;}
   }
+  function updateLampTest(now){
+    if(!testingLamps()||now-lampTestStart<LAMP_TEST_MS)return false;
+    lampTestStart=null;flashOrigin=now;
+    return true;
+  }
   function paintLights(now) {
     const colors=Array(10).fill('off');
     if (power) {
       if (fault !== 'normal') colors[faultCodes[fault]-1]='white';
+      else if (testingLamps()) {
+        const step=clamp(Math.floor((now-lampTestStart)/LAMP_STEP_MS),0,19);
+        const color=step<10?'blue':'white';
+        // Explicitly ten lamps / twenty color outputs; never test auxiliary outputs.
+        if(media.matches)colors.fill(color);else colors[step%10]=color;
+      }
       else if (holdingForMode()) {
         // Symmetric inward white fill is reserved for deliberate mode changes.
         const pairs=media.matches?5:clamp(Math.floor((now-press.start-HOLD_FEEDBACK_MS)/((HOLD_MS-HOLD_FEEDBACK_MS)/5))+1,1,5);
@@ -290,6 +304,7 @@
   function render() {
     const now=performance.now();
     updatePosition(now);
+    updateLampTest(now);
     tryArmInputs();
     const failed=fault!=='normal';
     q('power').checked=power;
@@ -308,11 +323,11 @@
     buttons.j.setAttribute('aria-pressed',String(!!jInput));
     setText(buttons.j.querySelector('small'),failed?'Hold 3 s: reset':mode==='clean'?'Press: return':mode==='max'?'Tap: save & exit':on?'Tap: water off':'Tap: water on');
     buttons.j.setAttribute('aria-label',failed?'J: remove fault cause, center G/H, then hold for 3 seconds to reset':mode==='clean'?'J: press to immediately leave Flush and restore normal operation':mode==='max'?'J: tap to save maximum; hold for 1.5 seconds for Flush':'J: tap to toggle water; hold for 1.5 seconds to enter Set Max');
-    setText(q('mode-label'),!power?'POWER OFF':holdingForMode()?(mode==='max'?'HOLD → FLUSH':'HOLD → SET MAX'):mode==='clean'?'FLUSH · 100%':mode==='max'?'SET MAX':'NORMAL');
+    setText(q('mode-label'),!power?'POWER OFF':testingLamps()?'LAMP TEST':holdingForMode()?(mode==='max'?'HOLD → FLUSH':'HOLD → SET MAX'):mode==='clean'?'FLUSH · 100%':mode==='max'?'SET MAX':'NORMAL');
     setText(q('scale-start'),mode==='clean'?'FULL OPEN':mode==='max'?'10% OPEN':'LESS');
     setText(q('scale-end'),mode==='clean'?'100%':mode==='max'?'100% OPEN':'MORE');
-    setText(q('blue-key'),mode==='clean'?'Full-open command':mode==='max'?'One lamp: maximum':pausedMarker()?'Maximum marker':'On command');
-    setText(q('white-key'),holdingForMode()?'Hold progress':mode==='clean'?(media.matches?'Flush marker':'Outward ripple: Flush'):mode==='max'?'Lamp 5 = 50%':'Paused / saved level');
+    setText(q('blue-key'),testingLamps()?'Blue lamp check':mode==='clean'?'Full-open command':mode==='max'?'One lamp: maximum':pausedMarker()?'Maximum marker':'On command');
+    setText(q('white-key'),testingLamps()?'White lamp check':holdingForMode()?'Hold progress':mode==='clean'?(media.matches?'Flush marker':'Outward ripple: Flush'):mode==='max'?'Lamp 5 = 50%':'Paused / saved level');
     let status='', detail='', helper='', label='';
     if(!power){
       status='Controller power off';
@@ -327,6 +342,11 @@
       if(latchedFaults.has('settings'))detail+=' · Reset restores level 4 / max 100%';
       if(latchedFaults.size>1)detail+=' · '+latchedFaults.size+' faults latched';
       label='Fault '+code+'. Lamp '+code+' white.';
+    } else if(testingLamps()){
+      status='Startup · lamp test';
+      detail=recovering?'Valve closing · opening commands locked':'Water command off · checking both colors';
+      helper='Blue, then white · release J and center G / H';
+      label='Startup lamp test. '+(media.matches?'All lamps blue, then all white.':'Each lamp blue from left to right, then each lamp white.')+' Opening commands inhibited.';
     } else if(recovering){
       status='Startup / recovery · closing valve';
       detail='Opening commands locked until the valve is closed';
@@ -361,7 +381,7 @@
     }
     setText(q('status'),status);setText(q('target'),detail);setText(q('switch-state'),helper);
     q('panel').setAttribute('aria-label',label);
-    setText(q('hold-caption'),!power?'Power on to operate':failed?(press?.reset?'Keep holding · reset at 3 s':'Remove cause · center G/H · hold J 3 s'):!ready()?'Waiting for closing / neutral':press?.long||press?.consumed?'Release J to rearm':holdingForMode()?'Keep holding…':mode==='clean'?'Press J to return':mode==='max'?(!on&&motion?'Closing before Flush':'Hold 1.5 s for full open'):'Hold 1.5 s to set max');
+    setText(q('hold-caption'),!power?'Power on to operate':failed?(press?.reset?'Keep holding · reset at 3 s':'Remove cause · center G/H · hold J 3 s'):testingLamps()?'Testing lamps · water command off':!ready()?'Waiting for closing / neutral':press?.long||press?.consumed?'Release J to rearm':holdingForMode()?'Keep holding…':mode==='clean'?'Press J to return':mode==='max'?(!on&&motion?'Closing before Flush':'Hold 1.5 s for full open'):'Hold 1.5 s to set max');
     if(!press||(!press.feedback&&!press.reset)||press.consumed||mode==='clean')q('hold-progress').style.width='0%';
     else if(press.long)q('hold-progress').style.width='100%';
     stage.dataset.power=String(power);stage.dataset.on=String(on);stage.dataset.setting=String(level);
@@ -369,6 +389,7 @@
     stage.dataset.runOpening=String(runOpening);stage.dataset.moving=String(!!motion);
     stage.dataset.armed=String(armed);
     stage.dataset.inputsReady=String(inputsReady);stage.dataset.recovering=String(recovering);stage.dataset.positionKnown=String(positionKnown);
+    stage.dataset.lampTest=String(testingLamps());
     stage.dataset.rocker=rocker;stage.dataset.triggerHeld=String(!!jInput);
     stage.dataset.fault=fault;stage.dataset.faultCause=faultCause;stage.dataset.latchedFaults=[...latchedFaults].join(',');
     paintLights(now);drawValve(now);ensureFrame();
@@ -379,8 +400,12 @@
   function ensureFrame(){
     if(frame===null&&needsFrame())frame=requestAnimationFrame(tick);
     if(flashTimer!==null){clearTimeout(flashTimer);flashTimer=null;}
-    // Idle lamps need one wakeup per color change, not a continuous frame loop.
-    if(frame===null&&!media.matches&&flashingLights()){
+    // Startup and idle lamps need one wakeup per color change, not a frame loop.
+    if(frame===null&&testingLamps()){
+      const interval=media.matches?LAMP_TEST_MS/2:LAMP_STEP_MS;
+      const delay=interval-((performance.now()-lampTestStart)%interval);
+      flashTimer=setTimeout(()=>{flashTimer=null;render();},Math.max(1,delay));
+    }else if(frame===null&&!media.matches&&flashingLights()){
       const interval=mode==='clean'?RIPPLE_MS:BLINK_MS;
       const delay=interval-((performance.now()-flashOrigin)%interval);
       flashTimer=setTimeout(()=>{
@@ -391,11 +416,12 @@
   function tick(now){
     frame=null;
     const ended=updatePosition(now);
+    const testEnded=updateLampTest(now);
     const feedbackStarted=press&&press.holdEligible&&!press.consumed&&!press.feedback&&!press.long&&now-press.start>=HOLD_FEEDBACK_MS;
     if(feedbackStarted)press.feedback=true;
     if(press?.reset)q('hold-progress').style.width=(clamp((now-press.start)/RESET_MS,0,1)*100)+'%';
     if(holdingForMode())q('hold-progress').style.width=(clamp((now-press.start-HOLD_FEEDBACK_MS)/(HOLD_MS-HOLD_FEEDBACK_MS),0,1)*100)+'%';
-    if(ended||feedbackStarted)render();
+    if(ended||testEnded||feedbackStarted)render();
     else {paintLights(now);drawValve(now);ensureFrame();}
   }
   function enterMax(){
@@ -507,8 +533,10 @@
     if(triggerTimer!==null)clearTimeout(triggerTimer);triggerTimer=null;
     if(power&&jInput)armTriggerWatchdog();on=false;resumeOn=false;mode='normal';draft=maximum;
     armed=false;inputsReady=false;recovering=false;positionKnown=false;
+    lampTestStart=null;
     if(power&&fault==='normal'){
       flashOrigin=performance.now();
+      lampTestStart=flashOrigin;
       beginRecovery();
     }
     render();
@@ -556,6 +584,7 @@
     fault=[...latchedFaults].sort((a,b)=>faultCodes[a]-faultCodes[b])[0];
     mode='normal';draft=maximum;
     on=false;resumeOn=false;armed=false;inputsReady=false;recovering=false;positionKnown=false;
+    lampTestStart=null;
     render();
   }
   q('fault').addEventListener('change',()=>{

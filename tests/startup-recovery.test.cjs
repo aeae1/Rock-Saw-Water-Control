@@ -17,7 +17,7 @@ for (const rocker of ['center', 'g', 'h']) {
         s.power(true, false);
         assert.equal(s.stage.dataset.rocker, rocker);
         assert.equal(s.stage.dataset.inputsReady, 'false'); paused(s);
-        s.advance(1600); paused(s);
+        s.advance(2100); paused(s);
         assert.equal(s.stage.dataset.setting, '4');
         assert.equal(s.stage.dataset.inputsReady, String(rocker === 'center' && !heldJ));
         if (releaseOrder === 'trigger-first') { if (heldJ) s.up(); s.click('center'); }
@@ -31,7 +31,7 @@ for (const rocker of ['center', 'g', 'h']) {
 }
 
 test('neutral must be continuous for 100 ms; switch activity restarts qualification', () => {
-  const s = simulator(); s.power(true, false); s.advance(99);
+  const s = simulator(); s.power(true, false); s.advance(2099);
   assert.equal(s.stage.dataset.inputsReady, 'false');
   s.click('g'); s.advance(1); s.click('center'); s.advance(99);
   assert.equal(s.stage.dataset.inputsReady, 'false');
@@ -45,7 +45,7 @@ test('neutral must be continuous for 100 ms; switch activity restarts qualificat
 test('startup-locked taps and holds never queue a future water command', () => {
   for (const duration of [0, 100, 499, 500, 1499, 1500, 6000]) {
     const s = simulator(); s.power(true, false);
-    s.down(); s.advance(duration); s.up(); s.advance(1000); paused(s);
+    s.down(); s.advance(duration); s.up(); s.advance(2100); paused(s);
     assert.equal(s.stage.dataset.inputsReady, 'true');
     s.tap(); assert.equal(s.stage.dataset.on, 'true');
   }

@@ -44,8 +44,9 @@ function simulator({ reducedMotion = false } = {}) {
     }
   }
   const click = key => emit(q(key), 'click');
-  // Most scenarios start after the neutral qualification; startup tests opt out.
-  const power = (value, settle = true) => { q('power').checked = value; emit(q('power'), 'change'); if (value && settle) advance(100); };
+  // Most scenarios start after the 2 s lamp test + neutral qualification.
+  // Closure/held controls can still inhibit commands; timing tests opt out.
+  const power = (value, settle = true) => { q('power').checked = value; emit(q('power'), 'change'); if (value && settle) advance(2100); };
   const jump = ms => { clock += ms; };
   const down = () => emit(q('j'), 'pointerdown', { pointerType: 'touch', pointerId: 1, button: 0 });
   const up = () => { emit(q('j'), 'pointerup', { pointerType: 'touch', pointerId: 1, button: 0 }); click('j'); };

@@ -74,13 +74,13 @@ stateDiagram-v2
 
 ## Paused maximum indication
 
-Once closing finishes, white lamps show the saved level. The lamp at `saved maximum / 10` alternates blue with its underlying color every 600 ms: off above the saved-level bar, or white within the bar. At a 70% maximum and level 4, lamp 7 alternates blue/off; at level 7 or higher, it alternates blue/white. The marker remains active for the entire paused state and never changes the valve target. Running, fill/drain, hold-progress, setup, cleaning, fault, and unpowered displays take precedence.
+Once closing finishes, white lamps show the saved level. The lamp at `saved maximum / 10` alternates blue with its underlying color every 600 ms: off above the saved-level bar, or white within the bar. At a 70% maximum and level 4, lamp 7 alternates blue/off; at level 7 or higher, it alternates blue/white. The marker remains active for the entire paused state and never changes the valve target. Startup lamp testing, running, fill/drain, hold-progress, setup, cleaning, fault, and unpowered displays take precedence.
 
 Idle blinking uses one scheduled timeout per color change. Reduced-motion mode uses a steady blue maximum marker and no idle animation timer. Delayed browser callbacks resume at the current phase without replaying missed changes.
 
 ## Startup and power interruption
 
-On controller power-up, the water command is paused and the valve is commanded closed. Saved level and maximum are retained. All opening commands are locked until closure/reference completes, then J is released and G/H is centered continuously for 100 ms. Input states are observed even while power is off, closing is underway, or faults inhibit commands. Activations while locked are consumed, not queued. Any control activity restarts neutral qualification. A held J cannot enter setup or toggle on release, and a held G/H cannot edit settings or arm operation. A fresh activation is required after arming. Once closed, the standard persistent paused maximum indication applies. There is no separate startup lamp animation. The 100 ms qualification verifies stable neutral controls; it is not a display delay.
+On controller power-up, the water command is paused and the valve is commanded closed. Saved level and maximum are retained. A two-second lamp test runs concurrently with closing: lamps 1–10 illuminate blue in order, then lamps 1–10 illuminate white in order, 100 ms per lamp with all others off. Reduced-motion mode instead shows all ten blue for one second, then all ten white for one second. All opening commands are locked until both the lamp test and closure/reference complete, then J is released and G/H is centered continuously for 100 ms. Input states are observed even while power is off, closing is underway, or faults inhibit commands. Activations while locked are consumed, not queued. Any control activity restarts neutral qualification. A held J cannot enter setup or toggle on release, and a held G/H cannot edit settings or arm operation. A fresh activation is required after arming. Once the lamp test and closing finish, the standard persistent paused maximum indication applies. A fault immediately cancels the test and takes display priority; a fault already latched at power-up suppresses it entirely. Fault acknowledgement does not restart the test. Power removal cancels it; the next healthy power-up starts again at lamp 1. Delayed callbacks complete the test by elapsed time without replaying missed steps. The test is a visual check of both lamp colors, not automatic proof of lamp health or valve closure. The 100 ms qualification verifies stable neutral controls; it is not a display delay.
 
 Removing power extinguishes all lamps, cancels motor motion at the current simulated position, discards an unsaved draft, and clears the water command. The simulated actuator is non-return: electrical power loss does not mechanically shut off water. On the next power-up, closing is commanded again.
 
@@ -97,7 +97,8 @@ Settings persist across the simulator's power switch within the current page ses
 | Maximum-mode J threshold | 1.5 seconds |
 | Paused/setup color-change interval | 600 ms |
 | Hold-feedback delay | 500 ms |
-| Startup/recovery neutral qualification | 100 ms |
+| Startup lamp test | 2 seconds; 100 ms per lamp/color |
+| Startup/recovery neutral qualification | 100 ms after startup prerequisites |
 | Hold-progress inward pair interval | 200 ms |
 | Cleaning outward pair interval | 180 ms |
 

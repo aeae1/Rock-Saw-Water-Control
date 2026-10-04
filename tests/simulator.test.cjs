@@ -489,7 +489,7 @@ test('fresh Flush press exits immediately and consumes its hold and release', ()
 
 test('startup closes fully and requires released J and centered rocker; nothing is queued', () => {
   const s = simulator(); s.power(true); s.tap(); s.advance(6000); s.click('g');
-  s.down(); s.power(false); s.power(true);
+  s.down(); s.power(false); s.power(true, false);
   assert.equal(s.stage.dataset.recovering, 'true'); assert.equal(s.stage.dataset.inputsReady, 'false');
   s.advance(7000); assert.equal(s.pos(), 0); assert.equal(s.stage.dataset.inputsReady, 'false');
   s.up(); assert.equal(s.stage.dataset.inputsReady, 'false');
@@ -498,7 +498,7 @@ test('startup closes fully and requires released J and centered rocker; nothing 
 });
 
 test('J commands during recovery are discarded until release even after closing finishes', () => {
-  const s = simulator(); s.power(true); s.tap(); s.advance(6000); s.power(false); s.power(true);
+  const s = simulator(); s.power(true); s.tap(); s.advance(6000); s.power(false); s.power(true, false);
   s.down(); s.advance(6000); assert.equal(s.stage.dataset.inputsReady, 'false');
   s.up(); s.advance(100); assert.equal(s.stage.dataset.inputsReady, 'true'); assert.equal(s.stage.dataset.on, 'false');
   s.tap(); assert.equal(s.stage.dataset.on, 'true');

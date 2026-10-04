@@ -1,6 +1,6 @@
 # Firmware Integration Contract
 
-Revision 0.5 · Reviewed 2026-10-04
+Revision 0.6 · Reviewed 2026-10-04
 
 No flashable firmware is supplied. The browser simulator is an executable operator-interface reference, not Arduino firmware. The current hardware direction is Nano Every, DFR1229 command, SEN0262 feedback to A0, three PCB0046 boards, a four-wire flow meter and two temperature sensors. See the [Revision C electrical audit](../docs/hardware-audit-2026-10-04.md) for the complete proposed circuit and release holds.
 
@@ -23,7 +23,7 @@ Use a monotonic, nonblocking main loop with explicit budgets. A recommended orde
 | :--- | :--- |
 | Raw input acquisition | Read all three conditioned inputs in every state, including startup, faults and Flush; normalize polarity |
 | Debounce | Qualify press/release and G/H conflict duration using measured switch/input behavior; a continuously active G or H is normal |
-| Startup/recovery | Request closed, validate closure/position, then require J released and G/H centered for 100 ms; consume all earlier activations |
+| Startup/recovery | Request closed; startup also runs the two-second lamp test concurrently. After test and verified closure, require J released and G/H centered for 100 ms; consume all earlier activations. Fault recovery does not repeat the lamp test |
 | Gestures | Fresh press and matching release; <500 ms tap, 500–1499 ms cancel, 1500 ms mode change; one mode transition per press |
 | Fault acknowledgement | All causes absent; fresh 3000 ms J hold with G/H centered throughout; any rocker movement or new cause cancels |
 | Stuck trigger | 30000 ms continuous powered assertion, including startup; compare elapsed time even if scheduling was delayed |
@@ -32,6 +32,14 @@ Use a monotonic, nonblocking main loop with explicit budgets. A recommended orde
 | Bus handling | Bound transactions and retry count; report failed initialization/transfers; never wait forever for an I²C device |
 | Persistence | Version, checksum, bounds, redundant committed records and wear-conscious writes; never restore an ON or Flush command |
 | Supervision | Hardware watchdog and a characterized output-inhibit path; feeding a watchdog requires successful control-loop progress |
+
+## Startup lamp test
+
+After successful output initialization, test only the twenty explicitly mapped lamp channels: lamps 1–10 blue in order, then lamps 1–10 white in order, 100 ms per lamp and all other lamp colors off. Clear the previous channel before setting the next. HSD1/HSD2 channels 0–7 and HSD3 channels 0–3 are the lamp allowlist; HSD3 channel 4 remains owned exclusively by valve supervision, and channels 5–7 remain OFF. Never implement a sweep over every driver output or a bulk clear that changes valve power.
+
+Run this as a nonblocking elapsed-time state alongside acquisition, supervision and closed-position recovery. Inhibit opening/gestures until the test and closure complete, then qualify neutral controls. A fault or failed lamp-driver transaction aborts the test immediately; faults have priority even at its completion deadline. Do not run over a latched fault or replay it after acknowledgement. A healthy controller power-up/reset restarts it; repeated loop iterations do not. The simulator offers an all-blue/all-white reduced-motion equivalent with the same two-second duration.
+
+This checks visibility and harness/color assignment for the operator. It does not prove electrical health automatically. Current diagnostics need separate qualified thresholds. Bench acceptance must verify every color, break-before-make switching, test interruption, held controls, timer rollover, and that all lamp-test writes leave the valve-watchdog channel unchanged. No test code may delay closure, watchdog servicing or fault evaluation.
 
 The simulator's 5-second full stroke and 200 ms minimum move are visual-model values. They are not hardware motion deadlines. Characterize the actual valve and feedback before selecting timeouts, tolerances, settle windows and current thresholds.
 
