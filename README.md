@@ -8,11 +8,33 @@ A configurable attachment water controller for machines that provide three indep
 
 **Project status:** interactive simulator and Revision C electrical bench design. The [connection audit](docs/hardware-audit-2026-10-04.md) includes circuit sheets, 138 individual connections, parts, tests and power-up checks. Machine harness verification, protection coordination, actual component qualification, actuator characterization and firmware/bench testing remain release holds. No hardware-ready firmware is included.
 
-## Electrical overview
+## Assembly and wiring overview
 
-![Revision C electrical overview showing the machine connector, Nano Every, input boards, lamp drivers, command and feedback modules, supervised valve-power branch, flow meter and temperature sensors](docs/assets/hardware/water-controller-wiring-flow.png)
+[![Revision C electrical overview showing the machine connector, Nano Every, input boards, lamp drivers, command and feedback modules, supervised valve-power branch, flow meter and temperature sensors](docs/assets/hardware/water-controller-wiring-flow.png)](docs/assets/hardware/water-controller-wiring-flow.svg)
 
-*Reviewed 4 October 2026. This overview groups conductors by function. Use the [six detailed circuit sheets and audit](docs/assets/hardware/water-controller-audit-rev-c.pdf), [connection schedule](hardware/rev-c/connections.csv) and [parts schedule](hardware/rev-c/bom.csv) for terminal details. The package remains a bench design with explicit hardware release holds.*
+*Revision C wiring; documentation updated 5 October 2026. The overview groups conductors by function. Select the image for the full-size vector drawing. Use the circuit sheets and connection schedule below for terminal details. The package remains a bench design with explicit hardware release holds.*
+
+## Detailed schematic
+
+**[Open the complete schematic and audit PDF](docs/assets/hardware/water-controller-audit-rev-c.pdf)** · [Every-wire connection schedule](hardware/rev-c/connections.csv) · [Parts schedule](hardware/rev-c/bom.csv)
+
+[![Revision C circuit sheet 03: supervised valve power, dedicated relay regulator, signal disconnect contacts and five-wire actuator cable](docs/assets/hardware/rev-c-03-valve.svg)](docs/assets/hardware/rev-c-03-valve.svg)
+
+The preview shows the valve power and signal-disconnect circuit. The complete package contains all six circuit sheets, the electrical audit and the individual connection schedule. The current automatic-close and reset policies are included in its fault-response notes; these software changes do not alter the Revision C wiring.
+
+<details>
+<summary>View all six circuit sheets</summary>
+
+1. [Power, returns and local I²C bus](docs/assets/hardware/rev-c-01-power.svg)
+2. [G/H/J input conditioning](docs/assets/hardware/rev-c-02-inputs.svg)
+3. [Valve power and signal disconnect](docs/assets/hardware/rev-c-03-valve.svg)
+4. [Position feedback and ScioSense flow meter](docs/assets/hardware/rev-c-04-feedback-meter.svg)
+5. [All twenty lamp-color outputs](docs/assets/hardware/rev-c-05-lamps.svg)
+6. [Temperature sensors and component pin orientation](docs/assets/hardware/rev-c-06-temperature.svg)
+
+</details>
+
+## Components
 
 | Function | Current component direction |
 | :--- | :--- |
@@ -70,7 +92,7 @@ In Set Max, running water holds its current valve opening while the cap is edite
 
 Blue lamps indicate the running level; white lamps indicate the saved paused level. While paused, the maximum lamp blinks blue/off above the white bar or blue/white within it. Set Max uses one alternating blue/white lamp. Mode-changing holds show an inward white fill after 0.5 seconds; Flush uses an outward white ripple.
 
-Faults latch, stop movement, and inhibit opening. Each numbered lamp blinks white while its cause is active and blue after it clears. All latched codes are shown together; all causes must be cleared before reset. The simulator provides one toggle per cause for testing simultaneous faults. Correct the cause, release J, then hold J for three seconds to acknowledge. Holding or moving G/H does not affect fault acknowledgement. During the reset hold, code lamps stay blue while a white fill sweeps across all ten positions, spending 0.3 seconds per position even behind a blue code. When the hold completes, the normal paused display returns immediately: the saved-level bar is white and the maximum marker blinks blue. Closing and neutral qualification continue with opening commands locked and water commanded off. **Stopping movement or losing electrical power does not guarantee that water stops.** The [operator guide](docs/operator-guide.md) explains routine use and recovery; the [fault reference](docs/faults.md) defines all ten codes and detection limits.
+Faults latch and inhibit opening. Settings/input faults (6, 7, 10) command the valve closed while retaining the fault display; faults involving the valve-control path (1–5, 8, 9) inhibit movement. Any latched movement-inhibiting fault takes priority, even after its cause clears. Each numbered lamp blinks white while its cause is active and blue after it clears. All latched codes are shown together; all causes must be cleared before reset. The simulator provides one toggle per cause for testing simultaneous faults. Correct the cause, release J, then hold J for three seconds to acknowledge. Holding or moving G/H does not affect fault acknowledgement. During the reset hold, code lamps stay blue while a white fill sweeps across all ten positions, spending 0.3 seconds per position even behind a blue code. When the hold completes, the normal paused display returns immediately: the saved-level bar is white and the maximum marker blinks blue. Reset keeps water off: a confirmed closed valve does not move again; otherwise closing/requalification finishes. After closure and 0.1 seconds with J released, a fresh J tap works with G/H still held. Earlier rocker actions are discarded. **Stopping movement or losing electrical power does not guarantee that water stops.** The [operator guide](docs/operator-guide.md) explains routine use and recovery; the [fault reference](docs/faults.md) defines all ten codes and detection limits.
 
 The current simulator uses valve-opening percentages. The planned hardware will use a measured [flow-calibration curve](docs/flow-calibration.md) so levels represent calibrated flow percentages; this requires real valve/nozzle measurements and does not provide live measured GPM. The water animation is illustrative. Settings and fault latches survive the simulator's power switch, but reset on page reload.
 
@@ -108,7 +130,7 @@ npm ci
 npm run check
 ```
 
-Edit `simulator/source.html`, then run `npm run build`. The build extracts the simulator into the committed HTML, CSS, and JavaScript under `docs/`. The 187 deterministic simulator tests include all 2,000 old-cap/new-cap/level/on-off remapping combinations, 100 paused-indicator combinations, all 90 ordered fault pairs, 4,000 seeded stress actions, and startup/recovery/gesture regressions, including twelve startup-lamp tests covering all twenty colors, held inputs, faults, power loss and reduced motion. Twenty-nine fault-display tests cover independent toggles, simultaneous faults, continuous blinking, reset progress, rejected holds, interruption, delayed callbacks and recovery indication. Eight additional reset-indication tests cover resets with either G/H direction held across all ten codes, post-reset neutral interlocks, fresh attempts after warnings, simultaneous code colors and agreement between indication and acknowledgement. Eighteen additional wiring checks validate the Rev C netlist and deliberately reject damaging connection/value changes, for 205 tests total. The check command also validates local documentation links and the current diagram image. GitHub Actions runs the suite on Node.js 22 and 24, checks simulator build reproducibility, and runs 63 real-browser cases across desktop Chromium, mobile Chromium and mobile WebKit. Browser reports and failure traces are retained as workflow artifacts. See the [software audit](docs/audit-2026-10-03.md) and [electrical audit](docs/hardware-audit-2026-10-04.md) for results and limits.
+Edit `simulator/source.html`, then run `npm run build`. The build extracts the simulator into the committed HTML, CSS, and JavaScript under `docs/`. The 208 deterministic simulator tests include all 2,000 old-cap/new-cap/level/on-off remapping combinations, 100 paused-indicator combinations, all 90 ordered fault pairs, 4,000 seeded stress actions, and startup/recovery/gesture regressions, including twelve startup-lamp tests covering all twenty colors, held inputs, faults, power loss and reduced motion. Twenty-nine fault-display tests cover independent toggles, simultaneous faults, continuous blinking, reset progress, rejected holds, interruption, delayed callbacks and recovery indication. Eight additional reset-indication tests cover resets with either G/H direction held across all ten codes, startup centering versus G/H-independent fault recovery, fresh attempts after warnings, simultaneous code colors and agreement between indication and acknowledgement. Twenty-one fault-response tests cover automatic closing, all 90 ordered fault-pair priorities, interrupted closing, unchanged closing deadlines and G/H-independent rearming. Eighteen additional wiring checks validate the Rev C netlist and deliberately reject damaging connection/value changes, for 226 tests total. The check command also validates local documentation links and the current diagram image. GitHub Actions runs the suite on Node.js 22 and 24, checks simulator build reproducibility, and runs 69 real-browser cases across desktop Chromium, mobile Chromium and mobile WebKit. Browser reports and failure traces are retained as workflow artifacts. See the [software audit](docs/audit-2026-10-03.md) and [electrical audit](docs/hardware-audit-2026-10-04.md) for results and limits.
 
 To run browser checks locally:
 

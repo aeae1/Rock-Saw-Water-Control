@@ -13,13 +13,18 @@
   const latchedFaults = new Set(), injectedCauses = new Set();
   const faultRows = [...stage.querySelectorAll('[data-fault-entry]')];
   const WARNING_MS = 1500, WARNING_STEP_MS = 250;
-  let faultWarningStart = null, resetOffDisplay = false;
+  let faultWarningStart = null, resetOffDisplay = false, faultCloseAttempted = false;
   let resumeOn = false, triggerCause = false, triggerTimer = null;
   let rocker = 'center', armed = true;
   let recovering = false, inputsReady = false, positionKnown = false, jInput = null;
-  let neutralSince = null, neutralTimer = null;
+  let neutralSince = null, neutralTimer = null, startupNeedsCenter = true;
   let lampTestStart = null;
   const faultCodes = {supply:1,stall:2,communication:3,driver:4,timeout:5,settings:6,input:7,position:8,temperature:9,trigger:10};
+  // Only these operator/settings faults leave the modeled valve path healthy.
+  // Any latched fault outside this allowlist inhibits drive until acknowledgement.
+  const closeOnFault = new Set(['settings','input','trigger']);
+  const faultInhibitsDrive = () => [...latchedFaults].some(cause=>!closeOnFault.has(cause));
+  const faultResponse = () => fault==='normal'?'none':!power?'unpowered':motion?.kind==='fault-close'?'closing':positionKnown&&position===0?'closed':'inhibited';
   const faultNames = {supply:'supply / brownout',stall:'valve jam / overcurrent',communication:'valve / interface communication',driver:'motor driver',timeout:'motion timeout',settings:'invalid saved settings',input:'conflicting inputs',position:'position unknown',temperature:'controller overtemperature',trigger:'stuck J trigger'};
   let flashOrigin = 0, flashTimer = null;
   let press = null, holdTimer = null, suppressClickUntil = 0;
@@ -31,6 +36,7 @@
   const testingLamps = () => power && fault==='normal' && lampTestStart!==null;
   const pausedMarker = () => power && fault==='normal' && !testingLamps() && mode==='normal' && !on && (!motion || resetOffDisplay);
   const ready = () => power && fault==='normal' && !recovering && positionKnown && inputsReady;
+  const mustCenterRocker = () => startupNeedsCenter&&rocker!=='center';
   const holdingForMode = () => !!press?.feedback && !press.long && !press.consumed && press.holdEligible;
   const flashingLights = () => power && fault==='normal' && (mode==='max' || mode==='clean' || pausedMarker());
 
@@ -65,7 +71,7 @@
     position = motion.from + (motion.to-motion.from)*p;
     if (p >= 1) {
       position=motion.to;
-      if(motion.kind==='boot'){recovering=false;positionKnown=true;}
+      if(motion.kind==='boot'||motion.kind==='fault-close'){recovering=false;positionKnown=true;}
       motion=null;return true;
     }
     return false;
@@ -85,7 +91,7 @@
     ensureFrame();
   }
   function tryArmInputs(){
-    const eligible=power&&fault==='normal'&&!testingLamps()&&!recovering&&positionKnown&&!inputsReady&&rocker==='center'&&!jInput;
+    const eligible=power&&fault==='normal'&&!testingLamps()&&!recovering&&positionKnown&&!inputsReady&&!mustCenterRocker()&&!jInput;
     if(!eligible){
       neutralSince=null;
       if(neutralTimer!==null)clearTimeout(neutralTimer);
@@ -101,11 +107,17 @@
       neutralTimer=setTimeout(()=>{neutralTimer=null;render();},NEUTRAL_MS-(now-neutralSince));
     }
   }
-  function beginRecovery(){
-    recovering=true;positionKnown=false;inputsReady=false;
-    moveTo(0,'boot');
+  function beginClosing(kind){
+    updatePosition(performance.now());inputsReady=false;
+    if(positionKnown&&position===0&&!motion){target=0;recovering=false;return;}
+    recovering=kind==='boot';positionKnown=false;
+    // Reuse an existing closing motion and its original deadline. A new fault
+    // or acknowledgement must not restart travel that is already closing.
+    if(motion?.to===0){motion.kind=kind;target=0;}
+    else moveTo(0,kind);
     if(!motion){recovering=false;positionKnown=true;}
   }
+  function beginRecovery(){beginClosing('boot');}
   function updateLampTest(now){
     if(!testingLamps()||now-lampTestStart<LAMP_TEST_MS)return false;
     lampTestStart=null;flashOrigin=now;
@@ -182,7 +194,7 @@
       q(name).setAttribute('opacity',flowing?'.9':'0');
     }
     setText(q('valve-readout'),fmt(position)+'% open');
-    setText(q('valve-state'),!power?'Unpowered':fault!=='normal'?'Position unconfirmed':motion?'Valve moving':mode==='max'&&on?'Position held':flowing?'Water moving':'Closed');
+    setText(q('valve-state'),!power?'Unpowered':fault!=='normal'?(faultResponse()==='closing'?'Closing on fault':faultResponse()==='closed'?'Closed · fault latched':'Position unconfirmed'):motion?'Valve moving':mode==='max'&&on?'Position held':flowing?'Water moving':'Closed');
     q('valve-svg').setAttribute('aria-label','Simulated ball valve '+fmt(position)+' percent open. '+(flowing?'Water flows left to right.':'No water flow.')+(mode==='max'?(on?' Position held during Set Max.':motion?' OFF command continues closing during setup.':' Valve closed during setup.'):'')+(!positionKnown?' Controller position reference unknown.':''));
     stage.dataset.position=String(Number(position.toFixed(4)));
     stage.dataset.target=String(Number(target.toFixed(4)));
@@ -216,8 +228,8 @@
     buttons.h.setAttribute('aria-pressed',String(rocker==='h'));
     buttons.center.setAttribute('aria-pressed',String(rocker==='center'));
     buttons.j.setAttribute('aria-pressed',String(!!jInput));
-    setText(buttons.j.querySelector('small'),failed?(causeActive()?'Reset blocked':faultSignal()==='holding'?'Hold 3 s: reset':jInput?'Release J':'Hold 3 s: reset'):!ready()?(!power?'Power off':testingLamps()?'Startup test':recovering?'Closing valve':rocker!=='center'?'Center '+rocker.toUpperCase()+' first':jInput?'Release J':'Wait for neutral'):mode==='clean'?'Press: return':mode==='max'?'Tap: save & exit':on?'Tap: water off':'Tap: water on');
-    buttons.j.setAttribute('aria-label',failed?'J reset: '+(faultSignal()==='holding'?'eligible hold in progress':resetInstruction()):!ready()?'J commands locked: '+(!power?'controller power off':testingLamps()?'startup lamp test':recovering?'valve closing':rocker!=='center'?'center '+rocker.toUpperCase()+' and release J':jInput?'release J':'waiting for neutral controls'):mode==='clean'?'J: press to immediately leave Flush and restore normal operation':mode==='max'?'J: tap to save maximum; hold for 1.5 seconds for Flush':'J: tap to toggle water; hold for 1.5 seconds to enter Set Max');
+    setText(buttons.j.querySelector('small'),failed?(causeActive()?'Reset blocked':faultSignal()==='holding'?'Hold 3 s: reset':jInput?'Release J':'Hold 3 s: reset'):!ready()?(!power?'Power off':testingLamps()?'Startup test':recovering?'Closing valve':mustCenterRocker()?'Center '+rocker.toUpperCase()+' first':jInput?'Release J':startupNeedsCenter?'Wait for neutral':'Wait for release'):mode==='clean'?'Press: return':mode==='max'?'Tap: save & exit':on?'Tap: water off':'Tap: water on');
+    buttons.j.setAttribute('aria-label',failed?'J reset: '+(faultSignal()==='holding'?'eligible hold in progress':resetInstruction()):!ready()?'J commands locked: '+(!power?'controller power off':testingLamps()?'startup lamp test':recovering?'valve closing':mustCenterRocker()?'center '+rocker.toUpperCase()+' and release J':jInput?'release J':startupNeedsCenter?'waiting for neutral controls':'waiting for stable J release'):mode==='clean'?'J: press to immediately leave Flush and restore normal operation':mode==='max'?'J: tap to save maximum; hold for 1.5 seconds for Flush':'J: tap to toggle water; hold for 1.5 seconds to enter Set Max');
     setText(q('mode-label'),!power?'POWER OFF':failed?'FAULT · '+faultSignal().toUpperCase():testingLamps()?'LAMP TEST':holdingForMode()?(mode==='max'?'HOLD → FLUSH':'HOLD → SET MAX'):mode==='clean'?'FLUSH · 100%':mode==='max'?'SET MAX':'NORMAL');
     setText(q('scale-start'),mode==='clean'?'FULL OPEN':mode==='max'?'10% OPEN':'LESS');
     setText(q('scale-end'),mode==='clean'?'100%':mode==='max'?'100% OPEN':'MORE');
@@ -232,11 +244,11 @@
     } else if(failed){
       const code=faultCodes[fault];
       status='Fault '+code+' · '+faultNames[fault];
-      detail='Motor command stopped · position unconfirmed';
+      detail=faultResponse()==='closing'?'Fault response · closing valve':faultResponse()==='closed'?'Valve closed · fault remains latched':'Drive inhibited · water may still be flowing';
       helper=faultSignal()==='rejected'?'Reset refused · '+resetInstruction():faultSignal()==='blocked'?'Reset blocked · '+resetInstruction():faultSignal()==='holding'?'Reset eligible · keep holding 3 s · white fill passes behind blue codes':resetInstruction();
       if(latchedFaults.has('settings'))detail+=' · Reset restores level 4 / max 100%';
       if(latchedFaults.size>1)detail+=' · '+latchedFaults.size+' faults latched';
-      label=[...latchedFaults].map(cause=>'Fault '+faultCodes[cause]+'. '+(activeCause(cause)?'Cause active.':'Cause cleared; reset pending.')).join(' ')+' '+helper;
+      label=[...latchedFaults].map(cause=>'Fault '+faultCodes[cause]+'. '+(activeCause(cause)?'Cause active.':'Cause cleared; reset pending.')).join(' ')+' '+detail+'. '+helper;
     } else if(testingLamps()){
       status='Startup · lamp test';
       detail=recovering?'Valve closing · opening commands locked':'Water command off · checking both colors';
@@ -245,11 +257,12 @@
     } else if(recovering){
       status='Startup / recovery · closing valve';
       detail='Opening commands locked until the valve is closed';
-      helper='Release J and center G / H · commands are not queued';
+      helper=(startupNeedsCenter?'Release J and center G / H':'Release J · G/H may stay held')+' · commands are not queued';
       label='Startup or recovery closing. Opening commands inhibited.';
     } else if(!inputsReady){
-      status=rocker!=='center'?'Water OFF · center '+rocker.toUpperCase()+' to enable J':jInput?'Water OFF · release J to enable controls':'Water OFF · qualifying neutral controls';detail='Valve closed · water stays off';
-      helper='Release J and center G / H for 0.1 s to arm';label='Valve closed. Release J and center the rocker for 0.1 seconds before operating.';
+      status=mustCenterRocker()?'Water OFF · center '+rocker.toUpperCase()+' to enable J':jInput?'Water OFF · release J to enable controls':'Water OFF · qualifying '+(startupNeedsCenter?'neutral controls':'J release');detail='Valve closed · water stays off';
+      helper=startupNeedsCenter?'Release J and center G / H for 0.1 s to arm':'Release J for 0.1 s to arm · G/H may stay held';
+      label='Valve closed. '+(startupNeedsCenter?'Release J and center the rocker':'Release J')+' for 0.1 seconds before operating.';
     } else if(mode==='max'){
       const next=nearest(Math.min(reference,draft),draft), newOpening=next*draft/10;
       status='Set Max · '+draft+'% opening';
@@ -276,7 +289,7 @@
     }
     setText(q('status'),status);setText(q('target'),detail);setText(q('switch-state'),helper);
     q('panel').setAttribute('aria-label',label);
-    setText(q('hold-caption'),!power?'Power on to operate':failed?(faultSignal()==='holding'?'Reset eligible · white fills left to right':resetInstruction()):testingLamps()?'Testing lamps · water command off':!ready()?'Waiting for closing / neutral':press?.long||press?.consumed?'Release J to rearm':holdingForMode()?'Keep holding…':mode==='clean'?'Press J to return':mode==='max'?(!on&&motion?'Closing before Flush':'Hold 1.5 s for full open'):'Hold 1.5 s to set max');
+    setText(q('hold-caption'),!power?'Power on to operate':failed?(faultSignal()==='holding'?'Reset eligible · white fills left to right':resetInstruction()):testingLamps()?'Testing lamps · water command off':!ready()?'Waiting for closing / '+(startupNeedsCenter?'neutral':'J release'):press?.long||press?.consumed?'Release J to rearm':holdingForMode()?'Keep holding…':mode==='clean'?'Press J to return':mode==='max'?(!on&&motion?'Closing before Flush':'Hold 1.5 s for full open'):'Hold 1.5 s to set max');
     if(!press||(!press.feedback&&!press.reset)||press.consumed||(press.reset&&faultSignal()!=='holding')||mode==='clean')q('hold-progress').style.width='0%';
     else if(press.long)q('hold-progress').style.width='100%';
     stage.dataset.power=String(power);stage.dataset.on=String(on);stage.dataset.setting=String(level);
@@ -288,6 +301,7 @@
     stage.dataset.rocker=rocker;stage.dataset.triggerHeld=String(!!jInput);
     stage.dataset.fault=fault;stage.dataset.faultCause=[...injectedCauses][0]||'normal';stage.dataset.latchedFaults=[...latchedFaults].join(',');
     stage.dataset.activeFaults=Object.keys(faultCodes).filter(activeCause).join(',');stage.dataset.faultSignal=faultSignal();
+    stage.dataset.faultResponse=faultResponse();
     paintLights(now);drawValve(now);ensureFrame();
   }
   function needsFrame(){
@@ -370,7 +384,7 @@
     const previous=rocker;
     rocker=next;
     // Track G/H during faults without editing settings or interrupting J reset.
-    // Recovery still requires neutral controls before normal commands rearm.
+    // Startup requires neutral controls; fault recovery only requires J release.
     if(next==='center'){armed=true;render();return;}
     const activated=next!==previous;
     if(!ready()||mode==='clean'||jInput){armed=false;render();return;}
@@ -447,7 +461,7 @@
     faultWarningStart=null;resetOffDisplay=false;flashOrigin=performance.now();
     if(triggerTimer!==null)clearTimeout(triggerTimer);triggerTimer=null;
     if(power&&jInput)armTriggerWatchdog();on=false;resumeOn=false;mode='normal';draft=maximum;
-    armed=false;inputsReady=false;recovering=false;positionKnown=false;
+    armed=false;inputsReady=false;recovering=false;positionKnown=false;startupNeedsCenter=true;
     lampTestStart=null;
     if(power&&fault==='normal'){
       flashOrigin=performance.now();
@@ -495,12 +509,19 @@
   }
   function latchFault(cause){
     if(!Object.hasOwn(faultCodes,cause))return;
-    endPress(false);stopMotor();latchedFaults.add(cause);
+    endPress(false);updatePosition(performance.now());
+    if(latchedFaults.size===0)faultCloseAttempted=false;
+    latchedFaults.add(cause);
     faultWarningStart=null;resetOffDisplay=false;flashOrigin=performance.now();
     fault=[...latchedFaults].sort((a,b)=>faultCodes[a]-faultCodes[b])[0];
     mode='normal';draft=maximum;
-    on=false;resumeOn=false;armed=false;inputsReady=false;recovering=false;positionKnown=false;
+    on=false;resumeOn=false;armed=false;inputsReady=false;recovering=false;
     lampTestStart=null;
+    if(faultInhibitsDrive()){
+      stopMotor();positionKnown=false;faultCloseAttempted=true;
+    }else if(!faultCloseAttempted){
+      faultCloseAttempted=true;beginClosing('fault-close');
+    }
     render();
   }
   for(const row of faultRows){
@@ -520,7 +541,7 @@
     if(latchedFaults.has('settings')){level=4;maximum=100;runOpening=40;}
     // Return to the paused lamp display immediately; closure/neutral still gate inputs.
     resetOffDisplay=true;faultWarningStart=null;flashOrigin=performance.now();
-    latchedFaults.clear();fault='normal';draft=maximum;
+    latchedFaults.clear();fault='normal';draft=maximum;faultCloseAttempted=false;startupNeedsCenter=false;
     beginRecovery();render();
   }
   q('reset-fault').addEventListener('click',()=>resetFault());

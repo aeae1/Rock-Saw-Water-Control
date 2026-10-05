@@ -446,7 +446,14 @@ for (const seed of [17, 103, 4099, 65537]) {
         assert.equal(d.colors, Array(10).fill('off').join(','));
       }
       if (d.mode === 'max' && d.on === 'true') assert.equal(d.moving, 'false');
-      if (d.fault !== 'normal') { assert.equal(d.on, 'false'); assert.equal(d.moving, 'false'); assert.equal(d.positionKnown, 'false'); }
+      if (d.fault !== 'normal') {
+        assert.equal(d.on, 'false');assert.equal(d.inputsReady,'false');
+        if(d.moving==='true'){
+          assert.equal(d.faultResponse,'closing');assert.equal(d.target,'0');
+          assert.ok(d.latchedFaults.split(',').every(c=>['settings','input','trigger'].includes(c)));
+        }
+        if(d.positionKnown==='true'){assert.equal(d.position,'0');assert.equal(d.faultResponse,'closed');}
+      }
       if (d.recovering === 'true') { assert.equal(d.target, '0'); assert.equal(d.on, 'false'); assert.equal(d.inputsReady, 'false'); }
     }
   });
@@ -514,11 +521,12 @@ for (const [index, cause] of faultTypes.entries()) {
       s.advance(1000); s.fault(cause); const stopped = s.pos();
       assert.equal(s.stage.dataset.colors.split(',')[index], 'white');
       assert.equal(s.stage.dataset.on, 'false'); assert.equal(s.stage.dataset.mode, 'normal');
-      s.click('reset-fault'); s.tap(); s.advance(6000); assert.equal(s.pos(), stopped);
+      const faultPosition=['settings','input','trigger'].includes(cause)?0:stopped;
+      s.click('reset-fault'); s.tap(); s.advance(6000); assert.equal(s.pos(), faultPosition);
       s.power(false); s.power(true); assert.equal(s.stage.dataset.fault, cause);
-      s.fault('normal'); s.advance(6000); assert.equal(s.pos(), stopped); // Cause removal is not acknowledgement.
+      s.fault('normal'); s.advance(6000); assert.equal(s.pos(), faultPosition); // Cause removal never starts another attempt.
       s.click('reset-fault'); assert.equal(s.stage.dataset.fault, 'normal');
-      assert.equal(s.stage.dataset.recovering, 'true'); s.advance(6000);
+      assert.equal(s.stage.dataset.recovering, String(faultPosition>0)); s.advance(6000);
       assert.equal(s.pos(), 0); assert.equal(s.stage.dataset.on, 'false'); assert.equal(s.stage.dataset.inputsReady, 'true');
     }
   });
@@ -530,8 +538,8 @@ test('fault reset accepts a fresh 3-second J hold with G held and consumes relea
   s.up(); assert.equal(s.stage.dataset.fault, 'driver');
   s.down(); s.advance(3000); assert.equal(s.stage.dataset.fault, 'normal');
   s.advance(6000); assert.equal(s.stage.dataset.inputsReady, 'false');
-  s.up(); s.advance(100);assert.equal(s.stage.dataset.inputsReady,'false');assert.equal(s.stage.dataset.setting,'5');
-  s.click('center');s.advance(100); assert.equal(s.stage.dataset.inputsReady, 'true'); assert.equal(s.stage.dataset.on, 'false');
+  s.up(); s.advance(100);assert.equal(s.stage.dataset.inputsReady,'true');assert.equal(s.stage.dataset.setting,'5');
+  assert.equal(s.stage.dataset.rocker,'g');assert.equal(s.stage.dataset.on,'false');
   s.tap(); assert.equal(s.stage.dataset.on, 'true');
 });
 

@@ -17,20 +17,20 @@
 			<text x="28" y="25" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(74%,21%,18%); stroke:none;" transform="translate(0,50) scale(1,-1)">REV C  |  04 OCT 2026  |  BENCH DESIGN - H1-H5 HOLD  |  Named nets connect across sheets</text>
 			<text x="28" y="9" style="font-family: DejaVu; font-size: 8px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,18) scale(1,-1)">Solid dot = joined wires. Crossing without a dot = no connection. Boxes show functions, not physical footprints.</text>
 			<text x="30" y="642" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1284) scale(1,-1)">HSD3 printed CH4 (+)</text>
-			<polyline points="35 622, 1000 622" style="stroke: rgb(74%,21%,18%); stroke-linecap: butt; stroke-width: 1.5; fill: None; fill-rule: evenodd;"/>
+			<path d="M 35,622 L 1000,622 Z" style="stroke: rgb(74%,21%,18%); stroke-linecap: butt; stroke-width: 1.5;"/>
 			<text x="485" y="633" style="font-family: DejaVu-Bold; font-size: 11px;fill: rgb(74%,21%,18%); stroke:none;" transform="translate(0,1266) scale(1,-1)">VALVE_12V</text>
 			<rect x="155" y="375" width="205" height="160" style="stroke: rgb(61%,67%,70%); stroke-linecap: butt; stroke-width: 1; fill: rgb(92%,94%,96%); fill-rule: evenodd;"/>
 			<text x="167" y="512" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1024) scale(1,-1)">U4 / L7805ABV</text>
 			<text x="167" y="494" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,988) scale(1,-1)">TO-220: 1 IN, 2 GND, 3 OUT</text>
-			<polyline points="200 622, 200 535" style="stroke: rgb(74%,21%,18%); stroke-linecap: butt; stroke-width: 1.5; fill: None; fill-rule: evenodd;"/>
+			<path d="M 200,622 L 200,535 Z" style="stroke: rgb(74%,21%,18%); stroke-linecap: butt; stroke-width: 1.5;"/>
 			<circle cx="200" cy="622" r="3" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(28%,34%,39%); fill-rule: evenodd;"/>
 			<circle cx="200" cy="535" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
 			<text x="208" y="531" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1062) scale(1,-1)">U4.1</text>
-			<polyline points="260 375, 375 375" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5; fill: None; fill-rule: evenodd;"/>
+			<path d="M 260,375 L 375,375 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
 			<text x="272" y="382" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,764) scale(1,-1)">0V</text>
 			<circle cx="260" cy="375" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
 			<text x="228.77734375" y="382" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,764) scale(1,-1)">U4.2</text>
-			<polyline points="360 477, 525 477" style="stroke: rgb(66%,35%,4%); stroke-linecap: butt; stroke-width: 1.5; fill: None; fill-rule: evenodd;"/>
+			<path d="M 360,477 L 525,477 Z" style="stroke: rgb(66%,35%,4%); stroke-linecap: butt; stroke-width: 1.5;"/>
 			<circle cx="360" cy="477" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
 			<text x="328.77734375" y="484" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,968) scale(1,-1)">U4.3</text>
 			<text x="382" y="490" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(66%,35%,4%); stroke:none;" transform="translate(0,980) scale(1,-1)">RELAY_5V</text>
@@ -39,7 +39,7 @@
 			<text x="537" y="494" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,988) scale(1,-1)">Single-side-stable, DPDT</text>
 			<circle cx="525" cy="477" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
 			<text x="533" y="473" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,946) scale(1,-1)">K1.1 coil +</text>
-			<polyline points="780 426, 895 426" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5; fill: None; fill-rule: evenodd;"/>
+			<path d="M 780,426 L 895,426 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
 			<text x="792" y="433" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,866) scale(1,-1)">0V</text>
 			<circle cx="780" cy="426" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
 			<text x="716.0380859375" y="433" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,866) scale(1,-1)">K1.10 coil -</text>
@@ -52,35 +52,35 @@
 			<rect x="920" y="165" width="175" height="405" style="stroke: rgb(61%,67%,70%); stroke-linecap: butt; stroke-width: 1; fill: rgb(92%,94%,96%); fill-rule: evenodd;"/>
 			<text x="932" y="547" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1094) scale(1,-1)">V1 / actuator</text>
 			<text x="932" y="529" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,1058) scale(1,-1)">One five-wire cable</text>
-			<polyline points="1000 622, 1000 570" style="stroke: rgb(74%,21%,18%); stroke-linecap: butt; stroke-width: 1.5; fill: None; fill-rule: evenodd;"/>
+			<path d="M 1000,622 L 1000,570 Z" style="stroke: rgb(74%,21%,18%); stroke-linecap: butt; stroke-width: 1.5;"/>
 			<circle cx="1000" cy="622" r="3" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(28%,34%,39%); fill-rule: evenodd;"/>
 			<circle cx="1000" cy="570" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
 			<text x="1008" y="566" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1132) scale(1,-1)">RED</text>
 			<text x="25" y="250" style="font-family: DejaVu-Bold; font-size: 11px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,500) scale(1,-1)">U2 OUT</text>
-			<polyline points="35 235, 510 235" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5; fill: None; fill-rule: evenodd;"/>
+			<path d="M 35,235 L 510,235 Z" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5;"/>
 			<circle cx="510" cy="235" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
 			<text x="452.87890625" y="242" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,484) scale(1,-1)">K1.3 COM</text>
-			<polyline points="514 235, 561 251" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5; fill: None; fill-rule: evenodd;"/>
+			<path d="M 514,235 L 561,251 Z" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5;"/>
 			<circle cx="574" cy="235" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
 			<text x="582" y="242" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,484) scale(1,-1)">K1.4 NO</text>
-			<polyline points="577 235, 920 235" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5; fill: None; fill-rule: evenodd;"/>
+			<path d="M 577,235 L 920,235 Z" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5;"/>
 			<circle cx="920" cy="235" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
 			<text x="928" y="231" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,462) scale(1,-1)">GREEN</text>
 			<text x="25" y="192" style="font-family: DejaVu-Bold; font-size: 11px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,384) scale(1,-1)">U3 I+</text>
-			<polyline points="35 180, 510 180" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5; fill: None; fill-rule: evenodd;"/>
+			<path d="M 35,180 L 510,180 Z" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5;"/>
 			<circle cx="510" cy="180" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
 			<text x="452.87890625" y="187" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,374) scale(1,-1)">K1.8 COM</text>
-			<polyline points="514 180, 561 196" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5; fill: None; fill-rule: evenodd;"/>
+			<path d="M 514,180 L 561,196 Z" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5;"/>
 			<circle cx="574" cy="180" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
 			<text x="582" y="187" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,374) scale(1,-1)">K1.7 NO</text>
-			<polyline points="577 180, 920 180" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5; fill: None; fill-rule: evenodd;"/>
+			<path d="M 577,180 L 920,180 Z" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5;"/>
 			<circle cx="920" cy="180" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
 			<text x="928" y="176" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,352) scale(1,-1)">YELLOW</text>
-			<polyline points="805 466, 920 466" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5; fill: None; fill-rule: evenodd;"/>
+			<path d="M 805,466 L 920,466 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
 			<text x="805" y="473" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,946) scale(1,-1)">0V</text>
 			<circle cx="920" cy="466" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
 			<text x="928" y="462" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,924) scale(1,-1)">V1.BLACK</text>
-			<polyline points="805 405, 920 405" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5; fill: None; fill-rule: evenodd;"/>
+			<path d="M 805,405 L 920,405 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
 			<text x="805" y="412" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,824) scale(1,-1)">0V / H4 HOLD</text>
 			<circle cx="920" cy="405" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
 			<text x="928" y="401" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,802) scale(1,-1)">V1.WHITE</text>

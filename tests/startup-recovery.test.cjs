@@ -112,8 +112,8 @@ test('rocker movement throughout acknowledgement preserves the hold deadline and
   assert.equal(s.stage.dataset.fault, 'driver');assert.equal(s.stage.dataset.faultSignal,'holding');
   s.advance(1); assert.equal(s.stage.dataset.fault, 'normal');assert.equal(s.stage.dataset.setting,'4');
   assert.equal(s.stage.dataset.inputsReady, 'false');
-  s.up(); s.advance(100); paused(s); assert.equal(s.stage.dataset.inputsReady, 'false');
-  s.click('center');s.advance(100);assert.equal(s.stage.dataset.inputsReady,'true');
+  s.up(); s.advance(100); paused(s); assert.equal(s.stage.dataset.inputsReady, 'true');
+  assert.equal(s.stage.dataset.rocker,'h');s.tap();assert.equal(s.stage.dataset.on,'true');
 });
 
 test('removing a cause while J remains held cannot start acknowledgement, regardless of rocker movement', () => {

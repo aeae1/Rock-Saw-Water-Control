@@ -15,7 +15,7 @@ If a control was held during startup, release J and center G/H. After the lamp t
 
 Check that all ten lamps show both colors during startup; a missing color needs inspection. A fault replaces the test immediately. The same sequence applies with reduced motion enabled. The test follows controller power-up, so a machine key cycle will not repeat it if the controller remains powered from constant hot.
 
-Holding G or H makes only one change. Once controls are ready, either direction may remain held while J toggles water normally. During startup or recovery, the J label identifies a held rocker that must be centered first. The selected level is remembered when water is off.
+Holding G or H makes only one change. Once controls are ready, either direction may remain held while J toggles water normally. Healthy startup requires centering the rocker first. After fault reset, G/H may remain held; only closure and a released J gate normal commands. The selected level is remembered when water is off.
 
 A **tap** means press and release J in less than half a second. A **hold** means keep J pressed for 1.5 seconds, then release it. Releasing between those times cancels the gesture without changing anything. White lamps start filling inward after half a second to show that a mode-changing hold is underway.
 
@@ -55,16 +55,16 @@ G/H does not change settings in Flush. Keeping J held after an exit cannot enter
 
 ## If a fault appears
 
-Each fault lights its own numbered lamp. **Blinking white means the cause is still active. Blinking blue means it has cleared but still needs acknowledgement.** Several faults can be shown together; all must be cleared before reset. Faults stop further valve movement, so **water may still be flowing**. Use the upstream manual shutoff when necessary.
+Each fault lights its own numbered lamp. **Blinking white means the cause is still active. Blinking blue means it has cleared but still needs acknowledgement.** Several faults can be shown together; all must be cleared before reset. Settings and switch faults (6, 7, 10) automatically close the valve if its control path remains healthy. Other faults inhibit movement, so **water may still be flowing**. Use the upstream manual shutoff when necessary.
 
 1. Correct every active cause using the [fault reference](faults.md).
 2. Release J. G/H can stay held in either direction.
 3. **Hold J for 3 seconds.** Fault lamps stay blue while the white fill moves left to right, spending the same time at every position, including behind blue lamps. Release after acknowledgement.
-4. As soon as the three-second hold succeeds, the normal water-OFF lights return: white saved level and blinking blue maximum. Closing still completes in the background. Release J and keep G/H centered for 0.1 seconds after closing before a fresh tap can resume water.
+4. As soon as the three-second hold succeeds, the normal water-OFF lights return: white saved level and blinking blue maximum. If closing is unfinished, it completes in the background; an already closed valve does not move again. Once closed, release J for 0.1 seconds, then make a fresh J tap to resume water. G/H can remain held throughout reset and recovery; movements made while commands are locked do not change the saved setting.
 
 In the simulator, turn fault toggles ON to activate causes and OFF to remove them. Try several at once. OFF does not erase a latched code. **Reset now · sim shortcut** skips the hold; use J to see its progress lights.
 
-If an active cause blocks reset, the row shows staggered blue/white. At three seconds, a brief faster blue/white warning indicates refusal if the cause remains. If J needs a fresh press, the code lamps stay blinking blue and the text says to release it. G/H may be held or moved throughout the reset hold. Only an eligible reset shows progress. Correct the causes, release J and try again; clearing a cause midway through a hold cannot make that hold valid. A new fault interrupts a reset hold; G/H does not. Rocker movements during reset do not change settings or queue a later adjustment. A new fault also interrupts recovery. Cycling power alone does not acknowledge faults. Invalid saved settings restore level 4 and a 100% maximum when acknowledged. Reduced-motion preferences use steady colors and text instead of flashing.
+If an active cause blocks reset, the row shows staggered blue/white. At three seconds, a brief faster blue/white warning indicates refusal if the cause remains. If J needs a fresh press, the code lamps stay blinking blue and the text says to release it. G/H may be held or moved throughout the reset hold. Only an eligible reset shows progress. Correct the causes, release J and try again; clearing a cause midway through a hold cannot make that hold valid. A new fault interrupts a reset hold; G/H does not. Rocker movements during reset do not change settings or queue a later adjustment. A new fault requires another acknowledgement. A valve-control fault stops closing; another settings or switch fault lets the existing close finish. Cycling power alone does not acknowledge faults. Invalid saved settings restore level 4 and a 100% maximum when acknowledged. Reduced-motion preferences use steady colors and text instead of flashing.
 
 ## Power and simulator notes
 

@@ -171,7 +171,10 @@ class Sheet:
     def rect(self,x,y,w,h,fill='#fff',stroke=None):
         self.d.add(Rect(x,self.h-y-h,w,h,fillColor=color(fill),strokeColor=color(stroke) if stroke else None,strokeWidth=1))
     def line(self,*pts,col=GRAY,width=1.5):
-        self.d.add(PolyLine([v for x,y in pts for v in (x,self.h-y)],strokeColor=color(col),strokeWidth=width,fillColor=None))
+        # SVG defaults open polylines to a black fill if its exporter omits
+        # fill="none". Individual line segments cannot create a filled polygon.
+        for (x1,y1),(x2,y2) in zip(pts,pts[1:]):
+            self.d.add(Line(x1,self.h-y1,x2,self.h-y2,strokeColor=color(col),strokeWidth=width))
     def dot(self,x,y,col=GRAY):self.d.add(Circle(x,self.h-y,3,fillColor=color(col),strokeColor=None))
     def box(self,x,y,w,h,title,sub=''):
         self.rect(x,y,w,h,PALE,'#9cabb5');self.text(x+12,y+23,title,12,NAVY,True)

@@ -1,14 +1,27 @@
 # Fault Detection and Recovery
 
-Revision 0.10 · Simulator behavior and proposed firmware contract
+Revision 0.11 · Simulator behavior and proposed firmware contract
 
 ## Common response
 
 The simulator has one ON/OFF toggle for each of the ten fault causes. ON injects and keeps the cause active; OFF removes that injected cause without acknowledging its latched code. Any number of toggles can be ON simultaneously. Briefly switching ON then OFF simulates a transient fault. The status beside each toggle distinguishes an active cause, a cleared cause awaiting reset, and an unlatched code. The controls are disabled while controller power is OFF. A continuously held J also triggers fault 10 automatically after 30 powered seconds, including when held at startup. Delayed release handling checks the same deadline. Physical supply, current, position, temperature, communication, and switch diagnostics require the sensors and firmware described below; the browser does not detect those physical conditions.
 
-On a fault, cancel pending gestures and draft edits, clear Normal/Flush run commands, stop modeled movement, invalidate the position reference, and latch the code. All opening commands are inhibited. Every latched code has its own numbered lamp; simultaneous faults are displayed together. The heading names the lowest numbered code and reports how many are latched. A blue code means that cause has cleared; any remaining white code still blocks acknowledgement of the entire set.
+On a fault, cancel pending gestures and draft edits, clear Normal/Flush run commands and latch the code. Codes 6, 7 and 10 request one automatic close when no drive-inhibiting fault is latched. Codes 1–5, 8 and 9 stop movement and invalidate the position reference. All opening commands are inhibited. Every latched code has its own numbered lamp; simultaneous faults are displayed together. The heading names the lowest numbered code and reports how many are latched. A blue code means that cause has cleared; any remaining white code still blocks acknowledgement of the entire set.
 
 **Stopped is not closed.** An actuator may hold an open position and continue passing water. For the proportional hardware, a fault response must be mapped to a characterized stop/power-inhibit circuit; removing a 4–20 mA signal is not assumed to close or stop it. Do not repeatedly drive a jammed actuator. Use the upstream manual shutoff if flow must stop and the actuator cannot close.
+
+## Automatic closing versus movement inhibition
+
+| Latched codes | Response |
+| :--- | :--- |
+| Only 6 (settings), 7 (conflicting inputs), and/or 10 (stuck J) | Command closed once, independently of the saved opening/flow curve. Keep fault lamps displayed throughout closing and after closure. |
+| Any of 1–5, 8 or 9 | Inhibit drive immediately. Do not attempt to force a jammed, overheated or untrusted actuator closed. Water may remain flowing. |
+
+A drive-inhibiting code takes priority regardless of arrival order, including when its injected cause has already cleared. A new such fault during automatic closing stops the attempt. Removing a cause, adding another operator fault or cycling power does not restart an interrupted close; a fresh acknowledgement is required. Additional settings/input faults do not restart an existing closing deadline. A new fault always cancels a reset hold, even if it permits closing to continue.
+
+Reset leaves water OFF. If closure is already confirmed, reset causes no additional movement. If an automatic close is underway, it retains its original deadline. Otherwise a deliberate reset authorizes one closing/reference attempt. A failure during that attempt inhibits drive again and requires correction and a new acknowledgement. J must be released for 100 ms after closure before a fresh command is accepted; G/H may remain held. Prior rocker activity is consumed.
+
+The ideal browser motion reaches its closed target on a five-second full-stroke model. Inject a jam/timeout/position fault to test an interrupted attempt; the browser does not simulate physical sensors or autonomously discover mechanical failure. Production firmware must separately validate voltage, temperature, driver/bus health, feedback progress and bounded closure time. Keep supervised valve power and the closed command available during healthy automatic closing; do not remove power merely because an operator fault latched. A watchdog or unsafe valve-path condition must still inhibit drive independently. A closed indication requires real feedback/flow qualification, not elapsed time alone.
 
 ## Codes
 
@@ -34,23 +47,37 @@ Thresholds and confirmation times are deliberately not released as hardware cons
 | Cause active | Its numbered lamp blinks white/off continuously, 600 ms per phase. |
 | Cause removed, code still latched | Its numbered lamp blinks blue/off at the same rate. Other active codes continue blinking white. |
 | Valid reset hold | All latched code lamps stay solid blue. White fill advances across all ten positions over the 3-second hold, spending 300 ms per position, including positions hidden behind blue code lamps. |
-| Reset acknowledged, recovery pending | Immediately return to the normal water-OFF display: white saved-level bar and blinking blue maximum marker. Closing and released/centered control qualification still inhibit opening. |
+| Reset acknowledged, recovery pending | Immediately return to the normal water-OFF display: white saved-level bar and blinking blue maximum marker. Closing and 100 ms of released J still inhibit opening. G/H may stay held. |
 | Reset blocked by an active cause | The row alternates staggered blue/white at 600 ms per phase. No reset progress bar is shown. This hold cannot acknowledge faults. |
 | Causes cleared, but reset interlocked | Code lamps continue blinking blue. Text identifies the need to release J and start a fresh hold. G/H position does not block reset. No active-fault warning or reset progress is shown. |
 | Blocked hold reaches 3 seconds with a cause still active | All lamps alternate blue/white at 250 ms per phase for 1.5 seconds, then ordinary fault blinking returns. Clearing the final cause ends this warning immediately. No automatic retry occurs. |
 
 White progress follows physical positions: lamp 1 is reached at 300 ms, lamp 2 at 600 ms, and so on. A blue code overlays the fill without shortening or redistributing its time. At 3000 ms acknowledgement immediately restores the OFF display; the completed fill is not held. With all ten codes latched, all ten remain blue; the simulator's separate progress bar still shows elapsed hold time. With reduced motion enabled, active codes are steady white and cleared/reset codes steady blue; holds blocked by active causes and their rejection warnings use steady white, and the white progress animation is suppressed. Text identifies each state. The rejection still expires after 1.5 seconds.
 
-## Acknowledgement
+## What clears a cause on real hardware?
+
+The browser toggles are manual stand-ins for physical detection. Production firmware must distinguish directly observable healthy conditions from actuator checks that cannot be completed with drive inhibited:
+
+| Condition | Recovery evidence |
+| :--- | :--- |
+| Stuck J or conflicting inputs | Debounced J release or removal of the simultaneous G/H assertion. A single held G or H is valid. |
+| Supply or temperature fault | Measured values inside a characterized recovery range for a stable interval; temperature recovery uses hysteresis. |
+| Communication or driver fault | Required initialization/transfers and independent diagnostics healthy; do not infer output correctness from a bus ACK alone. |
+| Jam, overcurrent, timeout or lost position | Correct the physical problem, verify independent preconditions and use a deliberate reset to authorize one bounded closing/requalification attempt. Current, feedback progress and closure must then pass before recovery completes. |
+| Invalid settings | Validate an available redundant record or acknowledge recovery to known defaults; do not use corrupt values to command closure. |
+
+Zero current with valve power disabled does not prove an overcurrent or jam is repaired. Actuator-dependent conditions remain pending verification, rather than falsely healthy or permanently impossible to reset. A reset may authorize the supervised test while these checks are pending; it does not erase their diagnostic record or authorize ordinary opening. A failed test inhibits movement again and requires a new deliberate attempt after correction. There are no final hardware thresholds or acquisition firmware in this repository yet.
+
+## Simulator acknowledgement
 
 1. Turn OFF each injected cause (or use **Turn off all fault toggles**). For a real automatic stuck-J fault, release J as well; the toggles cannot remove that physical-input condition.
 2. Release J. Every cause must be absent before starting a fresh hold. G/H may remain held in either direction.
 3. Hold J for three seconds. Blue code lamps remain visible while the other lamps fill white. Releasing early or introducing a new fault cancels the gesture, even if corrected before its deadline. Holding or moving G/H does not interrupt it and does not edit settings.
-4. Release J and wait for closing/reference recovery. Controls must remain released/centered for 100 ms afterward. Water stays OFF; no opening command is queued.
+4. Release J and wait for any unfinished closing/reference recovery. After closure, J must remain released for 100 ms; G/H may stay held or move. Water stays OFF until a fresh J tap. Earlier rocker activations are discarded, not queued.
 
-A hold started while a cause is active is blocked for its entire duration. Clearing that cause during the hold does not make it valid; release and press J again. G/H position and movement do not affect reset eligibility. A blocked hold never changes saved settings, clears latches or moves the valve. The active-cause warning ends as soon as the final cause clears. The short warning does not repeat if J remains held; the 30-second stuck-J detector remains active. The display and acknowledgement handler use the same reset-state decision. Only a hold displayed as eligible can acknowledge; the progress bar is reserved for that state.
+A hold started while a cause is active is blocked for its entire duration. Clearing that cause during the hold does not make it valid; release and press J again. G/H position and movement do not affect reset eligibility. A blocked hold never changes saved settings, clears latches or initiates valve movement. An automatic close already authorized by the fault response continues independently of the reset gesture. The active-cause warning ends as soon as the final cause clears. The short warning does not repeat if J remains held; the 30-second stuck-J detector remains active. The display and acknowledgement handler use the same reset-state decision. Only a hold displayed as eligible can acknowledge; the progress bar is reserved for that state.
 
-**Reset now · sim shortcut** skips the hold and its progress animation, but still requires all causes absent and J released; G/H may be held. Acknowledgement restores defaults if code 6 was among the latched codes and starts closing/reference recovery. At the instant acknowledgement succeeds, the reset animation ends and the normal water-OFF lamp display returns, even if J is still held or the valve is still closing. The progress bar clears immediately. The maximum marker starts on its blue phase and continues its usual blue/off or blue/white cycle; reduced motion uses a steady blue marker. The display shows the OFF command, not proof of physical closure. A new fault during closing stops recovery and takes over the display.
+**Reset now · sim shortcut** skips the hold and its progress animation, but still requires all causes absent and J released; G/H may be held. Acknowledgement restores defaults if code 6 was among the latched codes. If the valve is already confirmed closed, it remains closed without another movement. An automatic close already underway continues on its original deadline. Otherwise acknowledgement authorizes one closing/reference recovery attempt. At the instant acknowledgement succeeds, the reset animation ends and the normal water-OFF lamp display returns, even if J is still held or the valve is still closing. The progress bar clears immediately. The maximum marker starts on its blue phase and continues its usual blue/off or blue/white cycle; reduced motion uses a steady blue marker. The display shows the OFF command, not proof of physical closure. A new fault takes over the display and requires another acknowledgement. Codes 6, 7 and 10 allow an existing close to continue; a drive-inhibiting code stops it immediately.
 
 The simulator retains latches through its machine-power switch, not a page reload. Firmware must use a bounded, integrity-checked persistent fault record or reset-cause handling so power cycling cannot silently resume a previously faulted run. Persist only state changes and use redundant records; do not write flash/EEPROM on every loop or animation frame.
 

@@ -387,11 +387,12 @@ test('cleared faults reset while H stays held, with eligible progress and immedi
   await expect(stage.locator('[data-hold-progress]')).toHaveCSS('width','0px');
   await expect(stage).toHaveAttribute('data-colors','white,white,white,white,off,off,off,off,off,blue');
   await expect(stage).toHaveAttribute('data-on','false');await expect(stage).toHaveAttribute('data-rocker','h');
+  await expect(trigger).toHaveAttribute('aria-label',/release J/);
   await page.keyboard.up('Space');await page.clock.runFor(100);
-  await expect(stage).toHaveAttribute('data-inputs-ready','false');
-  await expect(stage.locator('[data-status]')).toContainText('center H to enable J');
-  await stage.locator('[data-center]').click();await page.clock.runFor(100);
   await expect(stage).toHaveAttribute('data-inputs-ready','true');
+  await trigger.focus();await page.keyboard.down('Space');await page.clock.runFor(100);await page.keyboard.up('Space');
+  await expect(stage).toHaveAttribute('data-on','true');await expect(stage).toHaveAttribute('data-rocker','h');
+  await expect(stage).toHaveAttribute('data-setting','4');
 });
 
 test('clearing a cause mid-hold stops active-fault animation without promoting the blocked hold', async ({page})=>{
@@ -406,4 +407,43 @@ test('clearing a cause mid-hold stops active-fault animation without promoting t
   await page.keyboard.up('Space');await trigger.focus();await page.keyboard.down('Space');await page.clock.runFor(1510);
   await expect(stage).toHaveAttribute('data-fault-signal','holding');await expect(stage).toHaveAttribute('data-colors','white,white,white,blue,white,off,off,off,off,off');
   await page.clock.runFor(1490);await expect(stage).toHaveAttribute('data-fault','normal');await page.keyboard.up('Space');
+});
+
+test('an operator fault closes water while its code stays visible and reset causes no further movement',async({page})=>{
+  await page.clock.install({time:new Date('2026-10-05T12:00:00Z')});await page.clock.pauseAt(new Date('2026-10-05T12:00:01Z'));
+  const stage=page.locator('.sa-stage'),trigger=stage.locator('[data-j]');
+  await stage.locator('[data-power]').check();await page.clock.runFor(2100);
+  await trigger.click();await page.clock.runFor(2200);
+  await stage.locator('[data-fault-toggle="settings"]').check();
+  await expect(stage).toHaveAttribute('data-fault-response','closing');
+  await expect(stage).toHaveAttribute('data-colors','off,off,off,off,off,white,off,off,off,off');
+  await expect(stage.locator('[data-target]')).toContainText('closing valve');
+  await page.clock.runFor(1000);expect(Number(await stage.getAttribute('data-position'))).toBeLessThan(40);
+  await page.clock.runFor(1200);await expect(stage).toHaveAttribute('data-position','0');
+  await expect(stage).toHaveAttribute('data-fault-response','closed');await expect(stage).toHaveAttribute('data-fault','settings');
+  await expect(stage.locator('[data-valve-state]')).toHaveText('Closed · fault latched');
+  await stage.locator('[data-fault-toggle="settings"]').uncheck();await trigger.focus();
+  await page.keyboard.down('Space');await page.clock.runFor(3000);
+  await expect(stage).toHaveAttribute('data-fault','normal');await expect(stage).toHaveAttribute('data-moving','false');
+  await expect(stage).toHaveAttribute('data-recovering','false');await page.keyboard.up('Space');await page.clock.runFor(100);
+  await expect(stage).toHaveAttribute('data-inputs-ready','true');await expect(stage).toHaveAttribute('data-on','false');
+});
+
+test('a jam interrupts fault closing and only deliberate reset can authorize another attempt',async({page})=>{
+  await page.clock.install({time:new Date('2026-10-05T12:00:00Z')});await page.clock.pauseAt(new Date('2026-10-05T12:00:01Z'));
+  const stage=page.locator('.sa-stage'),trigger=stage.locator('[data-j]');
+  await stage.locator('[data-power]').check();await page.clock.runFor(2100);
+  await trigger.click();await page.clock.runFor(2200);
+  await stage.locator('[data-fault-toggle="input"]').check();await page.clock.runFor(500);
+  await stage.locator('[data-fault-toggle="stall"]').check();const stopped=await stage.getAttribute('data-position');
+  expect(Number(stopped)).toBeGreaterThan(0);await expect(stage).toHaveAttribute('data-fault-response','inhibited');
+  await expect(stage.locator('[data-target]')).toContainText('water may still be flowing');
+  await stage.locator('[data-clear-causes]').click();await stage.locator('[data-fault-toggle="trigger"]').check();
+  await page.clock.runFor(6000);await expect(stage).toHaveAttribute('data-position',stopped);
+  await stage.locator('[data-clear-causes]').click();await trigger.focus();await page.keyboard.down('Space');
+  await page.clock.runFor(3000);await expect(stage).toHaveAttribute('data-fault','normal');
+  await expect(stage).toHaveAttribute('data-recovering','true');await expect(stage).toHaveAttribute('data-on','false');
+  await page.keyboard.up('Space');await page.clock.runFor(2200);
+  await expect(stage).toHaveAttribute('data-position','0');await expect(stage).toHaveAttribute('data-inputs-ready','true');
+  await expect(stage).toHaveAttribute('data-on','false');
 });

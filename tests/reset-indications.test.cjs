@@ -72,14 +72,18 @@ test('normal operation permits fresh J taps while either rocker direction stays 
  }
 });
 
-test('startup and post-reset neutral locks explicitly name a held rocker and recover after centering',()=>{
+test('cold startup requires centering but fault reset rearms J with either rocker held',()=>{
  for(const afterReset of [false,true])for(const direction of ['g','h']){
   const s=simulator();
   if(afterReset){s.power(true);s.fault('driver');s.fault('normal');s.down();s.advance(3000);s.click(direction);s.up();}
   else{s.click(direction);s.power(true);}
-  s.advance(2100);s.tap();assert.equal(s.stage.dataset.on,'false');
-  assert.match(s.q('status').textContent,new RegExp('center '+direction.toUpperCase()+' to enable J'));
-  s.click('center');s.advance(100);s.tap();assert.equal(s.stage.dataset.on,'true');
+  s.advance(2100);assert.equal(s.stage.dataset.setting,'4');s.tap();
+  if(afterReset){assert.equal(s.stage.dataset.on,'true');assert.equal(s.stage.dataset.rocker,direction);}
+  else{
+   assert.equal(s.stage.dataset.on,'false');
+   assert.match(s.q('status').textContent,new RegExp('center '+direction.toUpperCase()+' to enable J'));
+   s.click('center');s.advance(100);s.tap();assert.equal(s.stage.dataset.on,'true');
+  }
  }
 });
 
