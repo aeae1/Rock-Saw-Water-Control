@@ -63,3 +63,7 @@ For each test, record date, hardware/firmware revisions, supply voltage, water p
 | Long uptime / counter rollover | All gesture, watchdog and motion deadlines work across 32-bit wrap |
 | Hot enclosure, full lamp load and parked feed | Every component remains within measured/rated limits; acceptable battery draw |
 | Machine functions | Correct connector orientation and independence from depth/alignment hydraulics |
+
+## Immediate OFF display after acknowledgement
+
+The 5 October update replaces the post-reset blue-code hold with the normal paused display at the instant acknowledgement succeeds. The existing fault-display tests now verify the exact 3-second boundary, preserved saved level, both maximum-marker placements, reduced motion, a held J, background closure and neutral lockout. The browser reset scenario also checks immediate OFF lamps while closure is still running and confirms that the progress bar stays cleared. The configured totals remain 196 deterministic checks and 57 browser cases.

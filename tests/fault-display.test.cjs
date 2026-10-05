@@ -45,23 +45,34 @@ test('valid hold preserves all blue fault codes and fills only other lamps white
   s.advance(1510);assert.deepEqual(colors(s),['white','white','white','blue','white','off','off','blue','off','off']);
   s.advance(1489);assert.equal(s.stage.dataset.fault,'driver');
   assert.equal(colors(s).filter(c=>c==='blue').length,2);assert.equal(colors(s).filter(c=>c==='white').length,7);
-  s.advance(1);assert.equal(s.stage.dataset.fault,'normal');assert.equal(signal(s),'recovery');
-  assert.deepEqual(colors(s),['off','off','off','blue','off','off','off','blue','off','off']);
-  s.advance(1000);assert.equal(signal(s),'recovery');s.up();s.advance(99);assert.equal(signal(s),'recovery');
+  s.advance(1);assert.equal(s.stage.dataset.fault,'normal');assert.equal(signal(s),'none');
+  assert.deepEqual(colors(s),['white','white','white','white','off','off','off','off','off','blue']);
+  assert.equal(s.stage.dataset.inputsReady,'false');assert.equal(s.q('hold-progress').style.width,'0%');
+  s.advance(1000);assert.equal(signal(s),'none');s.up();s.advance(99);assert.equal(signal(s),'none');
   s.advance(1);assert.equal(signal(s),'none');assert.equal(s.stage.dataset.inputsReady,'true');assert.equal(s.stage.dataset.on,'false');
 });
 
 test('all ten simultaneous codes reset without division by zero or losing code lamps',()=>{
   const s=cleared(...causes);s.down();s.advance(1504);assert.ok(colors(s).every(c=>c==='blue'));
-  s.advance(1496);assert.equal(signal(s),'recovery');assert.ok(colors(s).every(c=>c==='blue'));
+  s.advance(1496);assert.equal(signal(s),'none');assert.deepEqual(colors(s),['white','white','white','white','off','off','off','off','off','blue']);
   s.up();s.advance(100);assert.equal(s.stage.dataset.fault,'normal');assert.equal(s.stage.dataset.setting,'4');
 });
 
-test('reset code lamps stay solid blue throughout closing and until neutral, not the saved white bar',()=>{
-  const s=simulator();s.power(true);s.tap();s.advance(5000);s.fault('driver');s.faultToggle('driver',false);
-  s.down();s.advance(3000);assert.equal(signal(s),'recovery');s.up();
-  s.advance(1500);assert.equal(signal(s),'recovery');assert.equal(colors(s)[3],'blue');assert.equal(colors(s)[0],'off');
-  s.advance(1000);assert.equal(signal(s),'none');assert.equal(s.pos(),0);assert.equal(s.stage.dataset.on,'false');
+test('reset immediately restores the paused bar and max marker while closing and neutral remain locked',()=>{
+  for(const cap of [50,100])for(const reducedMotion of [false,true]){
+    const s=simulator({reducedMotion});s.power(true);
+    if(cap===50){s.hold();s.draft(cap);s.click('center');s.tap();}
+    s.tap();s.advance(5000);s.fault('driver');s.faultToggle('driver',false);
+    s.down();s.advance(2999);assert.equal(s.stage.dataset.fault,'driver');
+    s.advance(1);assert.equal(signal(s),'none');assert.equal(s.stage.dataset.on,'false');
+    const level=Number(s.stage.dataset.setting),expected=Array.from({length:10},(_,i)=>i<level?'white':'off');expected[cap/10-1]='blue';
+    assert.deepEqual(colors(s),expected);assert.equal(s.q('mode-label').textContent,'NORMAL');
+    assert.equal(s.stage.dataset.recovering,'true');assert.equal(s.stage.dataset.inputsReady,'false');assert.equal(s.stage.dataset.target,'0');
+    assert.equal(s.q('hold-progress').style.width,'0%');
+    s.advance(616);assert.equal(s.q('hold-progress').style.width,'0%');
+    assert.equal(colors(s)[cap/10-1],reducedMotion?'blue':cap/10<=level?'white':'off');
+    s.up();s.tap();s.advance(1600);assert.equal(s.pos(),0);assert.equal(s.stage.dataset.inputsReady,'true');assert.equal(s.stage.dataset.on,'false');
+  }
 });
 
 test('blocked hold staggers, refuses once, warns briefly, then returns to continuous active indication',()=>{
@@ -107,7 +118,7 @@ test('automatic stuck J survives removing every injected cause; release and a fr
   assert.equal(s.stage.dataset.latchedFaults,'driver,trigger');s.down();s.advance(3000);assert.equal(s.stage.dataset.fault,'normal');
 });
 
-test('new fault during blue recovery replaces the acknowledgement display and stops closure',()=>{
+test('new fault during paused recovery overrides the OFF display and stops closure',()=>{
   const s=simulator();s.power(true);s.tap();s.advance(5000);s.fault('driver');s.fault('normal');s.click('reset-fault');
   s.advance(200);s.fault('position');assert.equal(signal(s),'active');assert.equal(colors(s)[3],'off');assert.equal(colors(s)[7],'white');
   const stopped=s.pos();s.advance(2000);assert.equal(s.pos(),stopped);

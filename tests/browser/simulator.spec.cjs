@@ -318,11 +318,12 @@ test('independent fault toggles show mixed active and cleared codes and keep res
   await expect(stage).toHaveAttribute('data-on','false');
 });
 
-test('reset hold fills white around blue fault codes and retains blue through release', async ({ page }, testInfo) => {
+test('reset hold fills around blue fault codes then immediately restores the OFF display', async ({ page }, testInfo) => {
   await page.clock.install({time:new Date('2026-10-04T12:00:00Z')});
   await page.clock.pauseAt(new Date('2026-10-04T12:00:01Z'));
   const stage=page.locator('.sa-stage'),trigger=stage.locator('[data-j]');
   await stage.locator('[data-power]').check();await page.clock.runFor(2100);
+  await trigger.click();await page.clock.runFor(2200);
   for(const cause of ['driver','position']){await stage.locator(`[data-fault-toggle="${cause}"]`).check();}
   await stage.locator('[data-clear-causes]').click();
   await trigger.focus();await page.keyboard.down('Space');await page.clock.runFor(1510);
@@ -330,10 +331,14 @@ test('reset hold fills white around blue fault codes and retains blue through re
   await expect(stage).toHaveAttribute('data-fault-signal','holding');
   await testInfo.attach('reset-progress',{body:await page.screenshot({fullPage:true}),contentType:'image/png'});
   await page.clock.runFor(1490);await expect(stage).toHaveAttribute('data-fault','normal');
-  await expect(stage).toHaveAttribute('data-colors','off,off,off,blue,off,off,off,blue,off,off');
-  await page.clock.runFor(500);await expect(stage).toHaveAttribute('data-fault-signal','recovery');
+  await expect(stage).toHaveAttribute('data-colors','white,white,white,white,off,off,off,off,off,blue');
+  await expect(stage).toHaveAttribute('data-fault-signal','none');
+  await expect(stage).toHaveAttribute('data-recovering','true');
+  await page.clock.runFor(500);await expect(stage.locator('[data-hold-progress]')).toHaveCSS('width','0px');
   await page.keyboard.up('Space');await page.clock.runFor(100);
-  await expect(stage).toHaveAttribute('data-fault-signal','none');await expect(stage).toHaveAttribute('data-on','false');
+  await expect(stage).toHaveAttribute('data-inputs-ready','false');
+  await page.clock.runFor(2000);await expect(stage).toHaveAttribute('data-inputs-ready','true');
+  await expect(stage).toHaveAttribute('data-on','false');
 });
 
 test('blocked reset warns once and clearing a toggle during the hold cannot acknowledge', async ({ page }) => {

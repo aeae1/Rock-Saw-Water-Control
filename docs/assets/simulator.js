@@ -13,7 +13,7 @@
   const latchedFaults = new Set(), injectedCauses = new Set();
   const faultRows = [...stage.querySelectorAll('[data-fault-entry]')];
   const WARNING_MS = 1500, WARNING_STEP_MS = 250;
-  let faultWarningStart = null, resetDisplayCodes = [];
+  let faultWarningStart = null, resetOffDisplay = false;
   let resumeOn = false, triggerCause = false, triggerTimer = null;
   let rocker = 'center', armed = true;
   let recovering = false, inputsReady = false, positionKnown = false, jInput = null;
@@ -29,14 +29,14 @@
   const nearest = (opening,cap) => clamp(Math.round(opening * 10 / cap),1,10);
   const setText = (el,text) => { if (el.textContent !== text) el.textContent = text; };
   const testingLamps = () => power && fault==='normal' && lampTestStart!==null;
-  const pausedMarker = () => power && fault==='normal' && !testingLamps() && mode==='normal' && !on && !motion;
+  const pausedMarker = () => power && fault==='normal' && !testingLamps() && mode==='normal' && !on && (!motion || resetOffDisplay);
   const ready = () => power && fault==='normal' && !recovering && positionKnown && inputsReady;
   const holdingForMode = () => !!press?.feedback && !press.long && !press.consumed && press.holdEligible;
   const flashingLights = () => power && fault==='normal' && (mode==='max' || mode==='clean' || pausedMarker());
 
   const activeCause = cause => injectedCauses.has(cause)||(cause==='trigger'&&triggerCause);
   const causeActive = () => injectedCauses.size>0||triggerCause;
-  const faultSignal = () => !power?'off':resetDisplayCodes.length?'recovery':fault==='normal'?'none':faultWarningStart!==null?'rejected':press?.reset&&!press.consumed?(press.resetAllowed?'holding':'blocked'):causeActive()?'active':'cleared';
+  const faultSignal = () => !power?'off':fault==='normal'?'none':faultWarningStart!==null?'rejected':press?.reset&&!press.consumed?(press.resetAllowed?'holding':'blocked'):causeActive()?'active':'cleared';
   function expireFaultWarning(now){
     if(faultWarningStart===null||now-faultWarningStart<WARNING_MS)return false;
     faultWarningStart=null;flashOrigin=now;return true;
@@ -118,9 +118,6 @@
           for(const cause of latchedFaults)colors[faultCodes[cause]-1]=activeCause(cause)?'white':'blue';
         }
       }
-      else if(resetDisplayCodes.length){
-        for(const code of resetDisplayCodes)colors[code-1]='blue';
-      }
       else if (testingLamps()) {
         // All ten white for 1 s, then all ten blue for 1 s, in either motion preference.
         // Lamp outputs only; auxiliary/valve outputs are never part of this test.
@@ -181,7 +178,7 @@
     updateLampTest(now);
     tryArmInputs();
     expireFaultWarning(now);
-    if(ready())resetDisplayCodes=[];
+    if(ready())resetOffDisplay=false;
     const failed=fault!=='normal';
     q('power').checked=power;
     setText(q('power-state'),power?'ON':'OFF');
@@ -195,7 +192,7 @@
       const cause=row.dataset.faultEntry, active=activeCause(cause);
       const toggle=row.querySelector('[data-fault-toggle]');
       toggle.disabled=!power;toggle.checked=injectedCauses.has(cause);
-      setText(row.querySelector('[data-cause-status]'),active?(cause==='trigger'&&triggerCause?'Cause active · release J'+(injectedCauses.has(cause)?' and remove injected cause':''):'Cause active · reset blocked'):latchedFaults.has(cause)?'Cause cleared · reset pending':resetDisplayCodes.includes(faultCodes[cause])?'Acknowledged · recovery pending':'Not latched');
+      setText(row.querySelector('[data-cause-status]'),active?(cause==='trigger'&&triggerCause?'Cause active · release J'+(injectedCauses.has(cause)?' and remove injected cause':''):'Cause active · reset blocked'):latchedFaults.has(cause)?'Cause cleared · reset pending':'Not latched');
     }
     q('clear-causes').disabled=!power||injectedCauses.size===0;
     q('reset-fault').disabled=!canResetFault()||!!jInput;
@@ -205,11 +202,11 @@
     buttons.j.setAttribute('aria-pressed',String(!!jInput));
     setText(buttons.j.querySelector('small'),failed?'Hold 3 s: reset':mode==='clean'?'Press: return':mode==='max'?'Tap: save & exit':on?'Tap: water off':'Tap: water on');
     buttons.j.setAttribute('aria-label',failed?'J: remove fault cause, center G/H, then hold for 3 seconds to reset':mode==='clean'?'J: press to immediately leave Flush and restore normal operation':mode==='max'?'J: tap to save maximum; hold for 1.5 seconds for Flush':'J: tap to toggle water; hold for 1.5 seconds to enter Set Max');
-    setText(q('mode-label'),!power?'POWER OFF':failed?'FAULT · '+faultSignal().toUpperCase():resetDisplayCodes.length?'RESET · RECOVERY':testingLamps()?'LAMP TEST':holdingForMode()?(mode==='max'?'HOLD → FLUSH':'HOLD → SET MAX'):mode==='clean'?'FLUSH · 100%':mode==='max'?'SET MAX':'NORMAL');
+    setText(q('mode-label'),!power?'POWER OFF':failed?'FAULT · '+faultSignal().toUpperCase():testingLamps()?'LAMP TEST':holdingForMode()?(mode==='max'?'HOLD → FLUSH':'HOLD → SET MAX'):mode==='clean'?'FLUSH · 100%':mode==='max'?'SET MAX':'NORMAL');
     setText(q('scale-start'),mode==='clean'?'FULL OPEN':mode==='max'?'10% OPEN':'LESS');
     setText(q('scale-end'),mode==='clean'?'100%':mode==='max'?'100% OPEN':'MORE');
-    setText(q('blue-key'),failed?'Cause cleared / reset hold':resetDisplayCodes.length?'Reset acknowledged':testingLamps()?'Blue lamp check':mode==='clean'?'Full-open command':mode==='max'?'One lamp: maximum':pausedMarker()?'Maximum marker':'On command');
-    setText(q('white-key'),failed?(faultSignal()==='holding'?'Reset progress':'Active cause / blocked reset'):resetDisplayCodes.length?'Normal display resumes when ready':testingLamps()?'White lamp check':holdingForMode()?'Hold progress':mode==='clean'?(media.matches?'Flush marker':'Outward ripple: Flush'):mode==='max'?'Lamp 5 = 50%':'Paused / saved level');
+    setText(q('blue-key'),failed?'Cause cleared / reset hold':testingLamps()?'Blue lamp check':mode==='clean'?'Full-open command':mode==='max'?'One lamp: maximum':pausedMarker()?'Maximum marker':'On command');
+    setText(q('white-key'),failed?(faultSignal()==='holding'?'Reset progress':'Active cause / blocked reset'):testingLamps()?'White lamp check':holdingForMode()?'Hold progress':mode==='clean'?(media.matches?'Flush marker':'Outward ripple: Flush'):mode==='max'?'Lamp 5 = 50%':'Paused / saved level');
     let status='', detail='', helper='', label='';
     if(!power){
       status='Controller power off';
@@ -310,7 +307,7 @@
     const warningEnded=expireFaultWarning(now);
     const feedbackStarted=press&&press.holdEligible&&!press.consumed&&!press.feedback&&!press.long&&now-press.start>=HOLD_FEEDBACK_MS;
     if(feedbackStarted)press.feedback=true;
-    if(press?.reset)q('hold-progress').style.width=(clamp((now-press.start)/RESET_MS,0,1)*100)+'%';
+    if(press?.reset&&!press.consumed)q('hold-progress').style.width=(clamp((now-press.start)/RESET_MS,0,1)*100)+'%';
     if(holdingForMode())q('hold-progress').style.width=(clamp((now-press.start-HOLD_FEEDBACK_MS)/(HOLD_MS-HOLD_FEEDBACK_MS),0,1)*100)+'%';
     if(ended||testEnded||feedbackStarted||warningEnded)render();
     else {paintLights(now);drawValve(now);ensureFrame();}
@@ -431,7 +428,7 @@
   q('power').addEventListener('change',()=>{
     const wanted=q('power').checked;
     endPress(false);stopMotor();power=wanted;
-    faultWarningStart=null;resetDisplayCodes=[];flashOrigin=performance.now();
+    faultWarningStart=null;resetOffDisplay=false;flashOrigin=performance.now();
     if(triggerTimer!==null)clearTimeout(triggerTimer);triggerTimer=null;
     if(power&&jInput)armTriggerWatchdog();on=false;resumeOn=false;mode='normal';draft=maximum;
     armed=false;inputsReady=false;recovering=false;positionKnown=false;
@@ -483,7 +480,7 @@
   function latchFault(cause){
     if(!Object.hasOwn(faultCodes,cause))return;
     endPress(false);stopMotor();latchedFaults.add(cause);
-    faultWarningStart=null;resetDisplayCodes=[];flashOrigin=performance.now();
+    faultWarningStart=null;resetOffDisplay=false;flashOrigin=performance.now();
     fault=[...latchedFaults].sort((a,b)=>faultCodes[a]-faultCodes[b])[0];
     mode='normal';draft=maximum;
     on=false;resumeOn=false;armed=false;inputsReady=false;recovering=false;positionKnown=false;
@@ -505,7 +502,8 @@
   function resetFault(fromHold=false){
     if(!canResetFault()||(!fromHold&&jInput))return;
     if(latchedFaults.has('settings')){level=4;maximum=100;runOpening=40;}
-    resetDisplayCodes=[...latchedFaults].map(cause=>faultCodes[cause]);faultWarningStart=null;
+    // Return to the paused lamp display immediately; closure/neutral still gate inputs.
+    resetOffDisplay=true;faultWarningStart=null;flashOrigin=performance.now();
     latchedFaults.clear();fault='normal';draft=maximum;
     beginRecovery();render();
   }

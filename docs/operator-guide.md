@@ -60,7 +60,7 @@ Each fault lights its own numbered lamp. **Blinking white means the cause is sti
 1. Correct every active cause using the [fault reference](faults.md).
 2. Release J and center G/H.
 3. **Hold J for 3 seconds.** Fault lamps stay blue while the remaining lamps fill white from left to right. Release after acknowledgement.
-4. Wait for closing and 0.1 seconds of released/centered controls. The blue code lamps then give way to the normal paused display. Tap J when ready to resume.
+4. As soon as the three-second hold succeeds, the normal water-OFF lights return: white saved level and blinking blue maximum. Closing still completes in the background. Release J and keep G/H centered for 0.1 seconds after closing before a fresh tap can resume water.
 
 In the simulator, turn fault toggles ON to activate causes and OFF to remove them. Try several at once. OFF does not erase a latched code. **Reset now · sim shortcut** skips the hold; use J to see its progress lights.
 

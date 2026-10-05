@@ -1,10 +1,10 @@
 # Fault Detection and Recovery
 
-Revision 0.6 · Simulator behavior and proposed firmware contract
+Revision 0.7 · Simulator behavior and proposed firmware contract
 
 ## Common response
 
-The simulator has one ON/OFF toggle for each of the ten fault causes. ON injects and keeps the cause active; OFF removes that injected cause without acknowledging its latched code. Any number of toggles can be ON simultaneously. Briefly switching ON then OFF simulates a transient fault. The status beside each toggle distinguishes an active cause, a cleared cause awaiting reset, and acknowledged recovery. The controls are disabled while controller power is OFF. A continuously held J also triggers fault 10 automatically after 30 powered seconds, including when held at startup. Delayed release handling checks the same deadline. Physical supply, current, position, temperature, communication, and switch diagnostics require the sensors and firmware described below; the browser does not detect those physical conditions.
+The simulator has one ON/OFF toggle for each of the ten fault causes. ON injects and keeps the cause active; OFF removes that injected cause without acknowledging its latched code. Any number of toggles can be ON simultaneously. Briefly switching ON then OFF simulates a transient fault. The status beside each toggle distinguishes an active cause, a cleared cause awaiting reset, and an unlatched code. The controls are disabled while controller power is OFF. A continuously held J also triggers fault 10 automatically after 30 powered seconds, including when held at startup. Delayed release handling checks the same deadline. Physical supply, current, position, temperature, communication, and switch diagnostics require the sensors and firmware described below; the browser does not detect those physical conditions.
 
 On a fault, cancel pending gestures and draft edits, clear Normal/Flush run commands, stop modeled movement, invalidate the position reference, and latch the code. All opening commands are inhibited. Every latched code has its own numbered lamp; simultaneous faults are displayed together. The heading names the lowest numbered code and reports how many are latched. A blue code means that cause has cleared; any remaining white code still blocks acknowledgement of the entire set.
 
@@ -34,7 +34,7 @@ Thresholds and confirmation times are deliberately not released as hardware cons
 | Cause active | Its numbered lamp blinks white/off continuously, 600 ms per phase. |
 | Cause removed, code still latched | Its numbered lamp blinks blue/off at the same rate. Other active codes continue blinking white. |
 | Valid reset hold | All latched code lamps stay solid blue. Remaining lamps fill white from left to right over the 3-second hold, skipping every code lamp. |
-| Reset acknowledged, recovery pending | Code lamps stay solid blue until closing completes and released/centered controls qualify for 100 ms. Then the normal paused display returns. |
+| Reset acknowledged, recovery pending | Immediately return to the normal water-OFF display: white saved-level bar and blinking blue maximum marker. Closing and released/centered control qualification still inhibit opening. |
 | Blocked reset hold | The row alternates staggered blue/white at 600 ms per phase. This hold cannot acknowledge faults. |
 | Blocked hold reaches 3 seconds | All lamps alternate blue/white at 250 ms per phase for 1.5 seconds, then ordinary fault blinking returns. No automatic retry occurs. |
 
@@ -49,7 +49,7 @@ White progress uses only lamps not occupied by fault codes. With all ten codes l
 
 A hold started while a cause is active or G/H is not centered is blocked for its entire duration. Clearing a cause or centering during that hold does not make it valid; release and press J again. A blocked hold never changes saved settings, clears latches or moves the valve. Its short warning does not repeat if J remains held; the 30-second stuck-J detector remains active.
 
-**Reset now · sim shortcut** skips the hold and its progress animation, but still requires all causes absent, J released and G/H centered. Acknowledgement restores defaults if code 6 was among the latched codes and starts closing/reference recovery. The solid blue acknowledgement remains visible through recovery and release, preventing a premature switch to the normal white saved-level bar. A new fault during closing stops recovery and takes over the display.
+**Reset now · sim shortcut** skips the hold and its progress animation, but still requires all causes absent, J released and G/H centered. Acknowledgement restores defaults if code 6 was among the latched codes and starts closing/reference recovery. At the instant acknowledgement succeeds, the reset animation ends and the normal water-OFF lamp display returns, even if J is still held or the valve is still closing. The progress bar clears immediately. The maximum marker starts on its blue phase and continues its usual blue/off or blue/white cycle; reduced motion uses a steady blue marker. The display shows the OFF command, not proof of physical closure. A new fault during closing stops recovery and takes over the display.
 
 The simulator retains latches through its machine-power switch, not a page reload. Firmware must use a bounded, integrity-checked persistent fault record or reset-cause handling so power cycling cannot silently resume a previously faulted run. Persist only state changes and use redundant records; do not write flash/EEPROM on every loop or animation frame.
 
