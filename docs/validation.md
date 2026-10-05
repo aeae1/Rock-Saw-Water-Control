@@ -76,3 +76,8 @@ The subsequent 5 October update separates an active-cause warning from a neutral
 ## G/H-independent fault acknowledgement
 
 The later 5 October control update removes G/H position and movement from fault-reset eligibility. Existing regressions were revised to verify resets in both held directions across all ten codes and both motion preferences, rocker movement without restarting the hold deadline or changing settings, all 45 cause-removal/retry combinations without requiring centering, and the simulator shortcut with held G/H. Active causes, a press started before cause removal, interrupted J holds and new faults still block/cancel acknowledgement. Two browser scenarios verify held H and rocker movement during a valid reset. The 100 ms neutral requirement remains after closure to rearm normal operation; no rocker action is queued. Configured totals remain 204 deterministic tests and 63 browser cases.
+
+
+## Reset fill timing across fault lamps
+
+The reset fill now uses all ten physical positions at 300 ms per position. Blue fault codes overlay the sweep without compressing its timeline. A new deterministic regression checks immediately before and at every visible position boundary for all ten single-code layouts, leading/trailing groups, separated/alternating codes and all ten codes together. The browser reset scenario checks the interval hidden behind code 4 and the subsequent arrival at lamp 5. Acknowledgement still occurs at 3000 ms with immediate OFF indication. Configured totals are 205 deterministic tests and 63 browser cases.

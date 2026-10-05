@@ -323,7 +323,7 @@ test('independent fault toggles show mixed active and cleared codes and keep res
   await expect(stage).toHaveAttribute('data-on','false');
 });
 
-test('reset hold fills around blue fault codes then immediately restores the OFF display', async ({ page }, testInfo) => {
+test('reset fill spends time behind blue fault codes then immediately restores the OFF display', async ({ page }, testInfo) => {
   await page.clock.install({time:new Date('2026-10-04T12:00:00Z')});
   await page.clock.pauseAt(new Date('2026-10-04T12:00:01Z'));
   const stage=page.locator('.sa-stage'),trigger=stage.locator('[data-j]');
@@ -331,7 +331,14 @@ test('reset hold fills around blue fault codes then immediately restores the OFF
   await trigger.click();await page.clock.runFor(2200);
   for(const cause of ['driver','position']){await stage.locator(`[data-fault-toggle="${cause}"]`).check();}
   await stage.locator('[data-clear-causes]').click();
-  await trigger.focus();await page.keyboard.down('Space');await page.clock.runFor(1510);
+  await trigger.focus();await page.keyboard.down('Space');await page.clock.runFor(920);
+  await expect(stage).toHaveAttribute('data-colors','white,white,white,blue,off,off,off,blue,off,off');
+  // The sweep crosses blue lamp 4 at 1.2 s without jumping to white lamp 5.
+  await page.clock.runFor(300);
+  await expect(stage).toHaveAttribute('data-colors','white,white,white,blue,off,off,off,blue,off,off');
+  await page.clock.runFor(270);
+  await expect(stage).toHaveAttribute('data-colors','white,white,white,blue,off,off,off,blue,off,off');
+  await page.clock.runFor(20);
   await expect(stage).toHaveAttribute('data-colors','white,white,white,blue,white,off,off,blue,off,off');
   await expect(stage).toHaveAttribute('data-fault-signal','holding');
   await testInfo.attach('reset-progress',{body:await page.screenshot({fullPage:true}),contentType:'image/png'});

@@ -1,6 +1,6 @@
 # Fault Detection and Recovery
 
-Revision 0.9 · Simulator behavior and proposed firmware contract
+Revision 0.10 · Simulator behavior and proposed firmware contract
 
 ## Common response
 
@@ -33,13 +33,13 @@ Thresholds and confirmation times are deliberately not released as hardware cons
 | :--- | :--- |
 | Cause active | Its numbered lamp blinks white/off continuously, 600 ms per phase. |
 | Cause removed, code still latched | Its numbered lamp blinks blue/off at the same rate. Other active codes continue blinking white. |
-| Valid reset hold | All latched code lamps stay solid blue. Remaining lamps fill white from left to right over the 3-second hold, skipping every code lamp. |
+| Valid reset hold | All latched code lamps stay solid blue. White fill advances across all ten positions over the 3-second hold, spending 300 ms per position, including positions hidden behind blue code lamps. |
 | Reset acknowledged, recovery pending | Immediately return to the normal water-OFF display: white saved-level bar and blinking blue maximum marker. Closing and released/centered control qualification still inhibit opening. |
 | Reset blocked by an active cause | The row alternates staggered blue/white at 600 ms per phase. No reset progress bar is shown. This hold cannot acknowledge faults. |
 | Causes cleared, but reset interlocked | Code lamps continue blinking blue. Text identifies the need to release J and start a fresh hold. G/H position does not block reset. No active-fault warning or reset progress is shown. |
 | Blocked hold reaches 3 seconds with a cause still active | All lamps alternate blue/white at 250 ms per phase for 1.5 seconds, then ordinary fault blinking returns. Clearing the final cause ends this warning immediately. No automatic retry occurs. |
 
-White progress uses only lamps not occupied by fault codes. With all ten codes latched, all ten remain blue; the simulator's separate progress bar still shows elapsed hold time. With reduced motion enabled, active codes are steady white and cleared/reset codes steady blue; holds blocked by active causes and their rejection warnings use steady white, and the white progress animation is suppressed. Text identifies each state. The rejection still expires after 1.5 seconds.
+White progress follows physical positions: lamp 1 is reached at 300 ms, lamp 2 at 600 ms, and so on. A blue code overlays the fill without shortening or redistributing its time. At 3000 ms acknowledgement immediately restores the OFF display; the completed fill is not held. With all ten codes latched, all ten remain blue; the simulator's separate progress bar still shows elapsed hold time. With reduced motion enabled, active codes are steady white and cleared/reset codes steady blue; holds blocked by active causes and their rejection warnings use steady white, and the white progress animation is suppressed. Text identifies each state. The rejection still expires after 1.5 seconds.
 
 ## Acknowledgement
 

@@ -316,14 +316,13 @@
           const phase=Math.floor((now-origin)/interval)%2;
           for(let i=0;i<10;i++)colors[i]=media.matches?'white':(phase+(signal==='blocked'?i:0))%2?'white':'blue';
         }else if(signal==='holding'){
-          const free=[];
+          // Sweep all ten physical positions at the same rate. Blue code lamps
+          // cover the white fill without removing their time from the sweep.
+          const filled=media.matches?0:Math.floor(clamp((now-press.start)/RESET_MS,0,1)*10);
           for(let i=0;i<10;i++){
             if([...latchedFaults].some(cause=>faultCodes[cause]-1===i))colors[i]='blue';
-            else free.push(i);
+            else if(i<filled)colors[i]='white';
           }
-          // Preserve every blue code lamp; fill only the remaining lamps in order.
-          const filled=media.matches?0:Math.floor(clamp((now-press.start)/RESET_MS,0,1)*free.length);
-          for(let i=0;i<filled;i++)colors[free[i]]='white';
         }else if(media.matches||Math.floor((now-flashOrigin)/BLINK_MS)%2===0){
           for(const cause of latchedFaults)colors[faultCodes[cause]-1]=activeCause(cause)?'white':'blue';
         }
@@ -428,7 +427,7 @@
       const code=faultCodes[fault];
       status='Fault '+code+' · '+faultNames[fault];
       detail='Motor command stopped · position unconfirmed';
-      helper=faultSignal()==='rejected'?'Reset refused · '+resetInstruction():faultSignal()==='blocked'?'Reset blocked · '+resetInstruction():faultSignal()==='holding'?'Reset eligible · keep holding 3 s · white progress fills around blue codes':resetInstruction();
+      helper=faultSignal()==='rejected'?'Reset refused · '+resetInstruction():faultSignal()==='blocked'?'Reset blocked · '+resetInstruction():faultSignal()==='holding'?'Reset eligible · keep holding 3 s · white fill passes behind blue codes':resetInstruction();
       if(latchedFaults.has('settings'))detail+=' · Reset restores level 4 / max 100%';
       if(latchedFaults.size>1)detail+=' · '+latchedFaults.size+' faults latched';
       label=[...latchedFaults].map(cause=>'Fault '+faultCodes[cause]+'. '+(activeCause(cause)?'Cause active.':'Cause cleared; reset pending.')).join(' ')+' '+helper;

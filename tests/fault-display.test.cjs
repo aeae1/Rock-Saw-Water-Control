@@ -58,6 +58,27 @@ test('all ten simultaneous codes reset without division by zero or losing code l
   s.up();s.advance(100);assert.equal(s.stage.dataset.fault,'normal');assert.equal(s.stage.dataset.setting,'4');
 });
 
+test('reset fill keeps its 300 ms position schedule behind single and grouped fault codes',()=>{
+  const layouts=[...causes.map(c=>[c]),causes.slice(0,3),causes.slice(7),['driver','position'],
+    ['supply','communication','timeout','input','temperature'],causes];
+  for(const layout of layouts){
+    const s=cleared(...layout);s.down();let elapsed=0;
+    // Explicit physical-position milestones, independent of free-lamp count.
+    for(const [deadline,prefix] of [[300,1],[600,2],[900,3],[1200,4],[1500,5],[1800,6],[2100,7],[2400,8],[2700,9]]){
+      for(const [time,completed] of [[deadline-1,prefix-1],[deadline,prefix]]){
+        s.advance(time-elapsed);elapsed=time;s.setReducedMotion(false);
+        assert.equal(signal(s),'holding');
+        const expected=Array(10).fill('off');expected.fill('white',0,completed);
+        for(const cause of layout)expected[causes.indexOf(cause)]='blue';
+        assert.deepEqual(colors(s),expected,layout.join(',')+' at '+time+' ms');
+      }
+    }
+    s.advance(2999-elapsed);assert.notEqual(s.stage.dataset.fault,'normal');
+    s.advance(1);assert.equal(s.stage.dataset.fault,'normal');assert.equal(s.stage.dataset.on,'false');
+    assert.equal(s.q('hold-progress').style.width,'0%');
+  }
+});
+
 test('reset immediately restores the paused bar and max marker while closing and neutral remain locked',()=>{
   for(const cap of [50,100])for(const reducedMotion of [false,true]){
     const s=simulator({reducedMotion});s.power(true);
