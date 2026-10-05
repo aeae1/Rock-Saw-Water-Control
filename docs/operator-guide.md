@@ -15,7 +15,7 @@ If a control was held during startup, release J and center G/H. After the lamp t
 
 Check that all ten lamps show both colors during startup; a missing color needs inspection. A fault replaces the test immediately. The same sequence applies with reduced motion enabled. The test follows controller power-up, so a machine key cycle will not repeat it if the controller remains powered from constant hot.
 
-Holding G or H makes only one change. The selected level is remembered when water is off.
+Holding G or H makes only one change. Once controls are ready, either direction may remain held while J toggles water normally. During startup or recovery, the J label identifies a held rocker that must be centered first. The selected level is remembered when water is off.
 
 A **tap** means press and release J in less than half a second. A **hold** means keep J pressed for 1.5 seconds, then release it. Releasing between those times cancels the gesture without changing anything. White lamps start filling inward after half a second to show that a mode-changing hold is underway.
 
@@ -64,7 +64,7 @@ Each fault lights its own numbered lamp. **Blinking white means the cause is sti
 
 In the simulator, turn fault toggles ON to activate causes and OFF to remove them. Try several at once. OFF does not erase a latched code. **Reset now · sim shortcut** skips the hold; use J to see its progress lights.
 
-If reset is blocked, the row shows staggered blue/white. At three seconds, a brief faster blue/white warning indicates refusal. Correct the causes, release J and try again; clearing a cause midway through a hold cannot make that hold valid. Moving G/H or a new fault interrupts a reset hold. A new fault also interrupts recovery. Cycling power alone does not acknowledge faults. Invalid saved settings restore level 4 and a 100% maximum when acknowledged. Reduced-motion preferences use steady colors and text instead of flashing.
+If an active cause blocks reset, the row shows staggered blue/white. At three seconds, a brief faster blue/white warning indicates refusal if the cause remains. If all causes are cleared but G/H is held, the code lamps stay blinking blue and the text says which direction to center. If J needs a fresh press, the text says to release it. Only an eligible reset shows progress. Correct the causes, release J and try again; clearing a cause midway through a hold cannot make that hold valid. Moving G/H or a new fault interrupts a reset hold. A new fault also interrupts recovery. Cycling power alone does not acknowledge faults. Invalid saved settings restore level 4 and a 100% maximum when acknowledged. Reduced-motion preferences use steady colors and text instead of flashing.
 
 ## Power and simulator notes
 

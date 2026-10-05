@@ -88,7 +88,7 @@ test('blocked hold staggers, refuses once, warns briefly, then returns to contin
 
 test('clearing causes during a blocked hold never promotes it into an acknowledgement',()=>{
   const s=simulator();s.power(true);s.fault('driver');s.down();s.advance(1000);s.faultToggle('driver',false);
-  assert.equal(signal(s),'blocked');s.advance(3500);assert.equal(signal(s),'cleared');assert.equal(s.stage.dataset.fault,'driver');
+  assert.equal(signal(s),'interlocked');assert.equal(s.q('hold-progress').style.width,'0%');s.advance(3500);assert.equal(signal(s),'cleared');assert.equal(s.stage.dataset.fault,'driver');
   s.advance(5000);assert.equal(s.stage.dataset.fault,'driver');s.up();s.down();s.advance(3000);assert.equal(s.stage.dataset.fault,'normal');
 });
 

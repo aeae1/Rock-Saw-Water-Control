@@ -1,6 +1,6 @@
 # Fault Detection and Recovery
 
-Revision 0.7 · Simulator behavior and proposed firmware contract
+Revision 0.8 · Simulator behavior and proposed firmware contract
 
 ## Common response
 
@@ -35,10 +35,11 @@ Thresholds and confirmation times are deliberately not released as hardware cons
 | Cause removed, code still latched | Its numbered lamp blinks blue/off at the same rate. Other active codes continue blinking white. |
 | Valid reset hold | All latched code lamps stay solid blue. Remaining lamps fill white from left to right over the 3-second hold, skipping every code lamp. |
 | Reset acknowledged, recovery pending | Immediately return to the normal water-OFF display: white saved-level bar and blinking blue maximum marker. Closing and released/centered control qualification still inhibit opening. |
-| Blocked reset hold | The row alternates staggered blue/white at 600 ms per phase. This hold cannot acknowledge faults. |
-| Blocked hold reaches 3 seconds | All lamps alternate blue/white at 250 ms per phase for 1.5 seconds, then ordinary fault blinking returns. No automatic retry occurs. |
+| Reset blocked by an active cause | The row alternates staggered blue/white at 600 ms per phase. No reset progress bar is shown. This hold cannot acknowledge faults. |
+| Causes cleared, but reset interlocked | Code lamps continue blinking blue. Text identifies the held G/H direction or the need to release J and start a fresh hold. No active-fault warning or reset progress is shown. |
+| Blocked hold reaches 3 seconds with a cause still active | All lamps alternate blue/white at 250 ms per phase for 1.5 seconds, then ordinary fault blinking returns. Clearing the final cause ends this warning immediately. No automatic retry occurs. |
 
-White progress uses only lamps not occupied by fault codes. With all ten codes latched, all ten remain blue; the simulator's separate progress bar still shows elapsed hold time. With reduced motion enabled, active codes are steady white and cleared/reset codes steady blue; blocked/rejected holds use steady white, and the white progress animation is suppressed. Text identifies each state. The rejection still expires after 1.5 seconds.
+White progress uses only lamps not occupied by fault codes. With all ten codes latched, all ten remain blue; the simulator's separate progress bar still shows elapsed hold time. With reduced motion enabled, active codes are steady white and cleared/reset codes steady blue; holds blocked by active causes and their rejection warnings use steady white, and the white progress animation is suppressed. Text identifies each state. The rejection still expires after 1.5 seconds.
 
 ## Acknowledgement
 
@@ -47,7 +48,7 @@ White progress uses only lamps not occupied by fault codes. With all ten codes l
 3. Hold J for three seconds. Blue code lamps remain visible while the other lamps fill white. Releasing early cancels; moving G/H or introducing a new fault cancels the gesture, even if corrected before its deadline.
 4. Release J and wait for closing/reference recovery. Controls must remain released/centered for 100 ms afterward. Water stays OFF; no opening command is queued.
 
-A hold started while a cause is active or G/H is not centered is blocked for its entire duration. Clearing a cause or centering during that hold does not make it valid; release and press J again. A blocked hold never changes saved settings, clears latches or moves the valve. Its short warning does not repeat if J remains held; the 30-second stuck-J detector remains active.
+A hold started while a cause is active or G/H is not centered is blocked for its entire duration. Clearing a cause or centering during that hold does not make it valid; release and press J again. A blocked hold never changes saved settings, clears latches or moves the valve. The active-cause warning ends as soon as the final cause clears. Centering or cause removal during a blocked hold still requires release and a fresh press. The short warning does not repeat if J remains held; the 30-second stuck-J detector remains active. The display and acknowledgement handler use the same reset-state decision. Only a hold displayed as eligible can acknowledge; the progress bar is reserved for that state.
 
 **Reset now · sim shortcut** skips the hold and its progress animation, but still requires all causes absent, J released and G/H centered. Acknowledgement restores defaults if code 6 was among the latched codes and starts closing/reference recovery. At the instant acknowledgement succeeds, the reset animation ends and the normal water-OFF lamp display returns, even if J is still held or the valve is still closing. The progress bar clears immediately. The maximum marker starts on its blue phase and continues its usual blue/off or blue/white cycle; reduced motion uses a steady blue marker. The display shows the OFF command, not proof of physical closure. A new fault during closing stops recovery and takes over the display.
 

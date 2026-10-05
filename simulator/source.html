@@ -230,7 +230,24 @@
 
   const activeCause = cause => injectedCauses.has(cause)||(cause==='trigger'&&triggerCause);
   const causeActive = () => injectedCauses.size>0||triggerCause;
-  const faultSignal = () => !power?'off':fault==='normal'?'none':faultWarningStart!==null?'rejected':press?.reset&&!press.consumed?(press.resetAllowed?'holding':'blocked'):causeActive()?'active':'cleared';
+  // The display and completion handler share this state. A blocked indication
+  // can never authorize acknowledgement, even if a previous warning was pending.
+  function faultSignal(){
+    if(!power)return 'off';
+    if(fault==='normal')return 'none';
+    if(faultWarningStart!==null&&causeActive())return 'rejected';
+    if(press?.reset&&!press.consumed){
+      if(press.resetAllowed&&canResetFault())return 'holding';
+      return causeActive()?'blocked':'interlocked';
+    }
+    return causeActive()?'active':'cleared';
+  }
+  function resetInstruction(){
+    if(causeActive())return 'Active cause remains · remove it and release J before resetting';
+    if(rocker!=='center')return rocker.toUpperCase()+' is held · center G/H and release J before resetting';
+    if(jInput)return 'Release J, then start a fresh 3-second reset hold';
+    return 'Causes cleared · hold J 3 s to reset';
+  }
   function expireFaultWarning(now){
     if(faultWarningStart===null||now-faultWarningStart<WARNING_MS)return false;
     faultWarningStart=null;flashOrigin=now;return true;
@@ -372,6 +389,7 @@
     updateLampTest(now);
     tryArmInputs();
     expireFaultWarning(now);
+    if(!causeActive())faultWarningStart=null;
     if(ready())resetOffDisplay=false;
     const failed=fault!=='normal';
     q('power').checked=power;
@@ -394,8 +412,8 @@
     buttons.h.setAttribute('aria-pressed',String(rocker==='h'));
     buttons.center.setAttribute('aria-pressed',String(rocker==='center'));
     buttons.j.setAttribute('aria-pressed',String(!!jInput));
-    setText(buttons.j.querySelector('small'),failed?'Hold 3 s: reset':mode==='clean'?'Press: return':mode==='max'?'Tap: save & exit':on?'Tap: water off':'Tap: water on');
-    buttons.j.setAttribute('aria-label',failed?'J: remove fault cause, center G/H, then hold for 3 seconds to reset':mode==='clean'?'J: press to immediately leave Flush and restore normal operation':mode==='max'?'J: tap to save maximum; hold for 1.5 seconds for Flush':'J: tap to toggle water; hold for 1.5 seconds to enter Set Max');
+    setText(buttons.j.querySelector('small'),failed?(causeActive()?'Reset blocked':rocker!=='center'?'Center '+rocker.toUpperCase()+' first':'Hold 3 s: reset'):!ready()?(!power?'Power off':testingLamps()?'Startup test':recovering?'Closing valve':rocker!=='center'?'Center '+rocker.toUpperCase()+' first':jInput?'Release J':'Wait for neutral'):mode==='clean'?'Press: return':mode==='max'?'Tap: save & exit':on?'Tap: water off':'Tap: water on');
+    buttons.j.setAttribute('aria-label',failed?'J reset: '+(faultSignal()==='holding'?'eligible hold in progress':resetInstruction()):!ready()?'J commands locked: '+(!power?'controller power off':testingLamps()?'startup lamp test':recovering?'valve closing':rocker!=='center'?'center '+rocker.toUpperCase()+' and release J':jInput?'release J':'waiting for neutral controls'):mode==='clean'?'J: press to immediately leave Flush and restore normal operation':mode==='max'?'J: tap to save maximum; hold for 1.5 seconds for Flush':'J: tap to toggle water; hold for 1.5 seconds to enter Set Max');
     setText(q('mode-label'),!power?'POWER OFF':failed?'FAULT · '+faultSignal().toUpperCase():testingLamps()?'LAMP TEST':holdingForMode()?(mode==='max'?'HOLD → FLUSH':'HOLD → SET MAX'):mode==='clean'?'FLUSH · 100%':mode==='max'?'SET MAX':'NORMAL');
     setText(q('scale-start'),mode==='clean'?'FULL OPEN':mode==='max'?'10% OPEN':'LESS');
     setText(q('scale-end'),mode==='clean'?'100%':mode==='max'?'100% OPEN':'MORE');
@@ -411,7 +429,7 @@
       const code=faultCodes[fault];
       status='Fault '+code+' · '+faultNames[fault];
       detail='Motor command stopped · position unconfirmed';
-      helper=faultSignal()==='rejected'?'Reset refused · remove all causes, release J and center G / H':faultSignal()==='blocked'?'Reset blocked · this hold cannot clear faults':faultSignal()==='holding'?'Keep holding 3 s · blue codes stay visible as white progress fills':causeActive()?'White = cause active · blue = cause cleared · remove all causes before reset':jInput||rocker!=='center'?'Release J and center G / H before a fresh reset hold':'Causes cleared · hold J 3 s to reset';
+      helper=faultSignal()==='rejected'?'Reset refused · '+resetInstruction():faultSignal()==='blocked'?'Reset blocked · '+resetInstruction():faultSignal()==='holding'?'Reset eligible · keep holding 3 s · white progress fills around blue codes':resetInstruction();
       if(latchedFaults.has('settings'))detail+=' · Reset restores level 4 / max 100%';
       if(latchedFaults.size>1)detail+=' · '+latchedFaults.size+' faults latched';
       label=[...latchedFaults].map(cause=>'Fault '+faultCodes[cause]+'. '+(activeCause(cause)?'Cause active.':'Cause cleared; reset pending.')).join(' ')+' '+helper;
@@ -426,7 +444,7 @@
       helper='Release J and center G / H · commands are not queued';
       label='Startup or recovery closing. Opening commands inhibited.';
     } else if(!inputsReady){
-      status='Waiting for released controls';detail='Valve closed · water stays off';
+      status=rocker!=='center'?'Water OFF · center '+rocker.toUpperCase()+' to enable J':jInput?'Water OFF · release J to enable controls':'Water OFF · qualifying neutral controls';detail='Valve closed · water stays off';
       helper='Release J and center G / H for 0.1 s to arm';label='Valve closed. Release J and center the rocker for 0.1 seconds before operating.';
     } else if(mode==='max'){
       const next=nearest(Math.min(reference,draft),draft), newOpening=next*draft/10;
@@ -444,7 +462,7 @@
       const shown=(approximate?'≈':'')+level+' / 10';
       status=motion?(motion.kind==='boot'?'Startup · closing valve':on?'Adjusting water':'Turning water off'):(on?'Water on · level '+shown:'Paused · level '+shown+' saved');
       detail='Max '+maximum+'% · '+(on?'Saved opening ':'Next on: ')+fmt(runOpening)+'%';
-      helper=rocker==='center'?(pausedMarker()?'White = saved level · '+(media.matches?'blue':'blinking blue')+' = maximum':'Rocker centered · ready'):rocker.toUpperCase()+' held · center or reverse to rearm';
+      helper=rocker==='center'?(pausedMarker()?'White = saved level · '+(media.matches?'blue':'blinking blue')+' = maximum':'Rocker centered · ready'):rocker.toUpperCase()+' held · J remains available · center or reverse for another adjustment';
       label=(on?'Water on. ':'Water paused. ')+'Level '+level+' of ten.'+(pausedMarker()?' Maximum lamp '+maximum/10+(media.matches?' is steady blue.':' alternates blue and '+(maximum/10<=level?'white.':'off.')):'');
     }
     if(power&&!failed&&holdingForMode()){
@@ -454,8 +472,8 @@
     }
     setText(q('status'),status);setText(q('target'),detail);setText(q('switch-state'),helper);
     q('panel').setAttribute('aria-label',label);
-    setText(q('hold-caption'),!power?'Power on to operate':failed?(faultSignal()==='rejected'?'Reset refused · release J':faultSignal()==='blocked'?'Blocked hold · release and correct cause':faultSignal()==='holding'?'White fills left to right · reset at 3 s':causeActive()?'Remove causes · center G/H · hold J 3 s':'Center G/H · fresh J hold 3 s'):testingLamps()?'Testing lamps · water command off':!ready()?'Waiting for closing / neutral':press?.long||press?.consumed?'Release J to rearm':holdingForMode()?'Keep holding…':mode==='clean'?'Press J to return':mode==='max'?(!on&&motion?'Closing before Flush':'Hold 1.5 s for full open'):'Hold 1.5 s to set max');
-    if(!press||(!press.feedback&&!press.reset)||press.consumed||mode==='clean')q('hold-progress').style.width='0%';
+    setText(q('hold-caption'),!power?'Power on to operate':failed?(faultSignal()==='holding'?'Reset eligible · white fills left to right':resetInstruction()):testingLamps()?'Testing lamps · water command off':!ready()?'Waiting for closing / neutral':press?.long||press?.consumed?'Release J to rearm':holdingForMode()?'Keep holding…':mode==='clean'?'Press J to return':mode==='max'?(!on&&motion?'Closing before Flush':'Hold 1.5 s for full open'):'Hold 1.5 s to set max');
+    if(!press||(!press.feedback&&!press.reset)||press.consumed||(press.reset&&faultSignal()!=='holding')||mode==='clean')q('hold-progress').style.width='0%';
     else if(press.long)q('hold-progress').style.width='100%';
     stage.dataset.power=String(power);stage.dataset.on=String(on);stage.dataset.setting=String(level);
     stage.dataset.maximum=String(maximum);stage.dataset.draft=String(draft);stage.dataset.mode=mode;
@@ -501,7 +519,7 @@
     const warningEnded=expireFaultWarning(now);
     const feedbackStarted=press&&press.holdEligible&&!press.consumed&&!press.feedback&&!press.long&&now-press.start>=HOLD_FEEDBACK_MS;
     if(feedbackStarted)press.feedback=true;
-    if(press?.reset&&!press.consumed)q('hold-progress').style.width=(clamp((now-press.start)/RESET_MS,0,1)*100)+'%';
+    if(faultSignal()==='holding')q('hold-progress').style.width=(clamp((now-press.start)/RESET_MS,0,1)*100)+'%';
     if(holdingForMode())q('hold-progress').style.width=(clamp((now-press.start-HOLD_FEEDBACK_MS)/(HOLD_MS-HOLD_FEEDBACK_MS),0,1)*100)+'%';
     if(ended||testEnded||feedbackStarted||warningEnded)render();
     else {paintLights(now);drawValve(now);ensureFrame();}
@@ -567,9 +585,10 @@
     if(checkStuckTrigger())return;
     if(press?.reset){
       if(!press.consumed){
+        const eligible=faultSignal()==='holding';
         press.consumed=true;
-        if(press.resetAllowed&&canResetFault())resetFault(true);
-        else faultWarningStart=performance.now();
+        if(eligible)resetFault(true);
+        else if(causeActive())faultWarningStart=performance.now();
       }
       return;
     }
