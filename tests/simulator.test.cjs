@@ -524,14 +524,14 @@ for (const [index, cause] of faultTypes.entries()) {
   });
 }
 
-test('fault reset requires neutral controls, accepts a fresh 3-second J hold, and consumes release', () => {
+test('fault reset accepts a fresh 3-second J hold with G held and consumes release before rearming', () => {
   const s = simulator(); s.power(true); s.tap(); s.advance(6000); s.click('g'); s.fault('driver'); s.fault('normal');
-  s.click('reset-fault'); assert.equal(s.stage.dataset.fault, 'driver');
-  s.click('center'); s.down(); s.advance(2999); assert.equal(s.stage.dataset.fault, 'driver');
+  s.down(); s.advance(2999); assert.equal(s.stage.dataset.fault, 'driver');
   s.up(); assert.equal(s.stage.dataset.fault, 'driver');
   s.down(); s.advance(3000); assert.equal(s.stage.dataset.fault, 'normal');
   s.advance(6000); assert.equal(s.stage.dataset.inputsReady, 'false');
-  s.up(); s.advance(100); assert.equal(s.stage.dataset.inputsReady, 'true'); assert.equal(s.stage.dataset.on, 'false');
+  s.up(); s.advance(100);assert.equal(s.stage.dataset.inputsReady,'false');assert.equal(s.stage.dataset.setting,'5');
+  s.click('center');s.advance(100); assert.equal(s.stage.dataset.inputsReady, 'true'); assert.equal(s.stage.dataset.on, 'false');
   s.tap(); assert.equal(s.stage.dataset.on, 'true');
 });
 

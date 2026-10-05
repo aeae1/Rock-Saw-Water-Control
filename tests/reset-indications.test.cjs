@@ -5,15 +5,21 @@ const colors=s=>s.stage.dataset.colors.split(',');
 const signal=s=>s.stage.dataset.faultSignal;
 const prepared=()=>{const s=simulator();s.power(true);s.fault('driver');s.fault('normal');return s;};
 
-test('cleared faults with G/H held show blue codes and an explicit interlock, never active-cause warning or progress',()=>{
- for(const direction of ['g','h'])for(const reducedMotion of [false,true]){
-  const s=simulator({reducedMotion});s.power(true);s.fault('driver');s.fault('normal');s.click(direction);s.down();
-  assert.equal(signal(s),'interlocked');assert.match(s.q('switch-state').textContent,new RegExp(direction.toUpperCase()+' is held'));
-  assert.match(s.q('j').textContent,new RegExp('Center '+direction.toUpperCase()+' first'));
-  for(let i=0;i<200;i++){
-   s.advance(20);assert.equal(s.stage.dataset.fault,'driver');assert.equal(s.q('hold-progress').style.width,'0%');
-   assert.ok(colors(s).every((c,i)=>i===3?['blue','off'].includes(c):c==='off'));
-  }
+test('every cleared fault accepts J reset with G/H held and shows eligible progress',()=>{
+ const causes=['supply','stall','communication','driver','timeout','settings','input','position','temperature','trigger'];
+ for(const direction of ['g','h'])for(const reducedMotion of [false,true])for(const cause of causes){
+  const s=simulator({reducedMotion});s.power(true);s.fault(cause);s.click(direction);
+  assert.equal(s.q('reset-fault').disabled,true);s.fault('normal');
+  assert.equal(s.q('reset-fault').disabled,false);s.down();
+  assert.equal(signal(s),'holding');assert.match(s.q('switch-state').textContent,/Reset eligible/);
+  assert.match(s.q('j').textContent,/Hold 3 s: reset/);
+  s.advance(1504);assert.equal(colors(s)[causes.indexOf(cause)],'blue');
+  assert.ok(parseFloat(s.q('hold-progress').style.width)>=50);
+  assert.equal(colors(s).includes('white'),!reducedMotion);
+  s.advance(1495);assert.equal(s.stage.dataset.fault,cause);
+  s.advance(1);assert.equal(s.stage.dataset.fault,'normal');assert.equal(s.stage.dataset.on,'false');
+  assert.equal(s.stage.dataset.setting,'4');assert.equal(s.stage.dataset.rocker,direction);
+  assert.equal(s.q('hold-progress').style.width,'0%');
  }
 });
 
@@ -37,10 +43,10 @@ test('all blocked/cause-removal/retry timings keep the display consistent with r
  for(const rocker of ['center','g','h'])for(const clearAt of ['before','during','after'])for(const retryAt of [0,250,1499,1500,1600]){
   const s=simulator();s.power(true);s.fault('driver');s.click(rocker);if(clearAt==='before')s.fault('normal');
   s.down();s.advance(1000);if(clearAt==='during')s.fault('normal');
-  const eligible=rocker==='center'&&clearAt==='before';assert.equal(signal(s)==='holding',eligible);
+  const eligible=clearAt==='before';assert.equal(signal(s)==='holding',eligible);
   s.advance(1999);assert.equal(s.stage.dataset.fault,'driver');s.advance(1);assert.equal(s.stage.dataset.fault==='normal',eligible);
   s.up();if(eligible)continue;
-  if(clearAt==='after')s.fault('normal');s.click('center');s.advance(retryAt);s.down();
+  if(clearAt==='after')s.fault('normal');s.advance(retryAt);s.down();
   assert.equal(signal(s),'holding');
   for(let time=0;time<2990;time+=10){s.advance(10);assert.equal(signal(s),'holding');assert.equal(colors(s)[3],'blue');}
   s.advance(10);assert.equal(s.stage.dataset.fault,'normal');assert.equal(s.stage.dataset.on,'false');

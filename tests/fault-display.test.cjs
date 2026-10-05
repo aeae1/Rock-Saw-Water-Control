@@ -92,16 +92,26 @@ test('clearing causes during a blocked hold never promotes it into an acknowledg
   s.advance(5000);assert.equal(s.stage.dataset.fault,'driver');s.up();s.down();s.advance(3000);assert.equal(s.stage.dataset.fault,'normal');
 });
 
-for(const interrupt of ['release','rocker','blur','cancel','new-fault','power'])test(`reset white fill cancels on ${interrupt} without acknowledgement or queued water`,()=>{
+for(const interrupt of ['release','blur','cancel','new-fault','power'])test(`reset white fill cancels on ${interrupt} without acknowledgement or queued water`,()=>{
   const s=cleared('driver');s.down();s.advance(1504);assert.ok(colors(s).includes('white'));
   if(interrupt==='release')s.up();
-  if(interrupt==='rocker'){s.click('g');s.click('center');}
   if(interrupt==='blur')s.emit(s.window,'blur');
   if(interrupt==='cancel')s.emit(s.q('j'),'pointercancel',{pointerId:1});
   if(interrupt==='new-fault')s.fault('position');
   if(interrupt==='power')s.power(false);
   s.advance(3500);assert.equal(s.stage.dataset.fault,'driver');assert.equal(s.stage.dataset.on,'false');
   assert.notEqual(signal(s),'holding');assert.notEqual(signal(s),'recovery');
+});
+
+test('reset shortcut ignores G/H but still rejects active causes and a held J',()=>{
+  for(const direction of ['g','h']){
+    const s=simulator();s.power(true);s.fault('driver');s.click(direction);
+    s.click('reset-fault');assert.equal(s.stage.dataset.fault,'driver');
+    s.fault('normal');s.down();s.click('reset-fault');assert.equal(s.stage.dataset.fault,'driver');
+    s.advance(100);s.up();s.click('reset-fault');assert.equal(s.stage.dataset.fault,'normal');
+    assert.equal(s.stage.dataset.on,'false');assert.equal(s.stage.dataset.setting,'4');
+    assert.equal(s.stage.dataset.rocker,direction);assert.equal(s.q('hold-progress').style.width,'0%');
+  }
 });
 
 test('reduced motion has steady codes, no white progress animation, and a bounded static rejection',()=>{

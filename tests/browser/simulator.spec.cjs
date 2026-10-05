@@ -273,17 +273,22 @@ test('G/H changes during recovery remain visible and cannot arm or adjust the sa
   await expect(stage).toHaveAttribute('data-on', 'false');
 });
 
-test('moving the rocker interrupts a reset hold until J is released and pressed again', async ({ page }) => {
-  const stage = page.locator('.sa-stage'), trigger = stage.locator('button[data-j]'); await start(stage);
+test('moving the rocker during a reset hold preserves its deadline and saved setting', async ({ page }) => {
+  await page.clock.install({time:new Date('2026-10-05T12:00:00Z')});await page.clock.pauseAt(new Date('2026-10-05T12:00:01Z'));
+  const stage = page.locator('.sa-stage'), trigger = stage.locator('button[data-j]');
+  await stage.locator('[data-power]').check();await page.clock.runFor(2100);
   await stage.locator('[data-fault-toggle="driver"]').check();
   await stage.locator('button[data-clear-causes]').click();
-  await page.clock.install(); await trigger.focus(); await page.keyboard.down('Space');
-  await page.clock.runFor(2000); await stage.locator('button[data-g]').click();
-  await stage.locator('button[data-center]').click(); await page.clock.runFor(2000);
+  await trigger.focus(); await page.keyboard.down('Space');
+  await page.clock.runFor(1000); await stage.locator('button[data-g]').click();
+  await stage.locator('button[data-center]').click();await stage.locator('button[data-h]').click();
+  await page.clock.runFor(1999);
   await expect(stage).toHaveAttribute('data-fault', 'driver');
-  await page.keyboard.up('Space'); await trigger.focus(); await page.keyboard.down('Space');
-  await page.clock.runFor(3000); await page.keyboard.up('Space'); await page.clock.runFor(100);
+  await expect(stage).toHaveAttribute('data-fault-signal','holding');
+  await page.clock.runFor(1);
   await expect(stage).toHaveAttribute('data-fault', 'normal');
+  await expect(stage).toHaveAttribute('data-setting','4');
+  await page.keyboard.up('Space');await stage.locator('button[data-center]').click();await page.clock.runFor(100);
   await expect(stage).toHaveAttribute('data-inputs-ready', 'true');
   await expect(stage).toHaveAttribute('data-on', 'false');
 });
@@ -360,20 +365,26 @@ test('active-cause reset warns once and a fresh valid retry replaces its warning
   await expect(stage).toHaveAttribute('data-fault','normal');await page.keyboard.up('Space');
 });
 
-test('cleared faults with H held explain the interlock and never show warning or reset progress', async ({page})=>{
+test('cleared faults reset while H stays held, with eligible progress and immediate OFF display', async ({page})=>{
   await page.clock.install({time:new Date('2026-10-05T12:00:00Z')});await page.clock.pauseAt(new Date('2026-10-05T12:00:01Z'));
   const stage=page.locator('.sa-stage'),trigger=stage.locator('[data-j]');
   await stage.locator('[data-power]').check();await page.clock.runFor(2100);
   await stage.locator('[data-fault-toggle="driver"]').check();await stage.locator('[data-fault-toggle="driver"]').uncheck();
   await stage.locator('[data-h]').click();await trigger.focus();await page.keyboard.down('Space');
-  await expect(stage).toHaveAttribute('data-fault-signal','interlocked');
-  await expect(stage.locator('[data-switch-state]')).toContainText('H is held');
+  await expect(stage).toHaveAttribute('data-fault-signal','holding');
+  await expect(stage.locator('[data-switch-state]')).toContainText('Reset eligible');
   await expect(stage).toHaveAttribute('data-colors','off,off,off,blue,off,off,off,off,off,off');
-  await page.clock.runFor(3000);await expect(stage).toHaveAttribute('data-fault','driver');
+  await page.clock.runFor(1510);
+  await expect(stage).toHaveAttribute('data-colors','white,white,white,blue,white,off,off,off,off,off');
+  await page.clock.runFor(1490);await expect(stage).toHaveAttribute('data-fault','normal');
   await expect(stage.locator('[data-hold-progress]')).toHaveCSS('width','0px');
-  await page.keyboard.up('Space');await stage.locator('[data-center]').click();await trigger.focus();await page.keyboard.down('Space');
-  await expect(stage).toHaveAttribute('data-fault-signal','holding');await page.clock.runFor(3000);
-  await expect(stage).toHaveAttribute('data-fault','normal');await page.keyboard.up('Space');
+  await expect(stage).toHaveAttribute('data-colors','white,white,white,white,off,off,off,off,off,blue');
+  await expect(stage).toHaveAttribute('data-on','false');await expect(stage).toHaveAttribute('data-rocker','h');
+  await page.keyboard.up('Space');await page.clock.runFor(100);
+  await expect(stage).toHaveAttribute('data-inputs-ready','false');
+  await expect(stage.locator('[data-status]')).toContainText('center H to enable J');
+  await stage.locator('[data-center]').click();await page.clock.runFor(100);
+  await expect(stage).toHaveAttribute('data-inputs-ready','true');
 });
 
 test('clearing a cause mid-hold stops active-fault animation without promoting the blocked hold', async ({page})=>{

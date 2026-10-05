@@ -71,3 +71,8 @@ The 5 October update replaces the post-reset blue-code hold with the normal paus
 ## Reset-indication consistency
 
 The subsequent 5 October update separates an active-cause warning from a neutral/fresh-press interlock. Eight added tests cover 45 cause-removal/retry combinations, cleared faults with either rocker held, cancellation of warnings when the last cause clears, fixed blue code lamps during a valid fill, interrupted retries, and ordinary J operation with G/H held. The display and acknowledgement share a single eligibility decision. Two browser scenarios cover the reported confusing conditions; the configured suite now has 204 deterministic tests and 63 browser cases. Simulator asset URLs include a content-derived version so a newly loaded page requests the matching script and stylesheet after an update.
+
+
+## G/H-independent fault acknowledgement
+
+The later 5 October control update removes G/H position and movement from fault-reset eligibility. Existing regressions were revised to verify resets in both held directions across all ten codes and both motion preferences, rocker movement without restarting the hold deadline or changing settings, all 45 cause-removal/retry combinations without requiring centering, and the simulator shortcut with held G/H. Active causes, a press started before cause removal, interrupted J holds and new faults still block/cancel acknowledgement. Two browser scenarios verify held H and rocker movement during a valid reset. The 100 ms neutral requirement remains after closure to rearm normal operation; no rocker action is queued. Configured totals remain 204 deterministic tests and 63 browser cases.

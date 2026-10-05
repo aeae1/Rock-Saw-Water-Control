@@ -50,7 +50,6 @@
   }
   function resetInstruction(){
     if(causeActive())return 'Active cause remains · remove it and release J before resetting';
-    if(rocker!=='center')return rocker.toUpperCase()+' is held · center G/H and release J before resetting';
     if(jInput)return 'Release J, then start a fresh 3-second reset hold';
     return 'Causes cleared · hold J 3 s to reset';
   }
@@ -58,7 +57,7 @@
     if(faultWarningStart===null||now-faultWarningStart<WARNING_MS)return false;
     faultWarningStart=null;flashOrigin=now;return true;
   }
-  const canResetFault = () => power&&fault!=='normal'&&!causeActive()&&rocker==='center';
+  const canResetFault = () => power&&fault!=='normal'&&!causeActive();
 
   function updatePosition(now) {
     if (!motion) return false;
@@ -218,7 +217,7 @@
     buttons.h.setAttribute('aria-pressed',String(rocker==='h'));
     buttons.center.setAttribute('aria-pressed',String(rocker==='center'));
     buttons.j.setAttribute('aria-pressed',String(!!jInput));
-    setText(buttons.j.querySelector('small'),failed?(causeActive()?'Reset blocked':rocker!=='center'?'Center '+rocker.toUpperCase()+' first':'Hold 3 s: reset'):!ready()?(!power?'Power off':testingLamps()?'Startup test':recovering?'Closing valve':rocker!=='center'?'Center '+rocker.toUpperCase()+' first':jInput?'Release J':'Wait for neutral'):mode==='clean'?'Press: return':mode==='max'?'Tap: save & exit':on?'Tap: water off':'Tap: water on');
+    setText(buttons.j.querySelector('small'),failed?(causeActive()?'Reset blocked':faultSignal()==='holding'?'Hold 3 s: reset':jInput?'Release J':'Hold 3 s: reset'):!ready()?(!power?'Power off':testingLamps()?'Startup test':recovering?'Closing valve':rocker!=='center'?'Center '+rocker.toUpperCase()+' first':jInput?'Release J':'Wait for neutral'):mode==='clean'?'Press: return':mode==='max'?'Tap: save & exit':on?'Tap: water off':'Tap: water on');
     buttons.j.setAttribute('aria-label',failed?'J reset: '+(faultSignal()==='holding'?'eligible hold in progress':resetInstruction()):!ready()?'J commands locked: '+(!power?'controller power off':testingLamps()?'startup lamp test':recovering?'valve closing':rocker!=='center'?'center '+rocker.toUpperCase()+' and release J':jInput?'release J':'waiting for neutral controls'):mode==='clean'?'J: press to immediately leave Flush and restore normal operation':mode==='max'?'J: tap to save maximum; hold for 1.5 seconds for Flush':'J: tap to toggle water; hold for 1.5 seconds to enter Set Max');
     setText(q('mode-label'),!power?'POWER OFF':failed?'FAULT · '+faultSignal().toUpperCase():testingLamps()?'LAMP TEST':holdingForMode()?(mode==='max'?'HOLD → FLUSH':'HOLD → SET MAX'):mode==='clean'?'FLUSH · 100%':mode==='max'?'SET MAX':'NORMAL');
     setText(q('scale-start'),mode==='clean'?'FULL OPEN':mode==='max'?'10% OPEN':'LESS');
@@ -371,9 +370,8 @@
     if(!['g','h','center'].includes(next))return;
     const previous=rocker;
     rocker=next;
-    // Moving the rocker interrupts an acknowledgement, even if re-centered
-    // before its deadline. A new J press is required to acknowledge again.
-    if(next!=='center'&&press?.reset)endPress(false);
+    // Track G/H during faults without editing settings or interrupting J reset.
+    // Recovery still requires neutral controls before normal commands rearm.
     if(next==='center'){armed=true;render();return;}
     const activated=next!==previous;
     if(!ready()||mode==='clean'||jInput){armed=false;render();return;}

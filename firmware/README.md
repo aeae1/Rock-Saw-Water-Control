@@ -1,6 +1,6 @@
 # Firmware Integration Contract
 
-Revision 0.6 · Reviewed 2026-10-04
+Revision 0.7 · Updated 2026-10-05
 
 No flashable firmware is supplied. The browser simulator is an executable operator-interface reference, not Arduino firmware. The current hardware direction is Nano Every, DFR1229 command, SEN0262 feedback to A0, three PCB0046 boards, a four-wire flow meter and two temperature sensors. See the [Revision C electrical audit](../docs/hardware-audit-2026-10-04.md) for the complete proposed circuit and release holds.
 
@@ -25,7 +25,7 @@ Use a monotonic, nonblocking main loop with explicit budgets. A recommended orde
 | Debounce | Qualify press/release and G/H conflict duration using measured switch/input behavior; a continuously active G or H is normal |
 | Startup/recovery | Request closed; startup also runs the two-second lamp test concurrently. After test and verified closure, require J released and G/H centered for 100 ms; consume all earlier activations. Fault recovery does not repeat the lamp test |
 | Gestures | Fresh press and matching release; <500 ms tap, 500–1499 ms cancel, 1500 ms mode change; one mode transition per press |
-| Fault acknowledgement | All causes absent; fresh 3000 ms J hold with G/H centered throughout; any rocker movement or new cause cancels |
+| Fault acknowledgement | All causes absent; fresh 3000 ms J hold; G/H position/movement ignored for acknowledgement and must not edit settings; a new cause or interrupted J hold cancels |
 | Stuck trigger | 30000 ms continuous powered assertion, including startup; compare elapsed time even if scheduling was delayed |
 | Valve interface | Explicit 4–20 mA range/scaling, initialized closed command and verified feedback; bounded motion deadline and progress checks |
 | Lamp interface | Twenty output channels, one color per lamp, old color off before replacement; initialize off and poll diagnostics |
@@ -37,7 +37,7 @@ Use a monotonic, nonblocking main loop with explicit budgets. A recommended orde
 
 Implement independent active-cause and latched-code bitsets. Show all latched codes concurrently: white/off while active, blue/off after a cause clears (600 ms phases). A valid fresh three-second reset hold keeps every code lamp solid blue while remaining lamps fill white left to right. Skip occupied code lamps; ten codes leave no progress lamps. Immediately after acknowledgement, end the reset animation and restore the normal OFF-command display: white saved-level bar with the maximum marker blinking blue (steady blue with reduced motion). Closing/requalification and 100 ms of neutral controls still gate all opening commands; the held reset input is consumed. Do not interpret acknowledgement as verified hardware recovery; retain the actual fault record until requalification succeeds as specified above.
 
-Reset eligibility is captured at the start of the press. Clearing causes during a blocked hold cannot authorize it. Holds blocked by active causes stagger blue/white at 600 ms phases; reaching three seconds with a cause still active gives a 1.5-second warning with 250 ms phases, then resumes the normal fault indication without retrying. With all causes cleared but neutral/fresh-press conditions unmet, retain blue-code blinking instead; do not show an active-cause warning or reset progress. Clearing the final cause ends the warning immediately without authorizing the existing hold. Use the same eligibility state for reset completion and its lamp indication. Any new fault or rocker movement cancels an eligible hold. A fault always outranks animation. See the [fault reference](../docs/faults.md) for the complete simulator contract, including reduced motion. This is a firmware requirement, not implemented Arduino code.
+Reset eligibility is captured at the start of the press. Clearing causes during a blocked hold cannot authorize it. Holds blocked by active causes stagger blue/white at 600 ms phases; reaching three seconds with a cause still active gives a 1.5-second warning with 250 ms phases, then resumes the normal fault indication without retrying. With all causes cleared but a fresh J press still required, retain blue-code blinking instead; do not show an active-cause warning or reset progress. Clearing the final cause ends the warning immediately without authorizing the existing hold. Use the same eligibility state for reset completion and its lamp indication. Any new fault cancels an eligible hold; G/H movement does not. After acknowledgement, retain closure and neutral qualification before rearming normal commands. A fault always outranks animation. See the [fault reference](../docs/faults.md) for the complete simulator contract, including reduced motion. This is a firmware requirement, not implemented Arduino code.
 
 ## Startup lamp test
 

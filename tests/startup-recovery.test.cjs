@@ -105,16 +105,18 @@ test('rocker movement during Flush is tracked without editing or replaying it on
   s.click('h'); assert.equal(s.stage.dataset.setting, '3');
 });
 
-test('rocker movement cancels a fault acknowledgement even if centered again before the deadline', () => {
+test('rocker movement throughout acknowledgement preserves the hold deadline and saved settings', () => {
   const s = simulator(); s.power(true); s.fault('driver'); s.fault('normal');
-  s.down(); s.advance(2000); s.click('g'); s.click('center'); s.advance(2000);
-  assert.equal(s.stage.dataset.fault, 'driver');
-  s.up(); s.down(); s.advance(3000); assert.equal(s.stage.dataset.fault, 'normal');
+  s.down(); s.advance(500); s.click('g'); s.advance(500); s.click('center');
+  s.advance(500); s.click('h'); s.advance(1499);
+  assert.equal(s.stage.dataset.fault, 'driver');assert.equal(s.stage.dataset.faultSignal,'holding');
+  s.advance(1); assert.equal(s.stage.dataset.fault, 'normal');assert.equal(s.stage.dataset.setting,'4');
   assert.equal(s.stage.dataset.inputsReady, 'false');
-  s.up(); s.advance(100); paused(s); assert.equal(s.stage.dataset.inputsReady, 'true');
+  s.up(); s.advance(100); paused(s); assert.equal(s.stage.dataset.inputsReady, 'false');
+  s.click('center');s.advance(100);assert.equal(s.stage.dataset.inputsReady,'true');
 });
 
-test('removing a cause or centering while J remains held cannot start an acknowledgement', () => {
+test('removing a cause while J remains held cannot start acknowledgement, regardless of rocker movement', () => {
   const s = simulator(); s.power(true); s.fault('driver'); s.click('g'); s.down();
   s.fault('normal'); s.click('center'); s.advance(4000);
   assert.equal(s.stage.dataset.fault, 'driver');
