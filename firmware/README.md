@@ -1,17 +1,18 @@
 # Firmware Integration Contract
 
-Revision 0.8 · Updated 2026-10-05
+Revision 0.9 · Updated 2026-10-07
 
-No flashable firmware is supplied. The browser simulator is an executable operator-interface reference, not Arduino firmware. The current hardware direction is Nano Every, DFR1229 command, SEN0262 feedback to A0, three PCB0046 boards, a four-wire flow meter, with no external temperature sensors. See the [Revision D electrical audit](../docs/hardware-audit-2026-10-07.md) for the complete proposed circuit and release holds.
+No flashable firmware is supplied. The browser simulator is an executable operator-interface reference, not Arduino firmware. The current hardware direction is Nano Every, DFR1229 command, SEN0262 feedback to A0, three PCB0046 boards, with no flow meter or external temperature sensors. See the [Revision E electrical audit](../docs/hardware-audit-rev-e.md) for the complete proposed circuit and release holds.
 
-## Revision D hardware integration requirements
+## Revision E hardware integration requirements
 
-- D2/D3/D4 are active-high G/H/J inputs after the selected opto boards. D7 is unused; D8/D9 are meter flow/error inputs. Error is a toggling output, not an assumed static fault level.
+- D2/D3/D4 are active-high G/H/J inputs after the selected opto boards. D7/D8/D9 are unused; configure them without a required sensor acquisition or missing-meter fault.
+- A control input may already be electrically asserted when the main supply returns. Preserve startup-neutral qualification and consume those assertions; never replay them as a new gesture. Off-state input backfeed and LED current are hardware acceptance checks, not behaviors a sleeping or unpowered sketch can enforce.
 - HSD3 channel 4 is reserved for a local SW8B watchdog controlling valve power and a signal-disconnect relay. It must never be included in lamp animation writes. Channels 5-7 remain OFF. The proposed 500 ms timeout/100 ms refresh requires physical validation.
 - The reviewed DFRobot GP8XXX driver discards ordinary I2C write return codes. Use a checked, bounded driver. Check both SW8B watchdog configuration packets; its convenience initialization also returns no status. Prove latched timeout, reset and partially completed initialization behavior before allowing opening.
 - Current feedback from HSD3 channel 4 includes the actuator and the relay/regulator baseline. Use proper channel selection/settling and measured thresholds. HSD VIN uses the default 11:1 divider.
 - A0's 1 kohm series resistor and 100 kohm pull-down introduce a 100/101 nominal attenuation. Calibrate the complete chain. Do not use a 0-5 V feedback assumption.
-- Meter faults need subcodes and qualified no-flow/flow-while-closed timeouts. A disconnected pulse wire can look inactive; no-flow does not establish a unique mechanical cause. Never silently substitute unmetered operation when calibrated flow control requires a meter.
+- No flow acquisition, automatic sweep, live GPM, no-flow detector or flow-while-closed detector is present. Optional manual flow calibration supplies a validated lookup table; store an explicit opening-scale versus calibrated-scale mode. Position feedback remains mandatory, and a closed-position indication is not proof of hydraulic shutoff.
 - The audit's fault-logging section specifies a bounded RAM history and a small redundant EEPROM last-fault/reset summary. Neither exists as running firmware. No external log memory or real-time clock is in the circuit.
 - Recovery must distinguish independent healthy preconditions from checks requiring powered actuation. With K1 open, absent position feedback is expected and remains unqualified. A fresh acknowledgement may authorize one bounded closing/requalification attempt after supply, bus and input checks; retain the fault history/latch until that attempt passes. Do not deadlock recovery by requiring powered feedback before enabling power, and do not treat zero unpowered current as proof a jam was repaired. Failure inhibits drive again without automatic retry.
 
@@ -75,6 +76,6 @@ Use unsigned subtraction for elapsed durations and test around the 32-bit millis
 
 Measure the DAC's reset/power-loss/retained-output behavior. A Nano reset does not necessarily reset the separately powered DAC or lamp boards. Never assume a disconnected command means close. Current-output compliance into the valve, feedback load/common connections and fault-inhibit behavior remain open hardware tests.
 
-Fault 2 needs acquisition of the newly specified HSD3 channel-4 actuator branch, including its relay/regulator baseline. Fault 9 is reserved and must not be emitted by Revision D. The drivers retain their built-in thermal protection; a generic hardware FAULT maps to code 4 and does not uniquely diagnose overheating. There is no ambient or actuator temperature acquisition. A failed display or I2C bus must not disable valve inhibition. The physical response for each code must be implemented and observed, not inferred from a simulator lamp.
+Fault 2 needs acquisition of the newly specified HSD3 channel-4 actuator branch, including its relay/regulator baseline. Fault 9 is reserved and must not be emitted by Revision E. The drivers retain their built-in thermal protection; a generic hardware FAULT maps to code 4 and does not uniquely diagnose overheating. There is no ambient or actuator temperature acquisition. A failed display or I2C bus must not disable valve inhibition. The physical response for each code must be implemented and observed, not inferred from a simulator lamp.
 
 Before field release, compile for the exact Nano Every/core/library revisions, record flash/RAM use, test all inputs and bus failures with hardware, stop the MCU deliberately, interrupt settings writes, exercise repeated power cycles and perform hot-soak and motion tests. Record results in [Validation](../docs/validation.md). No board firmware is represented as ready until those checks pass.

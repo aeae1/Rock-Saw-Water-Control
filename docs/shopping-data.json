@@ -2,7 +2,7 @@
   "reviewed": "2026-10-07",
   "currency": "USD",
   "taxRate": 0.0825,
-  "scope": "Revision D planning budget. Published prices were observed on public supplier pages; they are not destination checkout quotations. Allowances are unverified estimates. External temperature sensors are excluded. No hardware firmware or field release is supplied.",
+  "scope": "Revision E base build omits the flow meter and external temperature probes. Retained prices were reviewed 7 October 2026. Allowances are unverified estimates, not delivered quotations. Valve position feedback is retained; firmware and bench qualification remain open.",
   "items": [
     {
       "category": "Control",
@@ -115,20 +115,6 @@
       ]
     },
     {
-      "category": "Water",
-      "item": "ScioSense UFM-02-03NP4",
-      "qty": 1,
-      "unit": "meter",
-      "price": 59.66,
-      "basis": "Published",
-      "vendor": "DigiKey",
-      "note": "3/8-inch NPS, pulse, four wires. Possible tariff is additional; fittings and weather protection unresolved.",
-      "url": "https://www.digikey.com/en/products/detail/sciosense/UFM-02-03NP4-3-8-NPS-PULSE-4-WIRE/29771278",
-      "refs": [
-        "FM1"
-      ]
-    },
-    {
       "category": "Control",
       "item": "Panasonic TQ2-5V nonlatching DPDT",
       "qty": 1,
@@ -161,10 +147,10 @@
       "item": "Exact resistors, diodes and capacitors",
       "qty": 1,
       "unit": "small lot",
-      "price": 12.46,
+      "price": 12.02,
       "basis": "Published",
       "vendor": "DigiKey",
-      "note": "Seven exact part numbers, including modest spares; detailed installed/buy quantities and links below. $12.46 at observed quantity breaks.",
+      "note": "Six exact part numbers with modest spares; installed and purchase quantities below. $12.02 at observed quantity breaks.",
       "url": "https://www.digikey.com/en/products/detail/yageo/MFR-50FTE52-1K/9147015"
     },
     {
@@ -305,17 +291,6 @@
       "url": "https://www.amazon.com/s?k=aluminum+u+channel+12+inch"
     },
     {
-      "category": "Enclosure",
-      "item": "Meter electronics protection",
-      "qty": 1,
-      "unit": "assembly allowance",
-      "price": 15,
-      "basis": "Allowance",
-      "vendor": "Local / distributor",
-      "note": "Dedicated splash/impact protection, supported plumbing and sealed terminations; exact housing pending geometry.",
-      "url": "https://www.polycase.com/wp-series"
-    },
-    {
       "category": "Water",
       "item": "Manual shutoff and cleanable inlet strainer",
       "qty": 1,
@@ -323,19 +298,8 @@
       "price": 20,
       "basis": "Allowance",
       "vendor": "Amazon / local",
-      "note": "Reuse existing suitable items; select pressure rating and mesh for nozzle/meter requirements.",
+      "note": "Reuse existing suitable items; select pressure rating and mesh for nozzle requirements.",
       "url": "https://www.amazon.com/s?k=garden+hose+shut+off+valve+inline+filter+brass"
-    },
-    {
-      "category": "Water",
-      "item": "Correct NPS meter adapters and seals",
-      "qty": 1,
-      "unit": "pair allowance",
-      "price": 20,
-      "basis": "Allowance",
-      "vendor": "Plumbing supplier",
-      "note": "PROCUREMENT HOLD: straight NPS thread and actual seal geometry must match; NPT or cone-seat swivel is not assumed compatible.",
-      "url": "https://www.sciosense.com/ufm-02-ultrasonic-flow-sensing-module/"
     },
     {
       "category": "Water",
@@ -356,8 +320,8 @@
       "price": 8,
       "basis": "Allowance",
       "vendor": "Local",
-      "note": "Respect meter straight lengths and seal type. Do not seal NPS solely with PTFE tape.",
-      "url": "https://www.sciosense.com/ufm-02-ultrasonic-flow-sensing-module/"
+      "note": "Choose supports and short pipe as the valve/hose layout requires; no meter-specific straight sections or NPS fittings.",
+      "url": "https://www.amazon.com/s?k=brass+1%2F2+NPT+pipe+nipple+plumbing"
     },
     {
       "category": "Enclosure",
@@ -426,7 +390,7 @@
     {
       "vendor": "DigiKey + Mouser",
       "budget": 20,
-      "basis": "Combined allowance for two supplier baskets; neither is a destination quote",
+      "basis": "Combined allowance for DigiKey passives/regulator and Mouser relay; neither is a destination quote",
       "url": "https://www.mouser.com/en/ProductDetail/Panasonic-Industry/TQ2-5V?qs=HLLy2pIPwutHaTSpVfb1kw%3D%3D"
     },
     {
@@ -526,13 +490,11 @@
         "R1",
         "R2",
         "R3",
-        "R4",
-        "R8",
-        "R9"
+        "R4"
       ],
       "spec": "1 kohm, 1%, 0.5 W axial",
       "part": "MFR-50FTE52-1K",
-      "installed": 6,
+      "installed": 4,
       "buy": 10,
       "price": 0.076,
       "url": "https://www.digikey.com/en/products/detail/yageo/MFR-50FTE52-1K/9147015"
@@ -547,18 +509,6 @@
       "buy": 10,
       "price": 0.042,
       "url": "https://www.digikey.com/en/products/detail/yageo/MFR-25FBF52-100K/13473"
-    },
-    {
-      "refs": [
-        "R6",
-        "R7"
-      ],
-      "spec": "4.7 kohm, 1%, 0.25 W axial",
-      "part": "MFR-25FBF52-4K7",
-      "installed": 2,
-      "buy": 10,
-      "price": 0.044,
-      "url": "https://www.digikey.com/en/products/detail/yageo/MFR-25FBF52-4K7/9138176"
     },
     {
       "refs": [
@@ -577,7 +527,6 @@
     {
       "refs": [
         "C1",
-        "C2",
         "C5",
         "C10",
         "C11",
@@ -585,7 +534,7 @@
       ],
       "spec": "100 nF, 50 V, X7R, radial",
       "part": "C315C104K5R5TA",
-      "installed": 6,
+      "installed": 5,
       "buy": 10,
       "price": 0.488,
       "url": "https://www.digikey.com/en/products/detail/kemet/C315C104K5R5TA/12701330"
@@ -624,5 +573,23 @@
       "price": 0,
       "note": "Confirm actual cavity assignments; no new connector or separate machine power lead."
     }
-  ]
+  ],
+  "removedFromBase": [
+    {
+      "item": "ScioSense UFM-02-03NP4",
+      "previousBudget": 59.66,
+      "reason": "Flow meter omitted in Revision E"
+    },
+    {
+      "item": "Meter electronics protection",
+      "previousBudget": 15,
+      "reason": "Flow meter omitted in Revision E"
+    },
+    {
+      "item": "Correct NPS meter adapters and seals",
+      "previousBudget": 20,
+      "reason": "Flow meter omitted in Revision E"
+    }
+  ],
+  "previousPlanningTotal": 745.84
 }

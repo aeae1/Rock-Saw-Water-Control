@@ -1,0 +1,2028 @@
+{
+  "revision": "E",
+  "date": "2026-10-07",
+  "status": "BENCH_DESIGN_HOLD_H1_H5",
+  "components": {
+    "X1": {
+      "part": "Reused machine harness; verify actual cavities",
+      "pins": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "kind": "connector",
+      "note": ""
+    },
+    "TB12": {
+      "part": "12 V distribution",
+      "pins": [
+        "rail"
+      ],
+      "kind": "bus",
+      "note": "Joined terminals; hardware and wire rating subject to H2"
+    },
+    "TB5": {
+      "part": "Logic 5 V distribution",
+      "pins": [
+        "rail"
+      ],
+      "kind": "bus",
+      "note": "Joined terminals; hardware and wire rating subject to H2"
+    },
+    "TB0": {
+      "part": "Ground distribution",
+      "pins": [
+        "rail"
+      ],
+      "kind": "bus",
+      "note": "Joined terminals; hardware and wire rating subject to H2"
+    },
+    "U1": {
+      "part": "Arduino Nano Every ABX00028",
+      "pins": [
+        "VIN",
+        "5V",
+        "3V3",
+        "GND1",
+        "GND2",
+        "A0",
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "AREF",
+        "RESET1",
+        "RESET2",
+        "RX",
+        "TX",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6",
+        "D7",
+        "D8",
+        "D9",
+        "D10",
+        "D11",
+        "D12",
+        "D13"
+      ],
+      "kind": "module",
+      "note": ""
+    },
+    "U2": {
+      "part": "DFRobot DFR1229",
+      "pins": [
+        "VCC",
+        "GND",
+        "SDA",
+        "SCL",
+        "OUT",
+        "OUT_GND"
+      ],
+      "kind": "module",
+      "note": ""
+    },
+    "U3": {
+      "part": "DFRobot SEN0262",
+      "pins": [
+        "VCC",
+        "GND",
+        "SIGNAL",
+        "I+",
+        "I-"
+      ],
+      "kind": "module",
+      "note": ""
+    },
+    "HSD1": {
+      "part": "Serial Wombat PCB0046 HSD V2",
+      "pins": [
+        "VIN",
+        "LOAD_GND",
+        "D",
+        "C",
+        "V",
+        "G",
+        "CH0",
+        "CH1",
+        "CH2",
+        "CH3",
+        "CH4",
+        "CH5",
+        "CH6",
+        "CH7",
+        "G0",
+        "G1",
+        "G2",
+        "G3",
+        "G4",
+        "G5",
+        "G6",
+        "G7"
+      ],
+      "kind": "module",
+      "note": ""
+    },
+    "HSD2": {
+      "part": "Serial Wombat PCB0046 HSD V2",
+      "pins": [
+        "VIN",
+        "LOAD_GND",
+        "D",
+        "C",
+        "V",
+        "G",
+        "CH0",
+        "CH1",
+        "CH2",
+        "CH3",
+        "CH4",
+        "CH5",
+        "CH6",
+        "CH7",
+        "G0",
+        "G1",
+        "G2",
+        "G3",
+        "G4",
+        "G5",
+        "G6",
+        "G7"
+      ],
+      "kind": "module",
+      "note": ""
+    },
+    "HSD3": {
+      "part": "Serial Wombat PCB0046 HSD V2",
+      "pins": [
+        "VIN",
+        "LOAD_GND",
+        "D",
+        "C",
+        "V",
+        "G",
+        "CH0",
+        "CH1",
+        "CH2",
+        "CH3",
+        "CH4",
+        "CH5",
+        "CH6",
+        "CH7",
+        "G0",
+        "G1",
+        "G2",
+        "G3",
+        "G4",
+        "G5",
+        "G6",
+        "G7"
+      ],
+      "kind": "module",
+      "note": ""
+    },
+    "O1": {
+      "part": "SparkFun BOB-09118 v1.2",
+      "pins": [
+        "IN1",
+        "IN2",
+        "INPUT_GND",
+        "HV",
+        "HV_GND",
+        "OUT1",
+        "OUT2",
+        "JP2_1"
+      ],
+      "kind": "module",
+      "note": ""
+    },
+    "O2": {
+      "part": "SparkFun BOB-09118 v1.2",
+      "pins": [
+        "IN1",
+        "IN2",
+        "INPUT_GND",
+        "HV",
+        "HV_GND",
+        "OUT1",
+        "OUT2",
+        "JP2_1"
+      ],
+      "kind": "module",
+      "note": ""
+    },
+    "V1": {
+      "part": "U.S. Solid USS-MSV50030",
+      "pins": [
+        "RED",
+        "BLACK",
+        "GREEN",
+        "WHITE",
+        "YELLOW"
+      ],
+      "kind": "actuator",
+      "note": ""
+    },
+    "U4": {
+      "part": "ST L7805ABV TO-220",
+      "pins": [
+        "1",
+        "2",
+        "3",
+        "TAB"
+      ],
+      "kind": "regulator",
+      "note": ""
+    },
+    "K1": {
+      "part": "Panasonic TQ2-5V single-side-stable",
+      "pins": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "kind": "relay",
+      "note": ""
+    },
+    "L1": {
+      "part": "Nilight TL-248BW",
+      "pins": [
+        "BLUE",
+        "WHITE",
+        "BLACK"
+      ],
+      "kind": "lamp",
+      "note": ""
+    },
+    "L2": {
+      "part": "Nilight TL-248BW",
+      "pins": [
+        "BLUE",
+        "WHITE",
+        "BLACK"
+      ],
+      "kind": "lamp",
+      "note": ""
+    },
+    "L3": {
+      "part": "Nilight TL-248BW",
+      "pins": [
+        "BLUE",
+        "WHITE",
+        "BLACK"
+      ],
+      "kind": "lamp",
+      "note": ""
+    },
+    "L4": {
+      "part": "Nilight TL-248BW",
+      "pins": [
+        "BLUE",
+        "WHITE",
+        "BLACK"
+      ],
+      "kind": "lamp",
+      "note": ""
+    },
+    "L5": {
+      "part": "Nilight TL-248BW",
+      "pins": [
+        "BLUE",
+        "WHITE",
+        "BLACK"
+      ],
+      "kind": "lamp",
+      "note": ""
+    },
+    "L6": {
+      "part": "Nilight TL-248BW",
+      "pins": [
+        "BLUE",
+        "WHITE",
+        "BLACK"
+      ],
+      "kind": "lamp",
+      "note": ""
+    },
+    "L7": {
+      "part": "Nilight TL-248BW",
+      "pins": [
+        "BLUE",
+        "WHITE",
+        "BLACK"
+      ],
+      "kind": "lamp",
+      "note": ""
+    },
+    "L8": {
+      "part": "Nilight TL-248BW",
+      "pins": [
+        "BLUE",
+        "WHITE",
+        "BLACK"
+      ],
+      "kind": "lamp",
+      "note": ""
+    },
+    "L9": {
+      "part": "Nilight TL-248BW",
+      "pins": [
+        "BLUE",
+        "WHITE",
+        "BLACK"
+      ],
+      "kind": "lamp",
+      "note": ""
+    },
+    "L10": {
+      "part": "Nilight TL-248BW",
+      "pins": [
+        "BLUE",
+        "WHITE",
+        "BLACK"
+      ],
+      "kind": "lamp",
+      "note": ""
+    },
+    "R1": {
+      "part": "1000 ohm 1% 0.5 W",
+      "pins": [
+        "1",
+        "2"
+      ],
+      "kind": "resistor",
+      "note": "",
+      "resistance_ohms": 1000,
+      "power_w": 0.5,
+      "tolerance_pct": 1
+    },
+    "D1": {
+      "part": "1N4148, axial",
+      "pins": [
+        "A",
+        "K"
+      ],
+      "kind": "diode",
+      "note": "Band = K / cathode"
+    },
+    "R2": {
+      "part": "1000 ohm 1% 0.5 W",
+      "pins": [
+        "1",
+        "2"
+      ],
+      "kind": "resistor",
+      "note": "",
+      "resistance_ohms": 1000,
+      "power_w": 0.5,
+      "tolerance_pct": 1
+    },
+    "D2": {
+      "part": "1N4148, axial",
+      "pins": [
+        "A",
+        "K"
+      ],
+      "kind": "diode",
+      "note": "Band = K / cathode"
+    },
+    "R3": {
+      "part": "1000 ohm 1% 0.5 W",
+      "pins": [
+        "1",
+        "2"
+      ],
+      "kind": "resistor",
+      "note": "",
+      "resistance_ohms": 1000,
+      "power_w": 0.5,
+      "tolerance_pct": 1
+    },
+    "D3": {
+      "part": "1N4148, axial",
+      "pins": [
+        "A",
+        "K"
+      ],
+      "kind": "diode",
+      "note": "Band = K / cathode"
+    },
+    "R4": {
+      "part": "1000 ohm 1% 0.25 W",
+      "pins": [
+        "1",
+        "2"
+      ],
+      "kind": "resistor",
+      "note": "",
+      "resistance_ohms": 1000,
+      "power_w": 0.25,
+      "tolerance_pct": 1
+    },
+    "R5": {
+      "part": "100000 ohm 1% 0.25 W",
+      "pins": [
+        "1",
+        "2"
+      ],
+      "kind": "resistor",
+      "note": "",
+      "resistance_ohms": 100000,
+      "power_w": 0.25,
+      "tolerance_pct": 1
+    },
+    "D4": {
+      "part": "1N4148, axial",
+      "pins": [
+        "A",
+        "K"
+      ],
+      "kind": "diode",
+      "note": "Band = K / cathode"
+    },
+    "C1": {
+      "part": "100 nF X7R 50 V",
+      "pins": [
+        "1",
+        "2"
+      ],
+      "kind": "capacitor",
+      "note": ""
+    },
+    "C5": {
+      "part": "100 nF X7R 50 V",
+      "pins": [
+        "1",
+        "2"
+      ],
+      "kind": "capacitor",
+      "note": ""
+    },
+    "C10": {
+      "part": "100 nF X7R 50 V",
+      "pins": [
+        "1",
+        "2"
+      ],
+      "kind": "capacitor",
+      "note": ""
+    },
+    "C11": {
+      "part": "100 nF X7R 50 V",
+      "pins": [
+        "1",
+        "2"
+      ],
+      "kind": "capacitor",
+      "note": ""
+    },
+    "C12": {
+      "part": "100 nF X7R 50 V",
+      "pins": [
+        "1",
+        "2"
+      ],
+      "kind": "capacitor",
+      "note": ""
+    },
+    "C4": {
+      "part": "330 nF X7R 50 V",
+      "pins": [
+        "1",
+        "2"
+      ],
+      "kind": "capacitor",
+      "note": ""
+    },
+    "C7": {
+      "part": "47 uF 35 V 105 C electrolytic",
+      "pins": [
+        "+",
+        "-"
+      ],
+      "kind": "capacitor",
+      "note": ""
+    },
+    "C8": {
+      "part": "47 uF 35 V 105 C electrolytic",
+      "pins": [
+        "+",
+        "-"
+      ],
+      "kind": "capacitor",
+      "note": ""
+    },
+    "C9": {
+      "part": "47 uF 35 V 105 C electrolytic",
+      "pins": [
+        "+",
+        "-"
+      ],
+      "kind": "capacitor",
+      "note": ""
+    }
+  },
+  "nets": {
+    "MACHINE_12V": {
+      "domain": "12V",
+      "pins": [
+        "X1.1",
+        "TB12.rail",
+        "U1.VIN",
+        "HSD1.VIN",
+        "HSD2.VIN",
+        "HSD3.VIN",
+        "C7.+",
+        "C10.1",
+        "C8.+",
+        "C11.1",
+        "C9.+",
+        "C12.1"
+      ]
+    },
+    "0V": {
+      "domain": "ground",
+      "pins": [
+        "X1.2",
+        "TB0.rail",
+        "U1.GND1",
+        "U2.GND",
+        "U3.GND",
+        "HSD1.LOAD_GND",
+        "HSD2.LOAD_GND",
+        "HSD3.LOAD_GND",
+        "O1.INPUT_GND",
+        "O1.HV_GND",
+        "O2.INPUT_GND",
+        "O2.HV_GND",
+        "V1.BLACK",
+        "V1.WHITE",
+        "U3.I-",
+        "U4.2",
+        "K1.10",
+        "D1.A",
+        "D2.A",
+        "D3.A",
+        "O2.IN2",
+        "L1.BLACK",
+        "L2.BLACK",
+        "L3.BLACK",
+        "L4.BLACK",
+        "L5.BLACK",
+        "L6.BLACK",
+        "L7.BLACK",
+        "L8.BLACK",
+        "L9.BLACK",
+        "L10.BLACK",
+        "D4.A",
+        "C5.2",
+        "C4.2",
+        "R5.2",
+        "C1.2",
+        "C7.-",
+        "C10.2",
+        "C8.-",
+        "C11.2",
+        "C9.-",
+        "C12.2"
+      ]
+    },
+    "LOGIC_5V": {
+      "domain": "5V",
+      "pins": [
+        "U1.5V",
+        "TB5.rail",
+        "U2.VCC",
+        "U3.VCC",
+        "HSD1.V",
+        "HSD2.V",
+        "HSD3.V",
+        "O1.HV",
+        "O2.HV"
+      ]
+    },
+    "SDA": {
+      "domain": "signal",
+      "pins": [
+        "U1.A4",
+        "U2.SDA",
+        "HSD1.D",
+        "HSD2.D",
+        "HSD3.D"
+      ]
+    },
+    "SCL": {
+      "domain": "signal",
+      "pins": [
+        "U1.A5",
+        "U2.SCL",
+        "HSD1.C",
+        "HSD2.C",
+        "HSD3.C"
+      ]
+    },
+    "MACHINE_G": {
+      "domain": "12V_input",
+      "pins": [
+        "X1.3",
+        "R1.1"
+      ]
+    },
+    "OPTO_G": {
+      "domain": "signal",
+      "pins": [
+        "R1.2",
+        "O1.IN1",
+        "D1.K"
+      ]
+    },
+    "G_LOGIC": {
+      "domain": "signal",
+      "pins": [
+        "O1.OUT1",
+        "U1.D2"
+      ]
+    },
+    "MACHINE_H": {
+      "domain": "12V_input",
+      "pins": [
+        "X1.4",
+        "R2.1"
+      ]
+    },
+    "OPTO_H": {
+      "domain": "signal",
+      "pins": [
+        "R2.2",
+        "O1.IN2",
+        "D2.K"
+      ]
+    },
+    "H_LOGIC": {
+      "domain": "signal",
+      "pins": [
+        "O1.OUT2",
+        "U1.D3"
+      ]
+    },
+    "MACHINE_J": {
+      "domain": "12V_input",
+      "pins": [
+        "X1.5",
+        "R3.1"
+      ]
+    },
+    "OPTO_J": {
+      "domain": "signal",
+      "pins": [
+        "R3.2",
+        "O2.IN1",
+        "D3.K"
+      ]
+    },
+    "J_LOGIC": {
+      "domain": "signal",
+      "pins": [
+        "O2.OUT1",
+        "U1.D4"
+      ]
+    },
+    "L1_BLUE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD1.CH0",
+        "L1.BLUE"
+      ]
+    },
+    "L1_WHITE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD1.CH1",
+        "L1.WHITE"
+      ]
+    },
+    "L2_BLUE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD1.CH2",
+        "L2.BLUE"
+      ]
+    },
+    "L2_WHITE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD1.CH3",
+        "L2.WHITE"
+      ]
+    },
+    "L3_BLUE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD1.CH4",
+        "L3.BLUE"
+      ]
+    },
+    "L3_WHITE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD1.CH5",
+        "L3.WHITE"
+      ]
+    },
+    "L4_BLUE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD1.CH6",
+        "L4.BLUE"
+      ]
+    },
+    "L4_WHITE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD1.CH7",
+        "L4.WHITE"
+      ]
+    },
+    "L5_BLUE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD2.CH0",
+        "L5.BLUE"
+      ]
+    },
+    "L5_WHITE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD2.CH1",
+        "L5.WHITE"
+      ]
+    },
+    "L6_BLUE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD2.CH2",
+        "L6.BLUE"
+      ]
+    },
+    "L6_WHITE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD2.CH3",
+        "L6.WHITE"
+      ]
+    },
+    "L7_BLUE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD2.CH4",
+        "L7.BLUE"
+      ]
+    },
+    "L7_WHITE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD2.CH5",
+        "L7.WHITE"
+      ]
+    },
+    "L8_BLUE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD2.CH6",
+        "L8.BLUE"
+      ]
+    },
+    "L8_WHITE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD2.CH7",
+        "L8.WHITE"
+      ]
+    },
+    "L9_BLUE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD3.CH0",
+        "L9.BLUE"
+      ]
+    },
+    "L9_WHITE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD3.CH1",
+        "L9.WHITE"
+      ]
+    },
+    "L10_BLUE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD3.CH2",
+        "L10.BLUE"
+      ]
+    },
+    "L10_WHITE": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD3.CH3",
+        "L10.WHITE"
+      ]
+    },
+    "VALVE_12V": {
+      "domain": "switched_12V",
+      "pins": [
+        "HSD3.CH4",
+        "V1.RED",
+        "U4.1",
+        "C4.1"
+      ]
+    },
+    "RELAY_5V": {
+      "domain": "relay_5V",
+      "pins": [
+        "U4.3",
+        "K1.1",
+        "D4.K",
+        "C5.1"
+      ]
+    },
+    "DAC_OUT": {
+      "domain": "current_loop",
+      "pins": [
+        "U2.OUT",
+        "K1.3"
+      ]
+    },
+    "VALVE_COMMAND": {
+      "domain": "current_loop",
+      "pins": [
+        "K1.4",
+        "V1.GREEN"
+      ]
+    },
+    "VALVE_FEEDBACK": {
+      "domain": "current_loop",
+      "pins": [
+        "V1.YELLOW",
+        "K1.7"
+      ]
+    },
+    "FEEDBACK_IN": {
+      "domain": "current_loop",
+      "pins": [
+        "K1.8",
+        "U3.I+"
+      ]
+    },
+    "POSITION_RAW": {
+      "domain": "analog_3V",
+      "pins": [
+        "U3.SIGNAL",
+        "R4.1"
+      ]
+    },
+    "POSITION_ADC": {
+      "domain": "analog_3V",
+      "pins": [
+        "R4.2",
+        "U1.A0",
+        "R5.1",
+        "C1.1"
+      ]
+    }
+  },
+  "wires": [
+    {
+      "id": "W001",
+      "net": "MACHINE_12V",
+      "from": "TB12.rail",
+      "to": "X1.1",
+      "note": "Existing fused machine supply; H1/H2 unresolved"
+    },
+    {
+      "id": "W002",
+      "net": "MACHINE_12V",
+      "from": "TB12.rail",
+      "to": "U1.VIN",
+      "note": "Existing fused machine supply; H1/H2 unresolved"
+    },
+    {
+      "id": "W003",
+      "net": "MACHINE_12V",
+      "from": "TB12.rail",
+      "to": "HSD1.VIN",
+      "note": "Existing fused machine supply; H1/H2 unresolved"
+    },
+    {
+      "id": "W004",
+      "net": "MACHINE_12V",
+      "from": "TB12.rail",
+      "to": "HSD2.VIN",
+      "note": "Existing fused machine supply; H1/H2 unresolved"
+    },
+    {
+      "id": "W005",
+      "net": "MACHINE_12V",
+      "from": "TB12.rail",
+      "to": "HSD3.VIN",
+      "note": "Existing fused machine supply; H1/H2 unresolved"
+    },
+    {
+      "id": "W006",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "X1.2",
+      "note": "Separate load and signal returns to distribution; V1 WHITE requires H4"
+    },
+    {
+      "id": "W007",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "U1.GND1",
+      "note": "Separate load and signal returns to distribution; V1 WHITE requires H4"
+    },
+    {
+      "id": "W008",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "U2.GND",
+      "note": "Separate load and signal returns to distribution; V1 WHITE requires H4"
+    },
+    {
+      "id": "W009",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "U3.GND",
+      "note": "Separate load and signal returns to distribution; V1 WHITE requires H4"
+    },
+    {
+      "id": "W010",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "HSD1.LOAD_GND",
+      "note": "Separate load and signal returns to distribution; V1 WHITE requires H4"
+    },
+    {
+      "id": "W011",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "HSD2.LOAD_GND",
+      "note": "Separate load and signal returns to distribution; V1 WHITE requires H4"
+    },
+    {
+      "id": "W012",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "HSD3.LOAD_GND",
+      "note": "Separate load and signal returns to distribution; V1 WHITE requires H4"
+    },
+    {
+      "id": "W013",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "O1.INPUT_GND",
+      "note": "Separate load and signal returns to distribution; V1 WHITE requires H4"
+    },
+    {
+      "id": "W014",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "O1.HV_GND",
+      "note": "Separate load and signal returns to distribution; V1 WHITE requires H4"
+    },
+    {
+      "id": "W015",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "O2.INPUT_GND",
+      "note": "Separate load and signal returns to distribution; V1 WHITE requires H4"
+    },
+    {
+      "id": "W016",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "O2.HV_GND",
+      "note": "Separate load and signal returns to distribution; V1 WHITE requires H4"
+    },
+    {
+      "id": "W017",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "V1.BLACK",
+      "note": "Separate load and signal returns to distribution; V1 WHITE requires H4"
+    },
+    {
+      "id": "W018",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "V1.WHITE",
+      "note": "Separate load and signal returns to distribution; V1 WHITE requires H4"
+    },
+    {
+      "id": "W019",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "U3.I-",
+      "note": "Separate load and signal returns to distribution; V1 WHITE requires H4"
+    },
+    {
+      "id": "W021",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "U4.2",
+      "note": "Separate load and signal returns to distribution; V1 WHITE requires H4"
+    },
+    {
+      "id": "W022",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "K1.10",
+      "note": "Separate load and signal returns to distribution; V1 WHITE requires H4"
+    },
+    {
+      "id": "W023",
+      "net": "LOGIC_5V",
+      "from": "TB5.rail",
+      "to": "U1.5V",
+      "note": "Only Nano regulator sources this rail; measure load"
+    },
+    {
+      "id": "W024",
+      "net": "LOGIC_5V",
+      "from": "TB5.rail",
+      "to": "U2.VCC",
+      "note": "Only Nano regulator sources this rail; measure load"
+    },
+    {
+      "id": "W025",
+      "net": "LOGIC_5V",
+      "from": "TB5.rail",
+      "to": "U3.VCC",
+      "note": "Only Nano regulator sources this rail; measure load"
+    },
+    {
+      "id": "W026",
+      "net": "LOGIC_5V",
+      "from": "TB5.rail",
+      "to": "HSD1.V",
+      "note": "Only Nano regulator sources this rail; measure load"
+    },
+    {
+      "id": "W027",
+      "net": "LOGIC_5V",
+      "from": "TB5.rail",
+      "to": "HSD2.V",
+      "note": "Only Nano regulator sources this rail; measure load"
+    },
+    {
+      "id": "W028",
+      "net": "LOGIC_5V",
+      "from": "TB5.rail",
+      "to": "HSD3.V",
+      "note": "Only Nano regulator sources this rail; measure load"
+    },
+    {
+      "id": "W029",
+      "net": "LOGIC_5V",
+      "from": "TB5.rail",
+      "to": "O1.HV",
+      "note": "Only Nano regulator sources this rail; measure load"
+    },
+    {
+      "id": "W030",
+      "net": "LOGIC_5V",
+      "from": "TB5.rail",
+      "to": "O2.HV",
+      "note": "Only Nano regulator sources this rail; measure load"
+    },
+    {
+      "id": "W032",
+      "net": "SDA",
+      "from": "U1.A4",
+      "to": "U2.SDA",
+      "note": "100 kHz local bus; only DAC onboard pull-up"
+    },
+    {
+      "id": "W033",
+      "net": "SDA",
+      "from": "U1.A4",
+      "to": "HSD1.D",
+      "note": "100 kHz local bus; only DAC onboard pull-up"
+    },
+    {
+      "id": "W034",
+      "net": "SDA",
+      "from": "U1.A4",
+      "to": "HSD2.D",
+      "note": "100 kHz local bus; only DAC onboard pull-up"
+    },
+    {
+      "id": "W035",
+      "net": "SDA",
+      "from": "U1.A4",
+      "to": "HSD3.D",
+      "note": "100 kHz local bus; only DAC onboard pull-up"
+    },
+    {
+      "id": "W036",
+      "net": "SCL",
+      "from": "U1.A5",
+      "to": "U2.SCL",
+      "note": "100 kHz local bus; only DAC onboard pull-up"
+    },
+    {
+      "id": "W037",
+      "net": "SCL",
+      "from": "U1.A5",
+      "to": "HSD1.C",
+      "note": "100 kHz local bus; only DAC onboard pull-up"
+    },
+    {
+      "id": "W038",
+      "net": "SCL",
+      "from": "U1.A5",
+      "to": "HSD2.C",
+      "note": "100 kHz local bus; only DAC onboard pull-up"
+    },
+    {
+      "id": "W039",
+      "net": "SCL",
+      "from": "U1.A5",
+      "to": "HSD3.C",
+      "note": "100 kHz local bus; only DAC onboard pull-up"
+    },
+    {
+      "id": "W040",
+      "net": "MACHINE_G",
+      "from": "X1.3",
+      "to": "R1.1",
+      "note": ""
+    },
+    {
+      "id": "W041",
+      "net": "OPTO_G",
+      "from": "R1.2",
+      "to": "O1.IN1",
+      "note": ""
+    },
+    {
+      "id": "W042",
+      "net": "OPTO_G",
+      "from": "R1.2",
+      "to": "D1.K",
+      "note": ""
+    },
+    {
+      "id": "W043",
+      "net": "0V",
+      "from": "O1.INPUT_GND",
+      "to": "D1.A",
+      "note": "Diode band faces IN terminal"
+    },
+    {
+      "id": "W044",
+      "net": "G_LOGIC",
+      "from": "O1.OUT1",
+      "to": "U1.D2",
+      "note": ""
+    },
+    {
+      "id": "W045",
+      "net": "MACHINE_H",
+      "from": "X1.4",
+      "to": "R2.1",
+      "note": ""
+    },
+    {
+      "id": "W046",
+      "net": "OPTO_H",
+      "from": "R2.2",
+      "to": "O1.IN2",
+      "note": ""
+    },
+    {
+      "id": "W047",
+      "net": "OPTO_H",
+      "from": "R2.2",
+      "to": "D2.K",
+      "note": ""
+    },
+    {
+      "id": "W048",
+      "net": "0V",
+      "from": "O1.INPUT_GND",
+      "to": "D2.A",
+      "note": "Diode band faces IN terminal"
+    },
+    {
+      "id": "W049",
+      "net": "H_LOGIC",
+      "from": "O1.OUT2",
+      "to": "U1.D3",
+      "note": ""
+    },
+    {
+      "id": "W050",
+      "net": "MACHINE_J",
+      "from": "X1.5",
+      "to": "R3.1",
+      "note": ""
+    },
+    {
+      "id": "W051",
+      "net": "OPTO_J",
+      "from": "R3.2",
+      "to": "O2.IN1",
+      "note": ""
+    },
+    {
+      "id": "W052",
+      "net": "OPTO_J",
+      "from": "R3.2",
+      "to": "D3.K",
+      "note": ""
+    },
+    {
+      "id": "W053",
+      "net": "0V",
+      "from": "O2.INPUT_GND",
+      "to": "D3.A",
+      "note": "Diode band faces IN terminal"
+    },
+    {
+      "id": "W054",
+      "net": "J_LOGIC",
+      "from": "O2.OUT1",
+      "to": "U1.D4",
+      "note": ""
+    },
+    {
+      "id": "W055",
+      "net": "0V",
+      "from": "O2.INPUT_GND",
+      "to": "O2.IN2",
+      "note": "Unused input held inactive"
+    },
+    {
+      "id": "W056",
+      "net": "L1_BLUE",
+      "from": "HSD1.CH0",
+      "to": "L1.BLUE",
+      "note": ""
+    },
+    {
+      "id": "W057",
+      "net": "L1_WHITE",
+      "from": "HSD1.CH1",
+      "to": "L1.WHITE",
+      "note": ""
+    },
+    {
+      "id": "W058",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "L1.BLACK",
+      "note": "Rated lamp-return harness; do not route through Nano"
+    },
+    {
+      "id": "W059",
+      "net": "L2_BLUE",
+      "from": "HSD1.CH2",
+      "to": "L2.BLUE",
+      "note": ""
+    },
+    {
+      "id": "W060",
+      "net": "L2_WHITE",
+      "from": "HSD1.CH3",
+      "to": "L2.WHITE",
+      "note": ""
+    },
+    {
+      "id": "W061",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "L2.BLACK",
+      "note": "Rated lamp-return harness; do not route through Nano"
+    },
+    {
+      "id": "W062",
+      "net": "L3_BLUE",
+      "from": "HSD1.CH4",
+      "to": "L3.BLUE",
+      "note": ""
+    },
+    {
+      "id": "W063",
+      "net": "L3_WHITE",
+      "from": "HSD1.CH5",
+      "to": "L3.WHITE",
+      "note": ""
+    },
+    {
+      "id": "W064",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "L3.BLACK",
+      "note": "Rated lamp-return harness; do not route through Nano"
+    },
+    {
+      "id": "W065",
+      "net": "L4_BLUE",
+      "from": "HSD1.CH6",
+      "to": "L4.BLUE",
+      "note": ""
+    },
+    {
+      "id": "W066",
+      "net": "L4_WHITE",
+      "from": "HSD1.CH7",
+      "to": "L4.WHITE",
+      "note": ""
+    },
+    {
+      "id": "W067",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "L4.BLACK",
+      "note": "Rated lamp-return harness; do not route through Nano"
+    },
+    {
+      "id": "W068",
+      "net": "L5_BLUE",
+      "from": "HSD2.CH0",
+      "to": "L5.BLUE",
+      "note": ""
+    },
+    {
+      "id": "W069",
+      "net": "L5_WHITE",
+      "from": "HSD2.CH1",
+      "to": "L5.WHITE",
+      "note": ""
+    },
+    {
+      "id": "W070",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "L5.BLACK",
+      "note": "Rated lamp-return harness; do not route through Nano"
+    },
+    {
+      "id": "W071",
+      "net": "L6_BLUE",
+      "from": "HSD2.CH2",
+      "to": "L6.BLUE",
+      "note": ""
+    },
+    {
+      "id": "W072",
+      "net": "L6_WHITE",
+      "from": "HSD2.CH3",
+      "to": "L6.WHITE",
+      "note": ""
+    },
+    {
+      "id": "W073",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "L6.BLACK",
+      "note": "Rated lamp-return harness; do not route through Nano"
+    },
+    {
+      "id": "W074",
+      "net": "L7_BLUE",
+      "from": "HSD2.CH4",
+      "to": "L7.BLUE",
+      "note": ""
+    },
+    {
+      "id": "W075",
+      "net": "L7_WHITE",
+      "from": "HSD2.CH5",
+      "to": "L7.WHITE",
+      "note": ""
+    },
+    {
+      "id": "W076",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "L7.BLACK",
+      "note": "Rated lamp-return harness; do not route through Nano"
+    },
+    {
+      "id": "W077",
+      "net": "L8_BLUE",
+      "from": "HSD2.CH6",
+      "to": "L8.BLUE",
+      "note": ""
+    },
+    {
+      "id": "W078",
+      "net": "L8_WHITE",
+      "from": "HSD2.CH7",
+      "to": "L8.WHITE",
+      "note": ""
+    },
+    {
+      "id": "W079",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "L8.BLACK",
+      "note": "Rated lamp-return harness; do not route through Nano"
+    },
+    {
+      "id": "W080",
+      "net": "L9_BLUE",
+      "from": "HSD3.CH0",
+      "to": "L9.BLUE",
+      "note": ""
+    },
+    {
+      "id": "W081",
+      "net": "L9_WHITE",
+      "from": "HSD3.CH1",
+      "to": "L9.WHITE",
+      "note": ""
+    },
+    {
+      "id": "W082",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "L9.BLACK",
+      "note": "Rated lamp-return harness; do not route through Nano"
+    },
+    {
+      "id": "W083",
+      "net": "L10_BLUE",
+      "from": "HSD3.CH2",
+      "to": "L10.BLUE",
+      "note": ""
+    },
+    {
+      "id": "W084",
+      "net": "L10_WHITE",
+      "from": "HSD3.CH3",
+      "to": "L10.WHITE",
+      "note": ""
+    },
+    {
+      "id": "W085",
+      "net": "0V",
+      "from": "TB0.rail",
+      "to": "L10.BLACK",
+      "note": "Rated lamp-return harness; do not route through Nano"
+    },
+    {
+      "id": "W086",
+      "net": "VALVE_12V",
+      "from": "HSD3.CH4",
+      "to": "V1.RED",
+      "note": "Watchdog controlled, steady DC; not lamp PWM"
+    },
+    {
+      "id": "W087",
+      "net": "VALVE_12V",
+      "from": "HSD3.CH4",
+      "to": "U4.1",
+      "note": "Watchdog controlled, steady DC; not lamp PWM"
+    },
+    {
+      "id": "W088",
+      "net": "RELAY_5V",
+      "from": "U4.3",
+      "to": "K1.1",
+      "note": "Separate from LOGIC_5V"
+    },
+    {
+      "id": "W089",
+      "net": "RELAY_5V",
+      "from": "U4.3",
+      "to": "D4.K",
+      "note": "Separate from LOGIC_5V"
+    },
+    {
+      "id": "W090",
+      "net": "RELAY_5V",
+      "from": "U4.3",
+      "to": "C5.1",
+      "note": "Separate from LOGIC_5V"
+    },
+    {
+      "id": "W091",
+      "net": "0V",
+      "from": "K1.10",
+      "to": "D4.A",
+      "note": "Flyback diode band faces coil positive"
+    },
+    {
+      "id": "W092",
+      "net": "0V",
+      "from": "U4.2",
+      "to": "C5.2",
+      "note": "Local regulator bypass return"
+    },
+    {
+      "id": "W093",
+      "net": "0V",
+      "from": "U4.2",
+      "to": "C4.2",
+      "note": "Local regulator bypass return"
+    },
+    {
+      "id": "W094",
+      "net": "VALVE_12V",
+      "from": "U4.1",
+      "to": "C4.1",
+      "note": "330 nF close to regulator IN"
+    },
+    {
+      "id": "W095",
+      "net": "DAC_OUT",
+      "from": "U2.OUT",
+      "to": "K1.3",
+      "note": "Potential about 15 V; never ADC"
+    },
+    {
+      "id": "W096",
+      "net": "VALVE_COMMAND",
+      "from": "K1.4",
+      "to": "V1.GREEN",
+      "note": ""
+    },
+    {
+      "id": "W097",
+      "net": "VALVE_FEEDBACK",
+      "from": "V1.YELLOW",
+      "to": "K1.7",
+      "note": ""
+    },
+    {
+      "id": "W098",
+      "net": "FEEDBACK_IN",
+      "from": "K1.8",
+      "to": "U3.I+",
+      "note": ""
+    },
+    {
+      "id": "W099",
+      "net": "POSITION_RAW",
+      "from": "U3.SIGNAL",
+      "to": "R4.1",
+      "note": ""
+    },
+    {
+      "id": "W100",
+      "net": "POSITION_ADC",
+      "from": "U1.A0",
+      "to": "R4.2",
+      "note": ""
+    },
+    {
+      "id": "W101",
+      "net": "POSITION_ADC",
+      "from": "U1.A0",
+      "to": "R5.1",
+      "note": ""
+    },
+    {
+      "id": "W102",
+      "net": "POSITION_ADC",
+      "from": "U1.A0",
+      "to": "C1.1",
+      "note": ""
+    },
+    {
+      "id": "W103",
+      "net": "0V",
+      "from": "U1.GND1",
+      "to": "R5.2",
+      "note": "Local ADC return; no load current"
+    },
+    {
+      "id": "W104",
+      "net": "0V",
+      "from": "U1.GND1",
+      "to": "C1.2",
+      "note": "Local ADC return; no load current"
+    },
+    {
+      "id": "W115",
+      "net": "MACHINE_12V",
+      "from": "HSD1.VIN",
+      "to": "C7.+",
+      "note": "Local load-supply bypass; electrolytic + to VIN"
+    },
+    {
+      "id": "W116",
+      "net": "MACHINE_12V",
+      "from": "HSD1.VIN",
+      "to": "C10.1",
+      "note": "Local load-supply bypass; electrolytic + to VIN"
+    },
+    {
+      "id": "W117",
+      "net": "0V",
+      "from": "HSD1.LOAD_GND",
+      "to": "C7.-",
+      "note": ""
+    },
+    {
+      "id": "W118",
+      "net": "0V",
+      "from": "HSD1.LOAD_GND",
+      "to": "C10.2",
+      "note": ""
+    },
+    {
+      "id": "W119",
+      "net": "MACHINE_12V",
+      "from": "HSD2.VIN",
+      "to": "C8.+",
+      "note": "Local load-supply bypass; electrolytic + to VIN"
+    },
+    {
+      "id": "W120",
+      "net": "MACHINE_12V",
+      "from": "HSD2.VIN",
+      "to": "C11.1",
+      "note": "Local load-supply bypass; electrolytic + to VIN"
+    },
+    {
+      "id": "W121",
+      "net": "0V",
+      "from": "HSD2.LOAD_GND",
+      "to": "C8.-",
+      "note": ""
+    },
+    {
+      "id": "W122",
+      "net": "0V",
+      "from": "HSD2.LOAD_GND",
+      "to": "C11.2",
+      "note": ""
+    },
+    {
+      "id": "W123",
+      "net": "MACHINE_12V",
+      "from": "HSD3.VIN",
+      "to": "C9.+",
+      "note": "Local load-supply bypass; electrolytic + to VIN"
+    },
+    {
+      "id": "W124",
+      "net": "MACHINE_12V",
+      "from": "HSD3.VIN",
+      "to": "C12.1",
+      "note": "Local load-supply bypass; electrolytic + to VIN"
+    },
+    {
+      "id": "W125",
+      "net": "0V",
+      "from": "HSD3.LOAD_GND",
+      "to": "C9.-",
+      "note": ""
+    },
+    {
+      "id": "W126",
+      "net": "0V",
+      "from": "HSD3.LOAD_GND",
+      "to": "C12.2",
+      "note": ""
+    }
+  ],
+  "internal_connections": [
+    [
+      "HSD1.LOAD_GND",
+      "HSD1.G"
+    ],
+    [
+      "HSD1.LOAD_GND",
+      "HSD1.G0"
+    ],
+    [
+      "HSD1.LOAD_GND",
+      "HSD1.G1"
+    ],
+    [
+      "HSD1.LOAD_GND",
+      "HSD1.G2"
+    ],
+    [
+      "HSD1.LOAD_GND",
+      "HSD1.G3"
+    ],
+    [
+      "HSD1.LOAD_GND",
+      "HSD1.G4"
+    ],
+    [
+      "HSD1.LOAD_GND",
+      "HSD1.G5"
+    ],
+    [
+      "HSD1.LOAD_GND",
+      "HSD1.G6"
+    ],
+    [
+      "HSD1.LOAD_GND",
+      "HSD1.G7"
+    ],
+    [
+      "HSD2.LOAD_GND",
+      "HSD2.G"
+    ],
+    [
+      "HSD2.LOAD_GND",
+      "HSD2.G0"
+    ],
+    [
+      "HSD2.LOAD_GND",
+      "HSD2.G1"
+    ],
+    [
+      "HSD2.LOAD_GND",
+      "HSD2.G2"
+    ],
+    [
+      "HSD2.LOAD_GND",
+      "HSD2.G3"
+    ],
+    [
+      "HSD2.LOAD_GND",
+      "HSD2.G4"
+    ],
+    [
+      "HSD2.LOAD_GND",
+      "HSD2.G5"
+    ],
+    [
+      "HSD2.LOAD_GND",
+      "HSD2.G6"
+    ],
+    [
+      "HSD2.LOAD_GND",
+      "HSD2.G7"
+    ],
+    [
+      "HSD3.LOAD_GND",
+      "HSD3.G"
+    ],
+    [
+      "HSD3.LOAD_GND",
+      "HSD3.G0"
+    ],
+    [
+      "HSD3.LOAD_GND",
+      "HSD3.G1"
+    ],
+    [
+      "HSD3.LOAD_GND",
+      "HSD3.G2"
+    ],
+    [
+      "HSD3.LOAD_GND",
+      "HSD3.G3"
+    ],
+    [
+      "HSD3.LOAD_GND",
+      "HSD3.G4"
+    ],
+    [
+      "HSD3.LOAD_GND",
+      "HSD3.G5"
+    ],
+    [
+      "HSD3.LOAD_GND",
+      "HSD3.G6"
+    ],
+    [
+      "HSD3.LOAD_GND",
+      "HSD3.G7"
+    ],
+    [
+      "U4.2",
+      "U4.TAB"
+    ],
+    [
+      "U1.GND1",
+      "U1.GND2"
+    ],
+    [
+      "U2.GND",
+      "U2.OUT_GND"
+    ]
+  ],
+  "no_connect": [
+    "O1.JP2_1",
+    "O2.JP2_1",
+    "O2.OUT2",
+    "K1.2",
+    "K1.9",
+    "K1.5",
+    "K1.6",
+    "HSD3.CH5",
+    "HSD3.CH6",
+    "HSD3.CH7",
+    "U1.3V3",
+    "U1.A1",
+    "U1.A2",
+    "U1.A3",
+    "U1.A6",
+    "U1.A7",
+    "U1.AREF",
+    "U1.RESET1",
+    "U1.RESET2",
+    "U1.RX",
+    "U1.TX",
+    "U1.D5",
+    "U1.D6",
+    "U1.D7",
+    "U1.D10",
+    "U1.D11",
+    "U1.D12",
+    "U1.D13",
+    "U1.D8",
+    "U1.D9"
+  ],
+  "addresses": {
+    "U2": [
+      88
+    ],
+    "HSD1": [
+      96,
+      97
+    ],
+    "HSD2": [
+      98,
+      99
+    ],
+    "HSD3": [
+      100,
+      101
+    ]
+  },
+  "hold_points": [
+    "H1 machine pinout",
+    "H2 fuse/conductors",
+    "H3 actual parts",
+    "H4 valve loops",
+    "H5 firmware/bench"
+  ],
+  "lamp_channels": [
+    {
+      "lamp": 1,
+      "board": "HSD1",
+      "blue": 0,
+      "white": 1
+    },
+    {
+      "lamp": 2,
+      "board": "HSD1",
+      "blue": 2,
+      "white": 3
+    },
+    {
+      "lamp": 3,
+      "board": "HSD1",
+      "blue": 4,
+      "white": 5
+    },
+    {
+      "lamp": 4,
+      "board": "HSD1",
+      "blue": 6,
+      "white": 7
+    },
+    {
+      "lamp": 5,
+      "board": "HSD2",
+      "blue": 0,
+      "white": 1
+    },
+    {
+      "lamp": 6,
+      "board": "HSD2",
+      "blue": 2,
+      "white": 3
+    },
+    {
+      "lamp": 7,
+      "board": "HSD2",
+      "blue": 4,
+      "white": 5
+    },
+    {
+      "lamp": 8,
+      "board": "HSD2",
+      "blue": 6,
+      "white": 7
+    },
+    {
+      "lamp": 9,
+      "board": "HSD3",
+      "blue": 0,
+      "white": 1
+    },
+    {
+      "lamp": 10,
+      "board": "HSD3",
+      "blue": 2,
+      "white": 3
+    }
+  ],
+  "notes": [
+    "Not flashable firmware. No physical validation performed.",
+    "Every endpoint uses functional terminal names. X1 numbers are NOT machine cavities.",
+    "Voltage domains are nominal classifications, not transient or miswire ratings.",
+    "Revision E: no flow meter or external temperature sensors. D7/D8/D9 unused.",
+    "Valve position feedback remains required. No automatic flow acquisition or water-stop detection."
+  ],
+  "relay": {
+    "coil": [
+      "K1.1",
+      "K1.10"
+    ],
+    "normally_open": [
+      [
+        "K1.3",
+        "K1.4"
+      ],
+      [
+        "K1.8",
+        "K1.7"
+      ]
+    ],
+    "normally_closed": [
+      [
+        "K1.3",
+        "K1.2"
+      ],
+      [
+        "K1.8",
+        "K1.9"
+      ]
+    ],
+    "view": "manufacturer bottom view"
+  },
+  "watchdog": {
+    "board": "HSD3",
+    "address": 100,
+    "channel": 4,
+    "timeout_ms_proposed": 500,
+    "feed_ms_proposed": 100,
+    "default": "HIGH",
+    "timeout": "LOW",
+    "return_delay": 65535,
+    "qualified": false
+  },
+  "pullups": {
+    "SDA": {
+      "ohms": 4700,
+      "onboard": "U2"
+    },
+    "SCL": {
+      "ohms": 4700,
+      "onboard": "U2"
+    }
+  },
+  "jumper_configuration": {
+    "HSD1": {
+      "A1": false,
+      "A2": false,
+      "A3": false,
+      "SJSDA": false,
+      "SJSCL": false,
+      "MAX_AMP": false
+    },
+    "HSD2": {
+      "A1": true,
+      "A2": false,
+      "A3": false,
+      "SJSDA": false,
+      "SJSCL": false,
+      "MAX_AMP": false
+    },
+    "HSD3": {
+      "A1": false,
+      "A2": true,
+      "A3": false,
+      "SJSDA": false,
+      "SJSCL": false,
+      "MAX_AMP": false
+    }
+  }
+}

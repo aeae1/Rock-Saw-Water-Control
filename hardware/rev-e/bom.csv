@@ -1,0 +1,44 @@
+Reference,Specification,Note
+X1,Reused machine harness; verify actual cavities,
+TB12,12 V distribution,Joined terminals; hardware and wire rating subject to H2
+TB5,Logic 5 V distribution,Joined terminals; hardware and wire rating subject to H2
+TB0,Ground distribution,Joined terminals; hardware and wire rating subject to H2
+U1,Arduino Nano Every ABX00028,
+U2,DFRobot DFR1229,
+U3,DFRobot SEN0262,
+HSD1,Serial Wombat PCB0046 HSD V2,
+HSD2,Serial Wombat PCB0046 HSD V2,
+HSD3,Serial Wombat PCB0046 HSD V2,
+O1,SparkFun BOB-09118 v1.2,
+O2,SparkFun BOB-09118 v1.2,
+V1,U.S. Solid USS-MSV50030,
+U4,ST L7805ABV TO-220,
+K1,Panasonic TQ2-5V single-side-stable,
+L1,Nilight TL-248BW,
+L2,Nilight TL-248BW,
+L3,Nilight TL-248BW,
+L4,Nilight TL-248BW,
+L5,Nilight TL-248BW,
+L6,Nilight TL-248BW,
+L7,Nilight TL-248BW,
+L8,Nilight TL-248BW,
+L9,Nilight TL-248BW,
+L10,Nilight TL-248BW,
+R1,1000 ohm 1% 0.5 W,
+D1,"1N4148, axial",Band = K / cathode
+R2,1000 ohm 1% 0.5 W,
+D2,"1N4148, axial",Band = K / cathode
+R3,1000 ohm 1% 0.5 W,
+D3,"1N4148, axial",Band = K / cathode
+R4,1000 ohm 1% 0.25 W,
+R5,100000 ohm 1% 0.25 W,
+D4,"1N4148, axial",Band = K / cathode
+C1,100 nF X7R 50 V,
+C5,100 nF X7R 50 V,
+C10,100 nF X7R 50 V,
+C11,100 nF X7R 50 V,
+C12,100 nF X7R 50 V,
+C4,330 nF X7R 50 V,
+C7,47 uF 35 V 105 C electrolytic,
+C8,47 uF 35 V 105 C electrolytic,
+C9,47 uF 35 V 105 C electrolytic,

@@ -1,8 +1,12 @@
 # Flow Calibration Plan
 
-The intended hardware control scale is **percentage of calibrated flow**, using measurements from the actual valve, hose and spray heads. The current simulator still uses linear actuator-opening percentages because measured calibration data has not yet been supplied. Its ball readout will continue to show physical opening even after a flow curve is added.
+Revision E has **no permanent flow meter**. Start with valve-opening levels, or add a manually measured lookup table after bench qualification. An automatic flow-measuring calibration run is not included.
+
+The optional calibrated hardware control scale is **percentage of calibrated flow**, using measurements from the actual valve, hose and spray heads. The current simulator still uses linear actuator-opening percentages because measured calibration data has not yet been supplied. Its ball readout will continue to show physical opening even after a flow curve is added.
 
 ## Collect the data
+
+The owner reports a 45-70 psi supply, plain battery-fed 12 V control outputs without PWM, and a fixed set of saw nozzles. These are application inputs, not a substitute for connector identification or electrical measurements. A nominal 57 psi calibration is a reasonable starting point; measure pressure while water is flowing. Under the usual square-root pressure/flow approximation, 45 and 70 psi correspond to about 89% and 111% of the flow at 57 psi. This is an estimate, not an accuracy specification for this assembly. Verify representative levels at both pressure extremes. Do not assume a particular useful travel range before measuring the actual valve and nozzles.
 
 1. Assemble the real hose, strainer, valve, manifold and nozzles. Measure through the whole arrangement; discharging the bare valve into a bucket creates a different restriction curve.
 2. Record inlet pressure while flowing, hose length, nozzle configuration and water conditions. Keep them stable during a measurement series.

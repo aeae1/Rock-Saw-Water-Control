@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const base = JSON.parse(fs.readFileSync(path.join(__dirname, '../hardware/rev-d/netlist.json')));
+const base = JSON.parse(fs.readFileSync(path.join(__dirname, '../hardware/rev-e/netlist.json')));
 
 // This checks documentation topology, not semiconductor behavior or actual wiring.
 function audit(n) {
@@ -37,7 +37,6 @@ function audit(n) {
   for(let i=0;i<rails.length;i++) for(let j=i+1;j<rails.length;j++) separate(rails[i],rails[j]);
   expect('X1.1','TB12.rail');expect('X1.2','TB0.rail');expect('U1.VIN','TB12.rail');expect('U1.5V','TB5.rail');
   for(const p of ['A0','A4','A5','D2','D3','D4','D7','D8','D9','3V3']) separate('U1.'+p,'TB12.rail');
-  for(const p of ['FM1.RED','FM1.YELLOW','FM1.WHITE','FM1.BLACK']) separate(p,'TB12.rail');
   for(const h of ['HSD1','HSD2','HSD3']) {
     expect(h+'.VIN','TB12.rail');expect(h+'.V','TB5.rail');expect(h+'.LOAD_GND','TB0.rail');
     expect(h+'.D','U1.A4');expect(h+'.C','U1.A5');
@@ -50,7 +49,6 @@ function audit(n) {
   for(const p of ['U2.VCC','U3.VCC','O1.HV','O2.HV']) expect(p,'TB5.rail');
   for(const p of ['U2.GND','U3.GND','O1.INPUT_GND','O1.HV_GND','O2.INPUT_GND','O2.HV_GND']) expect(p,'TB0.rail');
   for(const ref of ['R1','R2','R3']) {assert.equal(n.components[ref].resistance_ohms,1000);assert(n.components[ref].power_w>=.5);}
-  for(const ref of ['R6','R7']) assert.equal(n.components[ref].resistance_ohms,4700);
   expect('U2.SDA','U1.A4');expect('U2.SCL','U1.A5');separate('U1.A4','U1.A5');
   expect('U2.GND','U2.OUT_GND');expect('U2.OUT_GND','V1.WHITE');expect('U3.I-','V1.WHITE');
   separate('U2.OUT','U1.A0');separate('U2.OUT','TB5.rail');
@@ -66,13 +64,9 @@ function audit(n) {
     expect(`D${i}.A`,'TB0.rail');expect(`${o}.${output}`,`U1.${pin}`);expect(`${o}.HV`,'TB5.rail');
     separate(`X1.${i+2}`,`${o}.${input}`);separate(`X1.${i+2}`,`U1.${pin}`);
   }
-  for(const [color,pull,series,pin] of [['YELLOW','R6','R8','D8'],['WHITE','R7','R9','D9']]) {
-    expect(pull+'.1','TB5.rail');expect(pull+'.2','FM1.'+color);expect(series+'.1','FM1.'+color);expect(series+'.2','U1.'+pin);
-    separate('FM1.'+color,'TB5.rail');separate(series+'.1',series+'.2');
-  }
-  expect('FM1.RED','TB5.rail');expect('FM1.BLACK','TB0.rail');
-  assert(nc.has('U1.D7'), 'Unused D7 must remain unconnected');
-  for(const ref of ['TS1','TS2','R10','C3','C6']) assert(!n.components[ref], 'Removed temperature component '+ref);
+  for(const pin of ['D7','D8','D9']) assert(nc.has('U1.'+pin),`Unused ${pin} must remain unconnected`);
+  for(const ref of ['TS1','TS2','R10','C3','C6','FM1','R6','R7','R8','R9','C2']) assert(!n.components[ref], 'Removed component '+ref);
+  assert(!Object.keys(n.nets).some(net=>net.startsWith('FLOW')), 'No flow-acquisition nets in Revision E');
   const outputPins=[];
   for(let i=1;i<=10;i++) {
     const b=1+Math.floor((i-1)/4), ch=((i-1)%4)*2;
@@ -87,8 +81,9 @@ function audit(n) {
   assert.equal(n.watchdog.qualified,false);assert.equal(n.status,'BENCH_DESIGN_HOLD_H1_H5');
   return { pins:pins.size,wires:n.wires.length };
 }
-test('Revision D: every declared terminal and every external wire has a consistent topology',()=>audit(base));
+test('Revision E: every declared terminal and every external wire has a consistent topology',()=>audit(base));
 test('Revision D removes only the external temperature branch from Revision C',()=>{
+  const base=JSON.parse(fs.readFileSync(path.join(__dirname,'../hardware/rev-d/netlist.json')));
   const old=JSON.parse(fs.readFileSync(path.join(__dirname,'../hardware/rev-c/netlist.json')));
   const removed=new Set(['TS1','TS2','R10','C3','C6']);
   const retained=pin=>!removed.has(pin.split('.')[0])&&pin!=='U1.D7';
@@ -104,15 +99,31 @@ test('Revision D removes only the external temperature branch from Revision C',(
   assert.deepEqual(base.addresses,old.addresses);
   assert.deepEqual(base.watchdog,old.watchdog);
 });
+test('Revision E removes only the meter branch and preserves all retained wire IDs',()=>{
+  const old=JSON.parse(fs.readFileSync(path.join(__dirname,'../hardware/rev-d/netlist.json')));
+  const removed=new Set(['FM1','R6','R7','R8','R9','C2']);
+  const retained=pin=>!removed.has(pin.split('.')[0])&&!['U1.D8','U1.D9'].includes(pin);
+  assert.deepEqual(Object.keys(base.components),Object.keys(old.components).filter(r=>!removed.has(r)));
+  for(const [ref,c] of Object.entries(base.components))assert.deepEqual(c,old.components[ref]);
+  assert.deepEqual(base.wires,old.wires.filter(w=>retained(w.from)&&retained(w.to)));
+  for(const [name,net] of Object.entries(old.nets)){
+    const pins=net.pins.filter(retained);
+    if(pins.length)assert.deepEqual(base.nets[name],{...net,pins});
+    else assert(!base.nets[name]);
+  }
+  for(const field of ['internal_connections','addresses','watchdog','relay','lamp_channels','jumper_configuration'])assert.deepEqual(base[field],old[field]);
+  assert.deepEqual(new Set(base.no_connect),new Set([...old.no_connect,'U1.D8','U1.D9']));
+  assert.deepEqual(base.pullups,{SDA:old.pullups.SDA,SCL:old.pullups.SCL});
+});
 function damage(label,fn) {test(`Audit rejects: ${label}`,()=>{const n=structuredClone(base);fn(n);assert.throws(()=>audit(n));});}
 function bridge(n,a,b,net='0V') {n.wires.push({id:'BAD',net,from:a,to:b});n.nets[net].pins.push(a,b);}
-damage('12 V on the meter supply',n=>bridge(n,'TB12.rail','FM1.RED','MACHINE_12V'));
+damage('removed meter input D8 accidentally connected',n=>bridge(n,'U1.D8','TB5.rail','LOGIC_5V'));
 damage('12 V on Arduino signal input',n=>bridge(n,'TB12.rail','U1.D2','MACHINE_12V'));
 damage('coil supply tied to Nano 5 V',n=>bridge(n,'U4.3','TB5.rail','LOGIC_5V'));
 damage('direct valve power bypassing watchdog',n=>bridge(n,'TB12.rail','V1.RED','MACHINE_12V'));
 damage('relay signal contact bypassed',n=>bridge(n,'K1.3','K1.4','DAC_OUT'));
 damage('two lamp colors joined',n=>bridge(n,'L1.BLUE','L1.WHITE','L1_BLUE'));
-damage('missing meter ground conductor',n=>{n.wires=n.wires.filter(w=>w.to!=='FM1.BLACK');});
+damage('missing position receiver ground conductor',n=>{n.wires=n.wires.filter(w=>w.to!=='U3.GND');});
 damage('flyback diode reversed',n=>{for(const w of n.wires){if(w.to==='D4.K')w.to='D4.A';else if(w.to==='D4.A')w.to='D4.K';}});
 damage('duplicate I2C address pair',n=>{n.addresses.HSD3=[0x62,0x63];});
 damage('extra HSD I2C pull-ups enabled',n=>{n.jumper_configuration.HSD2.SJSDA=true;});
@@ -132,8 +143,6 @@ test('analog scaling and component dissipation bounds are consistent with the st
   const minimumExternal=R('R1')*.99;
   const current=(16-1)/(minimumExternal+209), power=current*current*minimumExternal;
   assert(current<.013);assert(power<.17);assert(power<base.components.R1.power_w/2);
-  assert(5/R('R6')<.004); // Meter output test-current limit is 4 mA.
   assert(1000/(.8473*4700)>250e-3); // ns/ohms -> nF: ~251 pF.
-  assert(Math.abs(111/500*60-13.32)<1e-9);
   assert.equal(2*112+2*16,256,'Proposed persistence allocation fits Nano Every EEPROM exactly');
 });
