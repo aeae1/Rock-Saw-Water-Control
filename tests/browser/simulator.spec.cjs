@@ -307,7 +307,10 @@ test('startup-held J reaches the stuck-trigger fault and cannot acknowledge itse
 test('independent fault toggles show mixed active and cleared codes and keep reset inhibited', async ({ page }, testInfo) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const stage=page.locator('.sa-stage');await start(stage);
-  await expect(stage.locator('[data-fault-toggle]')).toHaveCount(10);
+  await expect(stage.locator('[data-fault-toggle]')).toHaveCount(9);
+  await expect(stage.locator('[data-fault-toggle="temperature"]')).toHaveCount(0);
+  await expect(stage.locator('.sa-lamp')).toHaveCount(10);
+  await expect(stage.locator('[data-fault-toggle="trigger"]')).toHaveAttribute('aria-label','Fault 10: Stuck J trigger');
   await expect(stage.locator('select')).toHaveCount(0);
   const driver=stage.locator('[data-fault-toggle="driver"]'), position=stage.locator('[data-fault-toggle="position"]');
   await driver.check();await position.check();await driver.uncheck();
