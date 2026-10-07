@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="1120" height="760" preserveAspectRatio="xMinYMin meet" viewBox="0 0 1120 760" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="1120" height="760"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-760)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="0" width="1120" height="760" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="0" y="686" width="1120" height="74" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,18%,27%); fill-rule: evenodd;"/>
+			<text x="28" y="729" style="font-family: DejaVu-Bold; font-size: 20px;fill: rgb(100%,100%,100%); stroke:none;" transform="translate(0,1458) scale(1,-1)">04 / ANALOG POSITION AND FLOW METER</text>
+			<text x="28" y="704" style="font-family: DejaVu; font-size: 11px;fill: rgb(84%,89%,93%); stroke:none;" transform="translate(0,1408) scale(1,-1)">No 12 V connection anywhere on this sheet; U2 current-loop output is not an ADC signal</text>
+			<text x="28" y="25" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(74%,21%,18%); stroke:none;" transform="translate(0,50) scale(1,-1)">REV D  |  07 OCT 2026  |  BENCH DESIGN - H1-H5 HOLD  |  Named nets connect across sheets</text>
+			<text x="28" y="9" style="font-family: DejaVu; font-size: 8px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,18) scale(1,-1)">Solid dot = joined wires. Crossing without a dot = no connection. Boxes show functions, not physical footprints.</text>
+			<rect x="150" y="438" width="220" height="205" style="stroke: rgb(61%,67%,70%); stroke-linecap: butt; stroke-width: 1; fill: rgb(92%,94%,96%); fill-rule: evenodd;"/>
+			<text x="162" y="620" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1240) scale(1,-1)">U3 / SEN0262</text>
+			<text x="162" y="602" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,1204) scale(1,-1)">4-20 mA -&gt; 0.48-2.40 V</text>
+			<path d="M 35,572 L 150,572 Z" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="35" y="579" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(3%,47%,32%); stroke:none;" transform="translate(0,1158) scale(1,-1)">FEEDBACK_IN</text>
+			<circle cx="150" cy="572" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="158" y="568" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1136) scale(1,-1)">U3.I+</text>
+			<path d="M 35,536 L 150,536 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="35" y="543" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,1086) scale(1,-1)">0V / WHITE</text>
+			<circle cx="150" cy="536" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="158" y="532" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1064) scale(1,-1)">U3.I-</text>
+			<path d="M 35,497 L 150,497 Z" style="stroke: rgb(66%,35%,4%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="35" y="504" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(66%,35%,4%); stroke:none;" transform="translate(0,1008) scale(1,-1)">LOGIC_5V</text>
+			<circle cx="150" cy="497" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="158" y="493" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,986) scale(1,-1)">U3.VCC</text>
+			<path d="M 35,460 L 150,460 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="35" y="467" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,934) scale(1,-1)">0V</text>
+			<circle cx="150" cy="460" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="158" y="456" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,912) scale(1,-1)">U3.GND</text>
+			<path d="M 370,565 L 490,565 Z" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<circle cx="370" cy="565" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="308.201171875" y="572" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1144) scale(1,-1)">U3.SIGNAL</text>
+			<path d="M 490,565 L 500,565 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<rect x="500" y="559" width="40" height="12" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<path d="M 540,565 L 550,565 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="498" y="580" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1160) scale(1,-1)">R4 1k</text>
+			<path d="M 550,565 L 975,565 Z" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<circle cx="975" cy="565" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="936.9365234375" y="572" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1144) scale(1,-1)">U1.A0</text>
+			<text x="722" y="579" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(3%,47%,32%); stroke:none;" transform="translate(0,1158) scale(1,-1)">POSITION_ADC</text>
+			<circle cx="615" cy="565" r="3" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(28%,34%,39%); fill-rule: evenodd;"/>
+			<path d="M 615,565 L 615,525 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<path d="M 615,525 L 615,515 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<rect x="609" y="485" width="12" height="30" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<path d="M 615,485 L 615,475 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="627" y="504" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1008) scale(1,-1)">R5</text>
+			<text x="627" y="489" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,978) scale(1,-1)">100k</text>
+			<path d="M 615,475 L 615,440 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="603" y="422" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,844) scale(1,-1)">0V</text>
+			<circle cx="808" cy="565" r="3" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(28%,34%,39%); fill-rule: evenodd;"/>
+			<path d="M 808,565 L 808,504 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<path d="M 792,504 L 824,504 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 2;"/>
+			<path d="M 792,496 L 824,496 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 2;"/>
+			<path d="M 808,496 L 808,440 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="825" y="501" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1002) scale(1,-1)">C1 100 nF</text>
+			<text x="796" y="422" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,844) scale(1,-1)">0V</text>
+			<text x="150" y="397" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,794) scale(1,-1)">R5 biases an open SIGNAL wire low. R4/R5 reduce the measured voltage by about 1%; calibrate.</text>
+			<text x="150" y="382" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,764) scale(1,-1)">No extra 250-ohm resistor across U3 I+/I-. C1 and R5 return locally to the Nano ground.</text>
+			<rect x="150" y="100" width="220" height="238" style="stroke: rgb(61%,67%,70%); stroke-linecap: butt; stroke-width: 1; fill: rgb(92%,94%,96%); fill-rule: evenodd;"/>
+			<text x="162" y="315" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,630) scale(1,-1)">FM1 / UFM-02-03NP4</text>
+			<text x="162" y="297" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,594) scale(1,-1)">Four-wire pulse version</text>
+			<path d="M 35,272 L 150,272 Z" style="stroke: rgb(66%,35%,4%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="35" y="279" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(66%,35%,4%); stroke:none;" transform="translate(0,558) scale(1,-1)">LOGIC_5V</text>
+			<circle cx="150" cy="272" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="158" y="268" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,536) scale(1,-1)">FM1.RED</text>
+			<path d="M 35,230 L 150,230 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="35" y="237" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,474) scale(1,-1)">0V</text>
+			<circle cx="150" cy="230" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="158" y="226" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,452) scale(1,-1)">FM1.BLACK</text>
+			<circle cx="370" cy="180" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="320.671875" y="187" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,374) scale(1,-1)">YELLOW</text>
+			<path d="M 370,180 L 755,180 Z" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<path d="M 755,180 L 765,180 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<rect x="765" y="174" width="40" height="12" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<path d="M 805,180 L 815,180 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="763" y="195" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,390) scale(1,-1)">R8 1k</text>
+			<path d="M 815,180 L 975,180 Z" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<circle cx="975" cy="180" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="936.0771484375" y="187" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,374) scale(1,-1)">U1.D8</text>
+			<circle cx="510" cy="180" r="3" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(28%,34%,39%); fill-rule: evenodd;"/>
+			<path d="M 510,180 L 510,240 Z" style="stroke: rgb(66%,35%,4%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<path d="M 510,290 L 510,280 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<rect x="504" y="250" width="12" height="30" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<path d="M 510,250 L 510,240 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="522" y="269" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,538) scale(1,-1)">R6</text>
+			<text x="522" y="254" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,508) scale(1,-1)">4.7k</text>
+			<text x="484" y="303" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(66%,35%,4%); stroke:none;" transform="translate(0,606) scale(1,-1)">LOGIC_5V</text>
+			<circle cx="370" cy="130" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="329.216796875" y="137" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,274) scale(1,-1)">WHITE</text>
+			<path d="M 370,130 L 755,130 Z" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<path d="M 755,130 L 765,130 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<rect x="765" y="124" width="40" height="12" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<path d="M 805,130 L 815,130 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="763" y="145" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,290) scale(1,-1)">R9 1k</text>
+			<path d="M 815,130 L 975,130 Z" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<circle cx="975" cy="130" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="936.0771484375" y="137" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,274) scale(1,-1)">U1.D9</text>
+			<circle cx="655" cy="130" r="3" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(28%,34%,39%); fill-rule: evenodd;"/>
+			<path d="M 655,130 L 655,225 Z" style="stroke: rgb(66%,35%,4%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<path d="M 655,275 L 655,265 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<rect x="649" y="235" width="12" height="30" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<path d="M 655,235 L 655,225 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="667" y="254" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,508) scale(1,-1)">R7</text>
+			<text x="667" y="239" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,478) scale(1,-1)">4.7k</text>
+			<text x="629" y="288" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(66%,35%,4%); stroke:none;" transform="translate(0,576) scale(1,-1)">LOGIC_5V</text>
+			<rect x="651" y="175" width="8" height="10" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<path d="M 655,185 L 655,175 Z" style="stroke: rgb(66%,35%,4%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="150" y="67" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,134) scale(1,-1)">C2 100 nF: FM1 RED to BLACK. Error output toggles; verify colors against Table 7 and bench tests.</text>
+		</g>
+	</g>
+</svg>

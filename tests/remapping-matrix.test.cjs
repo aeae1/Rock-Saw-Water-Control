@@ -35,7 +35,7 @@ for (const running of [false, true]) {
 }
 
 test('every ordered pair of distinct fault codes retains and displays both codes with the lower code in the heading', () => {
-  const faults = ['supply', 'stall', 'communication', 'driver', 'timeout', 'settings', 'input', 'position', 'temperature', 'trigger'];
+  const faults = ['supply', 'stall', 'communication', 'driver', 'timeout', 'settings', 'input', 'position', 'trigger'];
   for (let a = 0; a < faults.length; a++) {
     for (let b = 0; b < faults.length; b++) {
       if (a === b) continue;

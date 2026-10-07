@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="1120" height="760" preserveAspectRatio="xMinYMin meet" viewBox="0 0 1120 760" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="1120" height="760"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-760)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="0" width="1120" height="760" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="0" y="686" width="1120" height="74" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,18%,27%); fill-rule: evenodd;"/>
+			<text x="28" y="729" style="font-family: DejaVu-Bold; font-size: 20px;fill: rgb(100%,100%,100%); stroke:none;" transform="translate(0,1458) scale(1,-1)">01 / POWER AND LOCAL BUS</text>
+			<text x="28" y="704" style="font-family: DejaVu; font-size: 11px;fill: rgb(84%,89%,93%); stroke:none;" transform="translate(0,1408) scale(1,-1)">Supply domains, module grounds, I2C addresses and Nano connections</text>
+			<text x="28" y="25" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(74%,21%,18%); stroke:none;" transform="translate(0,50) scale(1,-1)">REV D  |  07 OCT 2026  |  BENCH DESIGN - H1-H5 HOLD  |  Named nets connect across sheets</text>
+			<text x="28" y="9" style="font-family: DejaVu; font-size: 8px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,18) scale(1,-1)">Solid dot = joined wires. Crossing without a dot = no connection. Boxes show functions, not physical footprints.</text>
+			<rect x="145" y="510" width="200" height="145" style="stroke: rgb(61%,67%,70%); stroke-linecap: butt; stroke-width: 1; fill: rgb(92%,94%,96%); fill-rule: evenodd;"/>
+			<text x="157" y="632" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1264) scale(1,-1)">X1 / reused connector</text>
+			<text x="157" y="614" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,1228) scale(1,-1)">INTERNAL terminal labels only</text>
+			<path d="M 345,595 L 460,595 Z" style="stroke: rgb(74%,21%,18%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="357" y="602" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(74%,21%,18%); stroke:none;" transform="translate(0,1204) scale(1,-1)">MACHINE_12V</text>
+			<circle cx="345" cy="595" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="314.24609375" y="602" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1204) scale(1,-1)">X1.1</text>
+			<path d="M 345,560 L 460,560 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="357" y="567" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,1134) scale(1,-1)">0V</text>
+			<circle cx="345" cy="560" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="314.24609375" y="567" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1134) scale(1,-1)">X1.2</text>
+			<text x="155" y="482" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,964) scale(1,-1)">X1.3 = G; X1.4 = H; X1.5 = J.</text>
+			<text x="155" y="467" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,934) scale(1,-1)">Actual machine cavities: H1 HOLD.</text>
+			<text x="155" y="452" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,904) scale(1,-1)">No additional fuse block; H2 HOLD.</text>
+			<rect x="145" y="130" width="200" height="275" style="stroke: rgb(61%,67%,70%); stroke-linecap: butt; stroke-width: 1; fill: rgb(92%,94%,96%); fill-rule: evenodd;"/>
+			<text x="157" y="382" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,764) scale(1,-1)">U1 / Nano Every</text>
+			<text x="157" y="364" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,728) scale(1,-1)">Only VIN accepts machine voltage</text>
+			<path d="M 345,340 L 460,340 Z" style="stroke: rgb(74%,21%,18%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="357" y="347" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(74%,21%,18%); stroke:none;" transform="translate(0,694) scale(1,-1)">MACHINE_12V</text>
+			<circle cx="345" cy="340" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="302.869140625" y="347" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,694) scale(1,-1)">U1.VIN</text>
+			<path d="M 345,302 L 460,302 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="357" y="309" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,618) scale(1,-1)">0V</text>
+			<circle cx="345" cy="302" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="290.84765625" y="309" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,618) scale(1,-1)">U1.GND1</text>
+			<path d="M 345,264 L 460,264 Z" style="stroke: rgb(66%,35%,4%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="357" y="271" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(66%,35%,4%); stroke:none;" transform="translate(0,542) scale(1,-1)">LOGIC_5V</text>
+			<circle cx="345" cy="264" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="306.9365234375" y="271" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,542) scale(1,-1)">U1.5V</text>
+			<path d="M 345,222 L 460,222 Z" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="357" y="229" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(3%,47%,32%); stroke:none;" transform="translate(0,458) scale(1,-1)">SDA</text>
+			<circle cx="345" cy="222" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="306.9365234375" y="229" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,458) scale(1,-1)">U1.A4</text>
+			<path d="M 345,184 L 460,184 Z" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="357" y="191" style="font-family: DejaVu-Bold; font-size: 9px;fill: rgb(8%,45%,72%); stroke:none;" transform="translate(0,382) scale(1,-1)">SCL</text>
+			<circle cx="345" cy="184" r="3.2" style="stroke: rgb(9%,18%,27%); stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<text x="306.9365234375" y="191" style="font-family: DejaVu; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,382) scale(1,-1)">U1.A5</text>
+			<rect x="620" y="355" width="345" height="300" style="stroke: rgb(61%,67%,70%); stroke-linecap: butt; stroke-width: 1; fill: rgb(92%,94%,96%); fill-rule: evenodd;"/>
+			<text x="632" y="632" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1264) scale(1,-1)">PARALLEL SUPPLY CONNECTIONS</text>
+			<text x="638" y="605" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,1210) scale(1,-1)">MACHINE_12V -&gt; TB12 -&gt; U1 VIN + HSD1/2/3 VIN</text>
+			<text x="638" y="590" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,1180) scale(1,-1)">0V -&gt; TB0 -&gt; all power/signal returns</text>
+			<text x="638" y="575" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,1150) scale(1,-1)">LOGIC_5V -&gt; TB5 -&gt; U2 VCC, U3 VCC, HSD V,</text>
+			<text x="638" y="560" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,1120) scale(1,-1)">O1/O2 HV, FM1 RED</text>
+			<text x="638" y="545" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,1090) scale(1,-1)"></text>
+			<text x="638" y="530" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,1060) scale(1,-1)">HSD load GND also grounds its logic internally.</text>
+			<text x="638" y="515" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,1030) scale(1,-1)">Do not carry lamp current through a logic header.</text>
+			<text x="638" y="500" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,1000) scale(1,-1)">U2 OUT_GND = U2 GND internally.</text>
+			<text x="638" y="485" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,970) scale(1,-1)">U1 GND2 = U1 GND1 internally.</text>
+			<text x="638" y="470" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,940) scale(1,-1)">U4 relay 5 V must NOT connect to LOGIC_5V.</text>
+			<rect x="620" y="130" width="345" height="195" style="stroke: rgb(61%,67%,70%); stroke-linecap: butt; stroke-width: 1; fill: rgb(92%,94%,96%); fill-rule: evenodd;"/>
+			<text x="632" y="302" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,604) scale(1,-1)">LOCAL I2C - 100 kHz</text>
+			<text x="638" y="275" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,550) scale(1,-1)">SDA: U1 A4 -&gt; U2 SDA + HSD1/2/3 D</text>
+			<text x="638" y="260" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,520) scale(1,-1)">SCL: U1 A5 -&gt; U2 SCL + HSD1/2/3 C</text>
+			<text x="638" y="245" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,490) scale(1,-1)">U2: 0x58; HSD pairs: 0x60/61, 0x62/63, 0x64/65</text>
+			<text x="638" y="230" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,460) scale(1,-1)">Use U2 onboard 4.7k pull-ups only.</text>
+			<text x="638" y="215" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,430) scale(1,-1)">Open all HSD SDA/SCL pull-up jumpers.</text>
+			<text x="638" y="200" style="font-family: DejaVu; font-size: 10px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,400) scale(1,-1)">All bus wiring remains inside enclosure.</text>
+			<text x="145" y="88" style="font-family: DejaVu; font-size: 11px;fill: rgb(74%,21%,18%); stroke:none;" transform="translate(0,176) scale(1,-1)">Local HSD bypass at each VIN/GND: 47 uF / 35 V (+ to VIN) in parallel with 100 nF / 50 V.</text>
+			<text x="145" y="72" style="font-family: DejaVu; font-size: 11px;fill: rgb(74%,21%,18%); stroke:none;" transform="translate(0,144) scale(1,-1)">USB can energize the logic rail. Disconnect machine, valve and water before USB servicing.</text>
+		</g>
+	</g>
+</svg>

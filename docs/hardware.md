@@ -1,8 +1,8 @@
 # Hardware Selection
 
-Reviewed 2026-10-04 · Revision C bench design, not a construction release
+Reviewed 2026-10-07 · Revision D bench design, not a construction release
 
-The [Revision C electrical audit](hardware-audit-2026-10-04.md) is the current terminal-level reference. The [build guide](build-guide.md) summarizes it. Earlier prototype costs, diagrams and pin assignments have been superseded.
+The [Revision D electrical audit](hardware-audit-2026-10-07.md) is the current terminal-level reference. The [build guide](build-guide.md) summarizes it. Earlier prototype costs, diagrams and pin assignments have been superseded.
 
 | Function | Selected direction | Outstanding evidence |
 | :--- | :--- | :--- |
@@ -14,7 +14,7 @@ The [Revision C electrical audit](hardware-audit-2026-10-04.md) is the current t
 | Operator inputs | Two SparkFun BOB-09118 boards; 1 kohm series resistors and reverse diodes | Actual machine thresholds and part qualification |
 | Power | Reused connector constant 12 V and wired ground; existing machine fuse | Key-off behavior, current capacity and parked draw |
 | Housing | Opaque UV-resistant enclosure, glands and mounting plate | Fit, finished sealing and hot-soak temperature |
-| Fault inhibition / extra sensing | HSD3 ch4 watchdog, TQ2-5V signal relay, L7805ABV coil supply, two DS18B20 sensors | Proposed circuit specified in Rev C; firmware and bench tests pending |
+| Fault inhibition / extra sensing | HSD3 ch4 watchdog, TQ2-5V signal relay, L7805ABV coil supply | Proposed circuit specified in Rev D; firmware and bench tests pending |
 | Flow sensing | ScioSense UFM-02-03NP4, four-wire pulse interface | Correct variant, pulse/error interpretation, weather protection and actual flow range |
 
 The current layout uses no new 14-pin connector, separate battery feed, extra fuse block, external ADC, separate GPIO expanders, or reversing motor driver. Three HSD boards provide both output expansion and lamp power switching. A bare PCA9685 does not directly replace them for twenty 12 V color leads.

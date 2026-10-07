@@ -1,14 +1,24 @@
 const assert = require('node:assert/strict');
 const { test } = require('node:test');
 const { simulator } = require('./helpers/simulator.cjs');
-const causes=['supply','stall','communication','driver','timeout','settings','input','position','temperature','trigger'];
+const causes=['supply','stall','communication','driver','timeout','settings','input','position','trigger'];
 const colors=s=>s.stage.dataset.colors.split(',');
 const signal=s=>s.stage.dataset.faultSignal;
 const row=(s,cause)=>s.stage.querySelector('[data-fault-entry="'+cause+'"]');
 function cleared(...faults){const s=simulator();s.power(true);for(const f of faults)s.fault(f);s.fault('normal');return s;}
 
-test('ten independent fault switches replace the dropdown, and stay truthful with power off',()=>{
-  const s=simulator();assert.equal(s.stage.querySelectorAll('[data-fault-toggle]').length,10);
+test('reserved code 9 has no cause toggle and stuck J remains on lamp 10',()=>{
+  const s=simulator();
+  assert.equal(s.stage.querySelector('[data-fault-toggle="temperature"]'),null);
+  s.power(true);s.fault('trigger');
+  assert.equal(colors(s)[8],'off');assert.equal(colors(s)[9],'white');
+  s.fault('normal');s.down();s.advance(2700);s.setReducedMotion(false);
+  assert.equal(colors(s)[8],'white');assert.equal(colors(s)[9],'blue');
+  s.advance(300);assert.equal(s.stage.dataset.fault,'normal');assert.equal(s.stage.dataset.on,'false');
+});
+
+test('nine independent fault switches replace the dropdown, and stay truthful with power off',()=>{
+  const s=simulator();assert.equal(s.stage.querySelectorAll('[data-fault-toggle]').length,9);
   assert.equal(s.stage.querySelectorAll('select').length,0);
   s.fault('driver');assert.equal(s.stage.dataset.fault,'normal');
   assert.equal(row(s,'driver').querySelector('input').checked,false);
@@ -17,14 +27,14 @@ test('ten independent fault switches replace the dropdown, and stay truthful wit
   assert.equal(signal(s),'off');assert.ok(colors(s).every(c=>c==='off'));
 });
 
-for(const [i,cause] of causes.entries())test(`fault ${i+1}: active white blinks continuously; removed cause blue blinks without clearing latch`,()=>{
+for(const [i,cause] of causes.entries())test(`fault ${cause==='trigger'?10:i+1}: active white blinks continuously; removed cause blue blinks without clearing latch`,()=>{
   const s=simulator();s.power(true);s.fault(cause);
   for(let n=0;n<8;n++){
-    assert.equal(colors(s)[i],'white');s.advance(600);assert.equal(colors(s)[i],'off');s.advance(600);
+    assert.equal(colors(s)[cause==='trigger'?9:i],'white');s.advance(600);assert.equal(colors(s)[cause==='trigger'?9:i],'off');s.advance(600);
   }
-  s.faultToggle(cause,false);assert.equal(colors(s)[i],'blue');assert.equal(signal(s),'cleared');
+  s.faultToggle(cause,false);assert.equal(colors(s)[cause==='trigger'?9:i],'blue');assert.equal(signal(s),'cleared');
   assert.equal(s.stage.dataset.fault,cause);assert.match(row(s,cause).textContent,/Cause cleared/);
-  s.advance(600);assert.equal(colors(s)[i],'off');s.advance(600);assert.equal(colors(s)[i],'blue');
+  s.advance(600);assert.equal(colors(s)[cause==='trigger'?9:i],'off');s.advance(600);assert.equal(colors(s)[cause==='trigger'?9:i],'blue');
   assert.equal(s.pendingFrames(),0,'idle blink uses timed color changes, not a frame loop');
 });
 
@@ -52,15 +62,15 @@ test('valid hold preserves all blue fault codes and fills only other lamps white
   s.advance(1);assert.equal(signal(s),'none');assert.equal(s.stage.dataset.inputsReady,'true');assert.equal(s.stage.dataset.on,'false');
 });
 
-test('all ten simultaneous codes reset without division by zero or losing code lamps',()=>{
-  const s=cleared(...causes);s.down();s.advance(1504);assert.ok(colors(s).every(c=>c==='blue'));
+test('all nine simultaneous codes reset without division by zero or losing code lamps',()=>{
+  const s=cleared(...causes);s.down();s.advance(1504);assert.deepEqual(colors(s),['blue','blue','blue','blue','blue','blue','blue','blue','off','blue']);
   s.advance(1496);assert.equal(signal(s),'none');assert.deepEqual(colors(s),['white','white','white','white','off','off','off','off','off','blue']);
   s.up();s.advance(100);assert.equal(s.stage.dataset.fault,'normal');assert.equal(s.stage.dataset.setting,'4');
 });
 
 test('reset fill keeps its 300 ms position schedule behind single and grouped fault codes',()=>{
   const layouts=[...causes.map(c=>[c]),causes.slice(0,3),causes.slice(7),['driver','position'],
-    ['supply','communication','timeout','input','temperature'],causes];
+    ['supply','communication','timeout','input'],causes];
   for(const layout of layouts){
     const s=cleared(...layout);s.down();let elapsed=0;
     // Explicit physical-position milestones, independent of free-lamp count.
@@ -69,7 +79,7 @@ test('reset fill keeps its 300 ms position schedule behind single and grouped fa
         s.advance(time-elapsed);elapsed=time;s.setReducedMotion(false);
         assert.equal(signal(s),'holding');
         const expected=Array(10).fill('off');expected.fill('white',0,completed);
-        for(const cause of layout)expected[causes.indexOf(cause)]='blue';
+        for(const cause of layout)expected[(cause==='trigger'?9:causes.indexOf(cause))]='blue';
         assert.deepEqual(colors(s),expected,layout.join(',')+' at '+time+' ms');
       }
     }

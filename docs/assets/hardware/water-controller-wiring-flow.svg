@@ -14,7 +14,7 @@
 			<rect x="0" y="686" width="1120" height="74" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,18%,27%); fill-rule: evenodd;"/>
 			<text x="28" y="729" style="font-family: DejaVu-Bold; font-size: 20px;fill: rgb(100%,100%,100%); stroke:none;" transform="translate(0,1458) scale(1,-1)">ROCK-SAW WATER CONTROL / REVISED ELECTRICAL OVERVIEW</text>
 			<text x="28" y="704" style="font-family: DejaVu; font-size: 11px;fill: rgb(84%,89%,93%); stroke:none;" transform="translate(0,1408) scale(1,-1)">Detailed terminal circuits: sheets 01-06. Every external wire is listed in connections.csv.</text>
-			<text x="28" y="25" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(74%,21%,18%); stroke:none;" transform="translate(0,50) scale(1,-1)">REV C  |  04 OCT 2026  |  BENCH DESIGN - H1-H5 HOLD  |  Named nets connect across sheets</text>
+			<text x="28" y="25" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(74%,21%,18%); stroke:none;" transform="translate(0,50) scale(1,-1)">REV D  |  07 OCT 2026  |  BENCH DESIGN - H1-H5 HOLD  |  Named nets connect across sheets</text>
 			<text x="28" y="9" style="font-family: DejaVu; font-size: 8px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,18) scale(1,-1)">Solid dot = joined wires. Crossing without a dot = no connection. Boxes show functions, not physical footprints.</text>
 			<rect x="35" y="525" width="240" height="130" style="stroke: rgb(61%,67%,70%); stroke-linecap: butt; stroke-width: 1; fill: rgb(92%,94%,96%); fill-rule: evenodd;"/>
 			<text x="47" y="632" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1264) scale(1,-1)">Reused machine connector</text>
@@ -35,8 +35,8 @@
 			<text x="787" y="412" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,824) scale(1,-1)">U4 + K1 / valve inhibit</text>
 			<text x="787" y="394" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,788) scale(1,-1)">Switched actuator power + signal relay</text>
 			<rect x="35" y="75" width="240" height="90" style="stroke: rgb(61%,67%,70%); stroke-linecap: butt; stroke-width: 1; fill: rgb(92%,94%,96%); fill-rule: evenodd;"/>
-			<text x="47" y="142" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,284) scale(1,-1)">Flow meter + temperatures</text>
-			<text x="47" y="124" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,248) scale(1,-1)">5 V pulse / error / 1-Wire</text>
+			<text x="47" y="142" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,284) scale(1,-1)">Flow meter</text>
+			<text x="47" y="124" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,248) scale(1,-1)">5 V pulse / error</text>
 			<rect x="775" y="75" width="305" height="90" style="stroke: rgb(61%,67%,70%); stroke-linecap: butt; stroke-width: 1; fill: rgb(92%,94%,96%); fill-rule: evenodd;"/>
 			<text x="787" y="142" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,284) scale(1,-1)">V1 / stainless ball valve</text>
 			<text x="787" y="124" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,248) scale(1,-1)">One five-wire actuator cable</text>
@@ -64,7 +64,7 @@
 			<path d="M 695,120 L 695,480 Z" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5;"/>
 			<path d="M 695,480 L 610,480 Z" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5;"/>
 			<path d="M 610,480 L 610,525 Z" style="stroke: rgb(3%,47%,32%); stroke-linecap: butt; stroke-width: 1.5;"/>
-			<text x="340" y="132" style="font-family: DejaVu; font-size: 9px;fill: rgb(3%,47%,32%); stroke:none;" transform="translate(0,264) scale(1,-1)">D8 flow / D9 error / D7 temperature</text>
+			<text x="340" y="132" style="font-family: DejaVu; font-size: 9px;fill: rgb(3%,47%,32%); stroke:none;" transform="translate(0,264) scale(1,-1)">D8 flow / D9 error</text>
 			<text x="395" y="220" style="font-family: DejaVu; font-size: 11px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,440) scale(1,-1)">Plumbing: manual shutoff -&gt; meter -&gt;</text>
 			<text x="395" y="204" style="font-family: DejaVu; font-size: 11px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,408) scale(1,-1)">straight section -&gt; valve -&gt; saw sprayer.</text>
 			<text x="395" y="188" style="font-family: DejaVu; font-size: 11px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,376) scale(1,-1)">No electrical wires to hose or valve body.</text>

@@ -427,7 +427,7 @@ for (const seed of [17, 103, 4099, 65537]) {
         case 3: s.click('g'); break;
         case 4: s.click('h'); break;
         case 5: s.click('center'); break;
-        case 6: if (!s.q('fault-toggle').disabled) s.fault(['normal', 'normal', 'driver', 'input', 'supply', 'stall', 'communication', 'timeout', 'settings', 'position', 'temperature', 'trigger'][next(12)]); break;
+        case 6: if (!s.q('fault-toggle').disabled) s.fault(['normal', 'normal', 'driver', 'input', 'supply', 'stall', 'communication', 'timeout', 'settings', 'position', 'trigger'][next(11)]); break;
         case 7: s.down(); s.advance(next(2600)); s.emit(s.q('j'), 'pointercancel', { pointerId: 1 }); break;
         case 8: s.fault('normal'); s.click('center'); s.click('reset-fault'); break;
         default: s.advance(next(7000));
@@ -511,15 +511,15 @@ test('J commands during recovery are discarded until release even after closing 
   s.tap(); assert.equal(s.stage.dataset.on, 'true');
 });
 
-const faultTypes = ['supply', 'stall', 'communication', 'driver', 'timeout', 'settings', 'input', 'position', 'temperature', 'trigger'];
+const faultTypes = ['supply', 'stall', 'communication', 'driver', 'timeout', 'settings', 'input', 'position', 'trigger'];
 for (const [index, cause] of faultTypes.entries()) {
-  test('fault ' + (index + 1) + ' ' + cause + ': latches, blocks restart, then acknowledges and references closed', () => {
+  test('fault ' + (cause === 'trigger' ? 10 : index + 1) + ' ' + cause + ': latches, blocks restart, then acknowledges and references closed', () => {
     for (const mode of ['normal', 'max', 'clean']) {
       const s = simulator(); s.power(true); s.tap(); s.advance(6000);
       if (mode !== 'normal') s.hold();
       if (mode === 'clean') s.hold();
       s.advance(1000); s.fault(cause); const stopped = s.pos();
-      assert.equal(s.stage.dataset.colors.split(',')[index], 'white');
+      assert.equal(s.stage.dataset.colors.split(',')[cause==='trigger'?9:index], 'white');
       assert.equal(s.stage.dataset.on, 'false'); assert.equal(s.stage.dataset.mode, 'normal');
       const faultPosition=['settings','input','trigger'].includes(cause)?0:stopped;
       s.click('reset-fault'); s.tap(); s.advance(6000); assert.equal(s.pos(), faultPosition);

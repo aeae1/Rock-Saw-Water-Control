@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="1120" height="760" preserveAspectRatio="xMinYMin meet" viewBox="0 0 1120 760" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="1120" height="760"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-760)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="0" width="1120" height="760" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(100%,100%,100%); fill-rule: evenodd;"/>
+			<rect x="0" y="686" width="1120" height="74" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(9%,18%,27%); fill-rule: evenodd;"/>
+			<text x="28" y="729" style="font-family: DejaVu-Bold; font-size: 20px;fill: rgb(100%,100%,100%); stroke:none;" transform="translate(0,1458) scale(1,-1)">05 / LAMP OUTPUTS AND BOARD CONFIGURATION</text>
+			<text x="28" y="704" style="font-family: DejaVu; font-size: 11px;fill: rgb(84%,89%,93%); stroke:none;" transform="translate(0,1408) scale(1,-1)">Use the printed channel numbers. Each blue/white lamp needs TWO separate switched positives.</text>
+			<text x="28" y="25" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(74%,21%,18%); stroke:none;" transform="translate(0,50) scale(1,-1)">REV D  |  07 OCT 2026  |  BENCH DESIGN - H1-H5 HOLD  |  Named nets connect across sheets</text>
+			<text x="28" y="9" style="font-family: DejaVu; font-size: 8px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,18) scale(1,-1)">Solid dot = joined wires. Crossing without a dot = no connection. Boxes show functions, not physical footprints.</text>
+			<rect x="35" y="202" width="320" height="443" style="stroke: rgb(61%,67%,70%); stroke-linecap: butt; stroke-width: 1; fill: rgb(92%,94%,96%); fill-rule: evenodd;"/>
+			<text x="47" y="622" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1244) scale(1,-1)">HSD1 / PCB0046 V2</text>
+			<text x="47" y="604" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,1208) scale(1,-1)">0x60/61  |  LOAD VIN 12 V; VDD 5 V</text>
+			<text x="48" y="571" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1142) scale(1,-1)">CH0</text>
+			<path d="M 91,575 L 147,575 Z" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="156" y="571" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1142) scale(1,-1)">L1 BLUE +</text>
+			<text x="48" y="529" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1058) scale(1,-1)">CH1</text>
+			<path d="M 91,533 L 147,533 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="156" y="529" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1058) scale(1,-1)">L1 WHITE +</text>
+			<text x="48" y="487" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,974) scale(1,-1)">CH2</text>
+			<path d="M 91,491 L 147,491 Z" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="156" y="487" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,974) scale(1,-1)">L2 BLUE +</text>
+			<text x="48" y="445" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,890) scale(1,-1)">CH3</text>
+			<path d="M 91,449 L 147,449 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="156" y="445" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,890) scale(1,-1)">L2 WHITE +</text>
+			<text x="48" y="403" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,806) scale(1,-1)">CH4</text>
+			<path d="M 91,407 L 147,407 Z" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="156" y="403" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,806) scale(1,-1)">L3 BLUE +</text>
+			<text x="48" y="361" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,722) scale(1,-1)">CH5</text>
+			<path d="M 91,365 L 147,365 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="156" y="361" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,722) scale(1,-1)">L3 WHITE +</text>
+			<text x="48" y="319" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,638) scale(1,-1)">CH6</text>
+			<path d="M 91,323 L 147,323 Z" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="156" y="319" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,638) scale(1,-1)">L4 BLUE +</text>
+			<text x="48" y="277" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,554) scale(1,-1)">CH7</text>
+			<path d="M 91,281 L 147,281 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="156" y="277" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,554) scale(1,-1)">L4 WHITE +</text>
+			<text x="47" y="169" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,338) scale(1,-1)">VIN -&gt; MACHINE_12V; LOAD GND -&gt; 0V</text>
+			<text x="47" y="155" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,310) scale(1,-1)">D -&gt; SDA; C -&gt; SCL; V -&gt; LOGIC_5V</text>
+			<text x="47" y="141" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,282) scale(1,-1)">All lamp BLACK leads -&gt; rated 0V return</text>
+			<rect x="400" y="202" width="320" height="443" style="stroke: rgb(61%,67%,70%); stroke-linecap: butt; stroke-width: 1; fill: rgb(92%,94%,96%); fill-rule: evenodd;"/>
+			<text x="412" y="622" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1244) scale(1,-1)">HSD2 / PCB0046 V2</text>
+			<text x="412" y="604" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,1208) scale(1,-1)">0x62/63  |  LOAD VIN 12 V; VDD 5 V</text>
+			<text x="413" y="571" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1142) scale(1,-1)">CH0</text>
+			<path d="M 456,575 L 512,575 Z" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="521" y="571" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1142) scale(1,-1)">L5 BLUE +</text>
+			<text x="413" y="529" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1058) scale(1,-1)">CH1</text>
+			<path d="M 456,533 L 512,533 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="521" y="529" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1058) scale(1,-1)">L5 WHITE +</text>
+			<text x="413" y="487" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,974) scale(1,-1)">CH2</text>
+			<path d="M 456,491 L 512,491 Z" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="521" y="487" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,974) scale(1,-1)">L6 BLUE +</text>
+			<text x="413" y="445" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,890) scale(1,-1)">CH3</text>
+			<path d="M 456,449 L 512,449 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="521" y="445" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,890) scale(1,-1)">L6 WHITE +</text>
+			<text x="413" y="403" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,806) scale(1,-1)">CH4</text>
+			<path d="M 456,407 L 512,407 Z" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="521" y="403" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,806) scale(1,-1)">L7 BLUE +</text>
+			<text x="413" y="361" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,722) scale(1,-1)">CH5</text>
+			<path d="M 456,365 L 512,365 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="521" y="361" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,722) scale(1,-1)">L7 WHITE +</text>
+			<text x="413" y="319" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,638) scale(1,-1)">CH6</text>
+			<path d="M 456,323 L 512,323 Z" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="521" y="319" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,638) scale(1,-1)">L8 BLUE +</text>
+			<text x="413" y="277" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,554) scale(1,-1)">CH7</text>
+			<path d="M 456,281 L 512,281 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="521" y="277" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,554) scale(1,-1)">L8 WHITE +</text>
+			<text x="412" y="169" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,338) scale(1,-1)">VIN -&gt; MACHINE_12V; LOAD GND -&gt; 0V</text>
+			<text x="412" y="155" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,310) scale(1,-1)">D -&gt; SDA; C -&gt; SCL; V -&gt; LOGIC_5V</text>
+			<text x="412" y="141" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,282) scale(1,-1)">All lamp BLACK leads -&gt; rated 0V return</text>
+			<rect x="765" y="202" width="320" height="443" style="stroke: rgb(61%,67%,70%); stroke-linecap: butt; stroke-width: 1; fill: rgb(92%,94%,96%); fill-rule: evenodd;"/>
+			<text x="777" y="622" style="font-family: DejaVu-Bold; font-size: 12px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1244) scale(1,-1)">HSD3 / PCB0046 V2</text>
+			<text x="777" y="604" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,1208) scale(1,-1)">0x64/65  |  LOAD VIN 12 V; VDD 5 V</text>
+			<text x="778" y="571" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1142) scale(1,-1)">CH0</text>
+			<path d="M 821,575 L 877,575 Z" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="886" y="571" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1142) scale(1,-1)">L9 BLUE +</text>
+			<text x="778" y="529" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1058) scale(1,-1)">CH1</text>
+			<path d="M 821,533 L 877,533 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="886" y="529" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,1058) scale(1,-1)">L9 WHITE +</text>
+			<text x="778" y="487" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,974) scale(1,-1)">CH2</text>
+			<path d="M 821,491 L 877,491 Z" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="886" y="487" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,974) scale(1,-1)">L10 BLUE +</text>
+			<text x="778" y="445" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,890) scale(1,-1)">CH3</text>
+			<path d="M 821,449 L 877,449 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="886" y="445" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,890) scale(1,-1)">L10 WHITE +</text>
+			<text x="778" y="403" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,806) scale(1,-1)">CH4</text>
+			<path d="M 821,407 L 877,407 Z" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="886" y="403" style="font-family: DejaVu; font-size: 9px;fill: rgb(3%,47%,32%); stroke:none;" transform="translate(0,806) scale(1,-1)">VALVE_12V / WATCHDOG</text>
+			<text x="778" y="361" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,722) scale(1,-1)">CH5</text>
+			<path d="M 821,365 L 877,365 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="886" y="361" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,722) scale(1,-1)">UNUSED / OFF</text>
+			<text x="778" y="319" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,638) scale(1,-1)">CH6</text>
+			<path d="M 821,323 L 877,323 Z" style="stroke: rgb(8%,45%,72%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="886" y="319" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,638) scale(1,-1)">UNUSED / OFF</text>
+			<text x="778" y="277" style="font-family: DejaVu-Bold; font-size: 10px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,554) scale(1,-1)">CH7</text>
+			<path d="M 821,281 L 877,281 Z" style="stroke: rgb(28%,34%,39%); stroke-linecap: butt; stroke-width: 1.5;"/>
+			<text x="886" y="277" style="font-family: DejaVu; font-size: 9px;fill: rgb(9%,18%,27%); stroke:none;" transform="translate(0,554) scale(1,-1)">UNUSED / OFF</text>
+			<text x="777" y="169" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,338) scale(1,-1)">VIN -&gt; MACHINE_12V; LOAD GND -&gt; 0V</text>
+			<text x="777" y="155" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,310) scale(1,-1)">D -&gt; SDA; C -&gt; SCL; V -&gt; LOGIC_5V</text>
+			<text x="777" y="141" style="font-family: DejaVu; font-size: 9px;fill: rgb(28%,34%,39%); stroke:none;" transform="translate(0,282) scale(1,-1)">All lamp BLACK leads -&gt; rated 0V return</text>
+			<text x="35" y="93" style="font-family: DejaVu; font-size: 11px;fill: rgb(74%,21%,18%); stroke:none;" transform="translate(0,186) scale(1,-1)">All HSD SDA/SCL pull-up jumpers OPEN. Address: HSD1 all open; HSD2 A1 closed; HSD3 A2 closed.</text>
+			<text x="35" y="77" style="font-family: DejaVu; font-size: 11px;fill: rgb(74%,21%,18%); stroke:none;" transform="translate(0,154) scale(1,-1)">V2 component-side: printed ch7 at top, ch0 at bottom; schematic OUT1 = ch7, OUT8 = ch0.</text>
+			<text x="35" y="61" style="font-family: DejaVu; font-size: 11px;fill: rgb(74%,21%,18%); stroke:none;" transform="translate(0,122) scale(1,-1)">Top supply: VIN left / G right. Bottom supply: G left / VIN right. Verify markings before power.</text>
+		</g>
+	</g>
+</svg>

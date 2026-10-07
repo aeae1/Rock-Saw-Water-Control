@@ -62,10 +62,10 @@ test('lamp test runs concurrently with closure and cannot certify closure itself
 });
 
 test('every fault cancels startup testing immediately and acknowledgement never resumes it', () => {
-  const faults = ['supply','stall','communication','driver','timeout','settings','input','position','temperature','trigger'];
+  const faults = ['supply','stall','communication','driver','timeout','settings','input','position','trigger'];
   faults.forEach((cause, index) => {
     const s = simulator(); s.power(true, false); s.advance(700); s.fault(cause);
-    const expected = Array(10).fill('off'); expected[index] = 'white';
+    const expected = Array(10).fill('off'); expected[cause === 'trigger' ? 9 : index] = 'white';
     assert.equal(s.stage.dataset.lampTest, 'false');
     assert.deepEqual(colors(s), expected); s.advance(2400);
     assert.deepEqual(colors(s), expected); paused(s);

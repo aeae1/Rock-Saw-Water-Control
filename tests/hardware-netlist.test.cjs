@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const base = JSON.parse(fs.readFileSync(path.join(__dirname, '../hardware/rev-c/netlist.json')));
+const base = JSON.parse(fs.readFileSync(path.join(__dirname, '../hardware/rev-d/netlist.json')));
 
 // This checks documentation topology, not semiconductor behavior or actual wiring.
 function audit(n) {
@@ -50,7 +50,7 @@ function audit(n) {
   for(const p of ['U2.VCC','U3.VCC','O1.HV','O2.HV']) expect(p,'TB5.rail');
   for(const p of ['U2.GND','U3.GND','O1.INPUT_GND','O1.HV_GND','O2.INPUT_GND','O2.HV_GND']) expect(p,'TB0.rail');
   for(const ref of ['R1','R2','R3']) {assert.equal(n.components[ref].resistance_ohms,1000);assert(n.components[ref].power_w>=.5);}
-  for(const ref of ['R6','R7','R10']) assert.equal(n.components[ref].resistance_ohms,4700);
+  for(const ref of ['R6','R7']) assert.equal(n.components[ref].resistance_ohms,4700);
   expect('U2.SDA','U1.A4');expect('U2.SCL','U1.A5');separate('U1.A4','U1.A5');
   expect('U2.GND','U2.OUT_GND');expect('U2.OUT_GND','V1.WHITE');expect('U3.I-','V1.WHITE');
   separate('U2.OUT','U1.A0');separate('U2.OUT','TB5.rail');
@@ -71,8 +71,8 @@ function audit(n) {
     separate('FM1.'+color,'TB5.rail');separate(series+'.1',series+'.2');
   }
   expect('FM1.RED','TB5.rail');expect('FM1.BLACK','TB0.rail');
-  for(const t of ['TS1','TS2']) {expect(t+'.1','TB0.rail');expect(t+'.2','U1.D7');expect(t+'.3','TB5.rail');}
-  expect('R10.1','TB5.rail');expect('R10.2','U1.D7');
+  assert(nc.has('U1.D7'), 'Unused D7 must remain unconnected');
+  for(const ref of ['TS1','TS2','R10','C3','C6']) assert(!n.components[ref], 'Removed temperature component '+ref);
   const outputPins=[];
   for(let i=1;i<=10;i++) {
     const b=1+Math.floor((i-1)/4), ch=((i-1)%4)*2;
@@ -87,7 +87,23 @@ function audit(n) {
   assert.equal(n.watchdog.qualified,false);assert.equal(n.status,'BENCH_DESIGN_HOLD_H1_H5');
   return { pins:pins.size,wires:n.wires.length };
 }
-test('Revision C: every declared terminal and every external wire has a consistent topology',()=>audit(base));
+test('Revision D: every declared terminal and every external wire has a consistent topology',()=>audit(base));
+test('Revision D removes only the external temperature branch from Revision C',()=>{
+  const old=JSON.parse(fs.readFileSync(path.join(__dirname,'../hardware/rev-c/netlist.json')));
+  const removed=new Set(['TS1','TS2','R10','C3','C6']);
+  const retained=pin=>!removed.has(pin.split('.')[0])&&pin!=='U1.D7';
+  assert.deepEqual(Object.keys(old.components).filter(r=>!removed.has(r)),Object.keys(base.components));
+  const connections=n=>n.wires.filter(w=>retained(w.from)&&retained(w.to)).map(({net,from,to})=>[net,from,to]);
+  assert.deepEqual(connections(base),connections(old));
+  for(const [net,v] of Object.entries(old.nets)){
+    const pins=v.pins.filter(retained);
+    if(pins.length)assert.deepEqual(base.nets[net].pins,pins);
+    else assert(!base.nets[net]);
+  }
+  assert.deepEqual(base.internal_connections,old.internal_connections);
+  assert.deepEqual(base.addresses,old.addresses);
+  assert.deepEqual(base.watchdog,old.watchdog);
+});
 function damage(label,fn) {test(`Audit rejects: ${label}`,()=>{const n=structuredClone(base);fn(n);assert.throws(()=>audit(n));});}
 function bridge(n,a,b,net='0V') {n.wires.push({id:'BAD',net,from:a,to:b});n.nets[net].pins.push(a,b);}
 damage('12 V on the meter supply',n=>bridge(n,'TB12.rail','FM1.RED','MACHINE_12V'));

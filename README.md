@@ -2,35 +2,45 @@
 
 # Rock Saw Water Control
 
-**[▶ Open Live Simulator](https://aeae1.github.io/Rock-Saw-Water-Control/)** · **[Operator guide](docs/operator-guide.md)** · [Build and wiring guide](docs/build-guide.md) · **[Audited schematic PDF](docs/assets/hardware/water-controller-audit-rev-c.pdf)** · [Shopping and enclosures](docs/shopping-guide.md)
+**[▶ Open Live Simulator](https://aeae1.github.io/Rock-Saw-Water-Control/)** · **[Operator guide](docs/operator-guide.md)** · **[Single-page schematic](docs/assets/hardware/water-controller-single-page-rev-d.pdf)** · [Build and wiring guide](docs/build-guide.md) · [Electrical audit](docs/assets/hardware/water-controller-audit-rev-d.pdf) · [Shopping and enclosures](docs/shopping-guide.md)
 
 A configurable attachment water controller for machines that provide three independent operator-control outputs. The proposed system adjusts a motorized water valve and presents operating status on ten blue/white indicator lamps. Typical applications include rock saws and other attachments supplied from a pressurized water hose.
 
-**Project status:** interactive simulator and Revision C electrical bench design. The [connection audit](docs/hardware-audit-2026-10-04.md) includes circuit sheets, 138 individual connections, parts, tests and power-up checks. Machine harness verification, protection coordination, actual component qualification, actuator characterization and firmware/bench testing remain release holds. No hardware-ready firmware is included.
+**Project status:** interactive simulator and Revision D electrical bench design. The [connection audit](docs/hardware-audit-2026-10-07.md) includes circuit sheets, 126 individual connections, parts, tests and power-up checks. Machine harness verification, protection coordination, actual component qualification, actuator characterization and firmware/bench testing remain release holds. No hardware-ready firmware is included.
 
-## Assembly and wiring overview
+## Assembly illustration
 
-[![Revision C electrical overview showing the machine connector, Nano Every, input boards, lamp drivers, command and feedback modules, supervised valve-power branch, flow meter and temperature sensors](docs/assets/hardware/water-controller-wiring-flow.png)](docs/assets/hardware/water-controller-wiring-flow.svg)
+[![Realistic Revision D assembly concept with ten lamps, Arduino Nano Every, three lamp-driver boards, input conditioning, command and feedback modules, supervised valve power, flow meter and proportional valve](docs/assets/hardware/assembly-concept-rev-d.png)](docs/assets/hardware/assembly-concept-rev-d.png)
 
-*Revision C wiring; documentation updated 5 October 2026. The overview groups conductors by function. Select the image for the full-size vector drawing. Use the circuit sheets and connection schedule below for terminal details. The package remains a bench design with explicit hardware release holds.*
+*Updated 7 October 2026. Physical arrangement concept; component appearance, wire routing, sensor packaging and fittings are illustrative. Use the single-page schematic and connection schedule for electrical assembly.*
+
+## Wiring overview
+
+[![Revision D electrical overview showing the machine connector, Nano Every, input boards, lamp drivers, command and feedback modules, supervised valve-power branch, flow meter](docs/assets/hardware/water-controller-wiring-flow.png)](docs/assets/hardware/water-controller-wiring-flow.svg)
+
+*Revision D wiring; documentation updated 7 October 2026. The overview groups conductors by function. Select the image for the full-size vector drawing. Use the circuit sheets and connection schedule below for terminal details. The package remains a bench design with explicit hardware release holds.*
 
 ## Detailed schematic
 
-**[Open the complete schematic and audit PDF](docs/assets/hardware/water-controller-audit-rev-c.pdf)** · [Every-wire connection schedule](hardware/rev-c/connections.csv) · [Parts schedule](hardware/rev-c/bom.csv)
+**[Open the complete single-page schematic — PDF](docs/assets/hardware/water-controller-single-page-rev-d.pdf)** · [Zoomable SVG](docs/assets/hardware/water-controller-single-page-rev-d.svg) · [Schematic and audit booklet](docs/assets/hardware/water-controller-audit-rev-d.pdf)
 
-[![Revision C circuit sheet 03: supervised valve power, dedicated relay regulator, signal disconnect contacts and five-wire actuator cable](docs/assets/hardware/rev-c-03-valve.svg)](docs/assets/hardware/rev-c-03-valve.svg)
+The single-page A0 sheet contains all six circuit sections, all 126 external connections, all 49 component references, internal common connections and unused terminals. It is a vector document: zoom in for individual connections, or print at A0 for the intended text size. [Single-page verification record](docs/single-page-schematic-review-2026-10-07.md) · [Every-wire connection schedule](hardware/rev-d/connections.csv) · [Parts schedule](hardware/rev-d/bom.csv)
 
-The preview shows the valve power and signal-disconnect circuit. The complete package contains all six circuit sheets, the electrical audit and the individual connection schedule. The current automatic-close and reset policies are included in its fault-response notes; these software changes do not alter the Revision C wiring.
+[![Complete single-page Revision D schematic with all six circuit sections and connection register](docs/assets/hardware/water-controller-single-page-rev-d.png)](docs/assets/hardware/water-controller-single-page-rev-d.pdf)
 
 <details>
-<summary>View all six circuit sheets</summary>
+<summary>Valve circuit detail and individual sheets</summary>
 
-1. [Power, returns and local I²C bus](docs/assets/hardware/rev-c-01-power.svg)
-2. [G/H/J input conditioning](docs/assets/hardware/rev-c-02-inputs.svg)
-3. [Valve power and signal disconnect](docs/assets/hardware/rev-c-03-valve.svg)
-4. [Position feedback and ScioSense flow meter](docs/assets/hardware/rev-c-04-feedback-meter.svg)
-5. [All twenty lamp-color outputs](docs/assets/hardware/rev-c-05-lamps.svg)
-6. [Temperature sensors and component pin orientation](docs/assets/hardware/rev-c-06-temperature.svg)
+[![Revision D circuit sheet 03: supervised valve power, dedicated relay regulator, signal disconnect contacts and five-wire actuator cable](docs/assets/hardware/rev-d-03-valve.svg)](docs/assets/hardware/rev-d-03-valve.svg)
+
+The preview shows the valve power and signal-disconnect circuit. The complete package contains all six circuit sheets, the electrical audit and the individual connection schedule. The current automatic-close and reset policies are included in its fault-response notes; Revision D removes the external temperature probes and leaves D7 unused.
+
+1. [Power, returns and local I²C bus](docs/assets/hardware/rev-d-01-power.svg)
+2. [G/H/J input conditioning](docs/assets/hardware/rev-d-02-inputs.svg)
+3. [Valve power and signal disconnect](docs/assets/hardware/rev-d-03-valve.svg)
+4. [Position feedback and ScioSense flow meter](docs/assets/hardware/rev-d-04-feedback-meter.svg)
+5. [All twenty lamp-color outputs](docs/assets/hardware/rev-d-05-lamps.svg)
+6. [Component pin orientation and assembly notes](docs/assets/hardware/rev-d-06-terminals.svg)
 
 </details>
 
@@ -46,13 +56,13 @@ The preview shows the valve power and signal-disconnect circuit. The complete pa
 | Valve feedback | [DFRobot SEN0262](https://wiki.dfrobot.com/sen0262/) converts position feedback to a voltage for the Nano's analog input; this receiver is not an I²C device |
 | Water valve | [U.S. Solid USS-MSV50030](https://ussolid.com/products/1-2-proportional-motorized-ball-valve-stainless-steel-dc-9-24v-4-20ma-control-5-wire-ip67-full-port), 1/2-inch stainless proportional ball valve with integrated actuator |
 | Flow meter | ScioSense UFM-02-03NP4 four-wire pulse meter; regulated 5 V, separate flow/error inputs |
-| Supervision and temperature | Proposed local HSD watchdog, TQ2-5V signal relay with dedicated L7805ABV regulator, and two powered DS18B20 sensors; physical qualification required |
+| Actuator supervision | Proposed local HSD watchdog, TQ2-5V signal relay with dedicated L7805ABV regulator; physical qualification required |
 
 The reference installation reuses its existing 14-pin connector for the constant 12 V supply, wired ground return, and three control signals. Power is distributed inside the controller; the selected layout relies on the existing machine fuse and includes no additional fuse block or separate power source. This is an installation-specific arrangement, not a universal connector pinout. Whether the supply remains live with the ignition off must be verified: startup behavior follows controller power-up or reset, not necessarily the machine's key cycle.
 
 The valve has **one five-conductor cable from its actuator housing**. The motor and position-control electronics are inside that housing; there are no electrical connections to the stainless valve body or water hoses. The [manufacturer's wiring table](https://file.ussolid.com/content/JFMSV/Manual-5003X.pdf) identifies red as power positive, black as power negative, green as command positive, white as signal common, and yellow as position-feedback positive.
 
-The electronics require a suitable weatherproof enclosure. Power budgets, fault behavior and environmental suitability require bench verification. The current [electrical audit](docs/hardware-audit-2026-10-04.md) supersedes earlier wiring concepts; the [2026-10-03 audit](docs/audit-2026-10-03.md) remains the historical software review. Automated wiring checks validate the documented topology, not physical field reliability.
+The electronics require a suitable weatherproof enclosure. Power budgets, fault behavior and environmental suitability require bench verification. The current [electrical audit](docs/hardware-audit-2026-10-07.md) supersedes earlier wiring concepts; the [2026-10-03 audit](docs/audit-2026-10-03.md) remains the historical software review. Automated wiring checks validate the documented topology, not physical field reliability.
 
 ## Simulator
 
@@ -92,7 +102,7 @@ In Set Max, running water holds its current valve opening while the cap is edite
 
 Blue lamps indicate the running level; white lamps indicate the saved paused level. While paused, the maximum lamp blinks blue/off above the white bar or blue/white within it. Set Max uses one alternating blue/white lamp. Mode-changing holds show an inward white fill after 0.5 seconds; Flush uses an outward white ripple.
 
-Faults latch and inhibit opening. Settings/input faults (6, 7, 10) command the valve closed while retaining the fault display; faults involving the valve-control path (1–5, 8, 9) inhibit movement. Any latched movement-inhibiting fault takes priority, even after its cause clears. Each numbered lamp blinks white while its cause is active and blue after it clears. All latched codes are shown together; all causes must be cleared before reset. The simulator provides one toggle per cause for testing simultaneous faults. Correct the cause, release J, then hold J for three seconds to acknowledge. Holding or moving G/H does not affect fault acknowledgement. During the reset hold, code lamps stay blue while a white fill sweeps across all ten positions, spending 0.3 seconds per position even behind a blue code. When the hold completes, the normal paused display returns immediately: the saved-level bar is white and the maximum marker blinks blue. Reset keeps water off: a confirmed closed valve does not move again; otherwise closing/requalification finishes. After closure and 0.1 seconds with J released, a fresh J tap works with G/H still held. Earlier rocker actions are discarded. **Stopping movement or losing electrical power does not guarantee that water stops.** The [operator guide](docs/operator-guide.md) explains routine use and recovery; the [fault reference](docs/faults.md) defines all ten codes and detection limits.
+Faults latch and inhibit opening. Settings/input faults (6, 7, 10) command the valve closed while retaining the fault display; faults involving the valve-control path (1–5, 8) inhibit movement. Any latched movement-inhibiting fault takes priority, even after its cause clears. Each numbered lamp blinks white while its cause is active and blue after it clears. All latched codes are shown together; all causes must be cleared before reset. The simulator provides one toggle per cause for testing simultaneous faults. Correct the cause, release J, then hold J for three seconds to acknowledge. Holding or moving G/H does not affect fault acknowledgement. During the reset hold, code lamps stay blue while a white fill sweeps across all ten positions, spending 0.3 seconds per position even behind a blue code. When the hold completes, the normal paused display returns immediately: the saved-level bar is white and the maximum marker blinks blue. Reset keeps water off: a confirmed closed valve does not move again; otherwise closing/requalification finishes. After closure and 0.1 seconds with J released, a fresh J tap works with G/H still held. Earlier rocker actions are discarded. **Stopping movement or losing electrical power does not guarantee that water stops.** The [operator guide](docs/operator-guide.md) explains routine use and recovery; the [fault reference](docs/faults.md) defines the supported codes, reserved code 9 and detection limits.
 
 The current simulator uses valve-opening percentages. The planned hardware will use a measured [flow-calibration curve](docs/flow-calibration.md) so levels represent calibrated flow percentages; this requires real valve/nozzle measurements and does not provide live measured GPM. The water animation is illustrative. Settings and fault latches survive the simulator's power switch, but reset on page reload.
 
@@ -130,7 +140,7 @@ npm ci
 npm run check
 ```
 
-Edit `simulator/source.html`, then run `npm run build`. The build extracts the simulator into the committed HTML, CSS, and JavaScript under `docs/`. The 208 deterministic simulator tests include all 2,000 old-cap/new-cap/level/on-off remapping combinations, 100 paused-indicator combinations, all 90 ordered fault pairs, 4,000 seeded stress actions, and startup/recovery/gesture regressions, including twelve startup-lamp tests covering all twenty colors, held inputs, faults, power loss and reduced motion. Twenty-nine fault-display tests cover independent toggles, simultaneous faults, continuous blinking, reset progress, rejected holds, interruption, delayed callbacks and recovery indication. Eight additional reset-indication tests cover resets with either G/H direction held across all ten codes, startup centering versus G/H-independent fault recovery, fresh attempts after warnings, simultaneous code colors and agreement between indication and acknowledgement. Twenty-one fault-response tests cover automatic closing, all 90 ordered fault-pair priorities, interrupted closing, unchanged closing deadlines and G/H-independent rearming. Eighteen additional wiring checks validate the Rev C netlist and deliberately reject damaging connection/value changes, for 226 tests total. The check command also validates local documentation links and the current diagram image. GitHub Actions runs the suite on Node.js 22 and 24, checks simulator build reproducibility, and runs 69 real-browser cases across desktop Chromium, mobile Chromium and mobile WebKit. Browser reports and failure traces are retained as workflow artifacts. See the [software audit](docs/audit-2026-10-03.md) and [electrical audit](docs/hardware-audit-2026-10-04.md) for results and limits.
+Edit `simulator/source.html`, then run `npm run build`. The build extracts the simulator into committed HTML, CSS and JavaScript under `docs/`. The suite contains 225 deterministic tests: 206 simulator checks and 19 electrical-document checks. Coverage includes 2,000 level/cap/on-off remapping combinations, 100 paused-indicator combinations, all 72 ordered pairs of supported faults, 4,000 seeded stress actions, startup lamp tests, held controls, interrupted gestures and G/H-independent fault recovery. Code 9 is reserved; regression tests keep stuck J on lamp 10 and preserve the full reset sweep. Wiring checks also verify that Revision D removes only the temperature branch from Revision C. Documentation checks validate local links, all 126 connections, all 49 parts, six embedded circuits and the single-page export hashes. GitHub Actions runs deterministic tests on Node.js 22 and 24 and 69 browser cases across desktop Chromium, mobile Chromium and mobile WebKit. Reports and failure traces are retained as workflow artifacts. See the [validation record](docs/validation.md) and [single-page review](docs/single-page-schematic-review-2026-10-07.md) for evidence and limits.
 
 To run browser checks locally:
 
@@ -145,6 +155,6 @@ The test suite covers simulator behavior and the documented circuit topology. Ph
 
 This is an independent project and is not affiliated with Takeuchi or the component manufacturers. The original machine artwork was supplied for this project. The selected red-stripe banner contains an unchanged, native-size copy of the original artwork. Four earlier AI-assisted banner studies are retained as superseded design swatches; they are not technical representations of the machine.
 
-An earlier assembly illustration is retained as AI-generated concept art. The current Rev C diagrams are programmatically drawn circuit documentation with explicit physical qualification holds; neither constitutes manufacturer-approved installation guidance.
+An earlier assembly illustration is retained as AI-generated concept art. The current Rev D diagrams are programmatically drawn circuit documentation with explicit physical qualification holds; neither constitutes manufacturer-approved installation guidance.
 
 No project-wide redistribution license has been selected. Third-party product names and marks retain their respective ownership.

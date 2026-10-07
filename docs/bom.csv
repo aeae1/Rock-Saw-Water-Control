@@ -4,14 +4,13 @@ Valve,1,assembly,U.S. Solid USS-MSV50030 / JFMSV50030,Selected; published price,
 Current command,1,board,DFRobot DFR1229 GP8600,Selected; published price,15.90,2026-10-04,3.3-5 V supply; current scale and loop compliance require bench verification
 Feedback receiver,1,board,DFRobot SEN0262,Selected; published price,4.90,2026-10-04,Analog output to Nano A0; no external ADC currently selected
 Lamp switching,3,board,Serial Wombat PCB0046 HSD V2,Selected direction; price/availability pending,,,20 lamp outputs plus HSD3 ch4 valve watchdog; address pairs 0x60/61 0x62/63 0x64/65
-Machine inputs,2,board,SparkFun BOB-09118 v1.2,Rev C selection; published unit price,5.95,2026-10-04,Three channels used; external 1k resistors and diodes; HV supplied with 5 V
+Machine inputs,2,board,SparkFun BOB-09118 v1.2,Rev D selection; published unit price,5.95,2026-10-04,Three channels used; external 1k resistors and diodes; HV supplied with 5 V
 Indicators,1,ten-pack,12 V blue/white common-negative marker lamps,Brand-neutral requirement,,,25.99 USD planning allowance only; Amazon checkout unverified; ten common-negative dual-color lamps
 Machine connector,1,existing assembly,Existing 14-pin connector,Reuse,0,,No new connector or separate power source; verify cavity assignments
 Enclosure,1,box,Hammond 1554VA2GY opaque polycarbonate,Preferred planning size; fit pending; plate additional,43.50,2026-10-04,Add 1554VAPL plate 9.25 USD; confirm physical layout; see docs/shopping-guide.md for complete allowances
 Assembly,1,set,Distribution terminals wire glands sealed connectors standoffs labels,Layout/quote pending,,,Reference installation uses existing machine fuse; no added fuse block
 Display mounting,1,assembly,Ten-lamp bar housing or shared enclosure face,Layout/quote pending,,,Depends on measured lamp dimensions and desired spacing
 Plumbing,1,set,Manual shutoff strainer hose/NPT adapters and removable fittings,Inventory/quote pending,,,Reuse suitable existing parts; no electrical wires to hoses
-Fault inhibition,1,circuit,HSD3 ch4 watchdog plus Panasonic TQ2-5V and ST L7805ABV,Rev C bench proposal,,,TQ2-5V 2.36 USD backorder; L7805ABV 0.96 USD observed 2026-10-04; watchdog unqualified; see shopping guide
-Temperature,2,sensor,DS18B20+ TO-92,Rev C selection; published unit price,7.35,2026-10-04,Powered three-wire interface; protected external sensor termination required
-Flow meter,1,meter,ScioSense UFM-02-03NP4,Rev C selection; published price; tariff may apply,59.66,2026-10-04,3/8 NPS four-wire pulse variant; protect electronics from weather; qualify flow range
-Passive components,1,set,Rev C resistors diodes and capacitors,Values specified,,,See hardware/rev-c/bom.csv for every reference and value
+Fault inhibition,1,circuit,HSD3 ch4 watchdog plus Panasonic TQ2-5V and ST L7805ABV,Rev D bench proposal,,,TQ2-5V 2.36 USD backorder; L7805ABV 0.96 USD observed 2026-10-04; watchdog unqualified; see shopping guide
+Flow meter,1,meter,ScioSense UFM-02-03NP4,Rev D selection; published price; tariff may apply,59.66,2026-10-04,3/8 NPS four-wire pulse variant; protect electronics from weather; qualify flow range
+Passive components,1,set,Rev D resistors diodes and capacitors,Values specified,,,See hardware/rev-d/bom.csv for every reference and value

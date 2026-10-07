@@ -1,8 +1,8 @@
 # Conceptual Connections
 
-Reviewed 2026-10-04 · Revision C functional overview
+Reviewed 2026-10-07 · Revision D functional overview
 
-These diagrams show functions, not terminal-level construction wiring. G/H/J mean increase, decrease and trigger; they are not verified machine connector cavities. Use the [Revision C audit and detailed schematic](hardware-audit-2026-10-04.md) for terminal wiring, board configuration and release holds.
+These diagrams show functions, not terminal-level construction wiring. G/H/J mean increase, decrease and trigger; they are not verified machine connector cavities. Use the [Revision D audit and detailed schematic](hardware-audit-2026-10-07.md) for terminal wiring, board configuration and release holds.
 
 ## Control and feedback
 
@@ -18,7 +18,7 @@ flowchart TD
     H -->|"20 switched 12 V color leads"| L["Ten blue/white lamps"]
     H -->|"Watchdog channel 4"| P["Valve power and signal relay"]
     P --> V
-    F["Flow meter and temperature sensors"] --> C
+    F["Flow meter"] --> C
 ```
 
 The receiver uses an analog input. The proportional actuator includes its motor and controller; no external reversing H-bridge is involved. The HSD boards combine I/O expansion and high-side switching.
@@ -29,7 +29,7 @@ The receiver uses an analog input. The proportional actuator includes its motor 
 | :--- | :--- |
 | Existing machine connector, verified 12 V | Nano VIN and HSD load inputs |
 | Connector wired ground | Power distribution return; separate load and analog-return routing |
-| Nano 5 V rail, after load/thermal verification | HSD logic, DFR1229, SEN0262, input board HV, meter and temperature sensors |
+| Nano 5 V rail, after load/thermal verification | HSD logic, DFR1229, SEN0262, input board HV, meter |
 | Twenty HSD switched outputs | One blue or white lamp-positive lead each |
 | Lamp common negatives | Ground distribution, sized for combined current |
 | HSD3 channel 4 / wired return | Valve red / black; dedicated relay-coil regulator input / return |

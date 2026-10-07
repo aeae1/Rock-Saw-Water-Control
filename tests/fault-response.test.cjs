@@ -2,8 +2,8 @@ const assert=require('node:assert/strict');
 const {test}=require('node:test');
 const {simulator}=require('./helpers/simulator.cjs');
 const closing=['settings','input','trigger'];
-const inhibited=['supply','stall','communication','driver','timeout','position','temperature'];
-const all=['supply','stall','communication','driver','timeout','settings','input','position','temperature','trigger'];
+const inhibited=['supply','stall','communication','driver','timeout','position'];
+const all=['supply','stall','communication','driver','timeout','settings','input','position','trigger'];
 function opened(mode='normal',reducedMotion=false){
   const s=simulator({reducedMotion});s.power(true);s.tap();s.advance(5000);
   if(mode!=='normal')s.hold();if(mode==='clean'){s.hold();s.advance(5000);}return s;
@@ -38,7 +38,7 @@ for(const cause of inhibited)test(`${cause} inhibits drive until a deliberate cl
   assert.equal(s.pos(),0);assert.equal(s.stage.dataset.on,'false');assert.equal(s.stage.dataset.inputsReady,'true');
 });
 
-test('all 90 ordered fault pairs give drive inhibition priority over automatic closing',()=>{
+test('all 72 ordered fault pairs give drive inhibition priority over automatic closing',()=>{
   for(const first of all)for(const second of all){
     if(first===second)continue;
     const s=opened();s.fault(first);s.advance(240);s.fault(second);const atSecond=s.pos();

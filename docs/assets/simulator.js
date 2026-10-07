@@ -19,13 +19,13 @@
   let recovering = false, inputsReady = false, positionKnown = false, jInput = null;
   let neutralSince = null, neutralTimer = null, startupNeedsCenter = true;
   let lampTestStart = null;
-  const faultCodes = {supply:1,stall:2,communication:3,driver:4,timeout:5,settings:6,input:7,position:8,temperature:9,trigger:10};
+  const faultCodes = {supply:1,stall:2,communication:3,driver:4,timeout:5,settings:6,input:7,position:8,trigger:10};
   // Only these operator/settings faults leave the modeled valve path healthy.
   // Any latched fault outside this allowlist inhibits drive until acknowledgement.
   const closeOnFault = new Set(['settings','input','trigger']);
   const faultInhibitsDrive = () => [...latchedFaults].some(cause=>!closeOnFault.has(cause));
   const faultResponse = () => fault==='normal'?'none':!power?'unpowered':motion?.kind==='fault-close'?'closing':positionKnown&&position===0?'closed':'inhibited';
-  const faultNames = {supply:'supply / brownout',stall:'valve jam / overcurrent',communication:'valve / interface communication',driver:'motor driver',timeout:'motion timeout',settings:'invalid saved settings',input:'conflicting inputs',position:'position unknown',temperature:'controller overtemperature',trigger:'stuck J trigger'};
+  const faultNames = {supply:'supply / brownout',stall:'valve jam / overcurrent',communication:'valve / interface communication',driver:'motor driver',timeout:'motion timeout',settings:'invalid saved settings',input:'conflicting inputs',position:'position unknown',trigger:'stuck J trigger'};
   let flashOrigin = 0, flashTimer = null;
   let press = null, holdTimer = null, suppressClickUntil = 0;
   let frame = null, lastTime = performance.now(), fluidPhase = 0;

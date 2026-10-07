@@ -6,14 +6,14 @@ const signal=s=>s.stage.dataset.faultSignal;
 const prepared=()=>{const s=simulator();s.power(true);s.fault('driver');s.fault('normal');return s;};
 
 test('every cleared fault accepts J reset with G/H held and shows eligible progress',()=>{
- const causes=['supply','stall','communication','driver','timeout','settings','input','position','temperature','trigger'];
+ const causes=['supply','stall','communication','driver','timeout','settings','input','position','trigger'];
  for(const direction of ['g','h'])for(const reducedMotion of [false,true])for(const cause of causes){
   const s=simulator({reducedMotion});s.power(true);s.fault(cause);s.click(direction);
   assert.equal(s.q('reset-fault').disabled,true);s.fault('normal');
   assert.equal(s.q('reset-fault').disabled,false);s.down();
   assert.equal(signal(s),'holding');assert.match(s.q('switch-state').textContent,/Reset eligible/);
   assert.match(s.q('j').textContent,/Hold 3 s: reset/);
-  s.advance(1504);assert.equal(colors(s)[causes.indexOf(cause)],'blue');
+  s.advance(1504);assert.equal(colors(s)[(cause==='trigger'?9:causes.indexOf(cause))],'blue');
   assert.ok(parseFloat(s.q('hold-progress').style.width)>=50);
   assert.equal(colors(s).includes('white'),!reducedMotion);
   s.advance(1495);assert.equal(s.stage.dataset.fault,cause);
@@ -54,11 +54,11 @@ test('all blocked/cause-removal/retry timings keep the display consistent with r
 });
 
 test('alternating numbered fault codes stay fixed blue throughout a successful fill rather than swapping colors',()=>{
- const s=simulator();s.power(true);for(const f of ['supply','communication','timeout','input','temperature'])s.fault(f);
+ const s=simulator();s.power(true);for(const f of ['supply','communication','timeout','input'])s.fault(f);
  s.fault('normal');s.down();let white=0;
  for(let i=0;i<149;i++){
   s.advance(20);const c=colors(s);assert.equal(signal(s),'holding');
-  for(const index of [0,2,4,6,8])assert.equal(c[index],'blue');
+  for(const index of [0,2,4,6])assert.equal(c[index],'blue');
   const count=c.filter(x=>x==='white').length;assert.ok(count>=white);white=count;
  }
  s.advance(20);assert.equal(s.stage.dataset.fault,'normal');
