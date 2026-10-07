@@ -2,7 +2,9 @@
 
 Prices reviewed 7 October 2026 · Design updated 7 October 2026 · USD · Revision E
 
-**[Download the editable shopping workbook](assets/procurement/shopping-list.xlsx)** · [Continuous single-page schematic](assets/hardware/water-controller-single-page-rev-e.pdf) · [Electrical audit](hardware-audit-rev-e.md) · [Exact circuit parts](../hardware/rev-e/bom.csv)
+**[Open the shopping list (Markdown)](shopping-list.md)** · [Continuous single-page schematic](assets/hardware/water-controller-single-page-rev-e.pdf) · [Electrical audit](hardware-audit-rev-e.md) · [Exact circuit parts](../hardware/rev-e/bom.csv)
+
+The Markdown list is the primary purchasing reference. It includes quantities, sellers, links, prices, alternatives and the complete budget without requiring a spreadsheet. This guide supplies the detailed enclosure and testing notes.
 
 This guide includes the controller, twenty lamp channels, proportional valve, enclosure materials, assembly supplies and temporary bench accessories. It does not authorize substitutions in the Revision E schematic. There is no flashable Arduino application yet; simulator tests do not qualify assembled electronics.
 
@@ -160,7 +162,9 @@ The only directly observed product-specific coupon in this pass was **FNIRSI DPS
 
 ZIP-specific Amazon checkout shipping, tax, coupons and exact seller prices could not be verified. Manufacturer/distributor prices above were checked on their public product pages; no destination checkout was completed. The links, dated published prices and explicit allowances remain useful for comparison; they should not be relabeled as checkout totals.
 
-## Using the workbook
+## Optional spreadsheet
+
+An [editable workbook](assets/procurement/shopping-list.xlsx) remains available for readers who prefer formula-based calculations. It is optional; the [Markdown list](shopping-list.md) contains the purchasing information.
 
 The **Shopping** tab contains editable quantities/prices, formula line totals, category totals, tax, one set of shipping allowances, a fee reserve and a discount input. Set an item's quantity to zero only when it is already owned or deliberately removed from the scope. Prices marked “Allowance” are assumptions. A detailed small-parts table below the shipping section supplies the installed quantity, purchase quantity, part number and source for each of the six lots; its sum feeds the main basket without double-counting. The **Options** tab is separate and is not included in the main total, avoiding double-counting alternative controllers, enclosures and power supplies. Links and source/basis notes accompany each entry. The source data is also available in [JSON](shopping-data.json).
 
