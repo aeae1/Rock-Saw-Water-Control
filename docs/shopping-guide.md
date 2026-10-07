@@ -1,31 +1,31 @@
 # Procurement and Enclosure Plan
 
-Prices reviewed 4 October 2026 · Design updated 7 October 2026 · USD · Revision D
+Prices reviewed 7 October 2026 · Design updated 7 October 2026 · USD · Revision D
 
-**[Download the editable shopping workbook](assets/procurement/shopping-list.xlsx)** · [Electrical audit](hardware-audit-2026-10-07.md) · [Exact circuit parts](../hardware/rev-d/bom.csv)
+**[Download the editable shopping workbook](assets/procurement/shopping-list.xlsx)** · [Continuous single-page schematic](assets/hardware/water-controller-single-page-rev-d.pdf) · [Electrical audit](hardware-audit-2026-10-07.md) · [Exact circuit parts](../hardware/rev-d/bom.csv)
 
 This guide includes the controller, twenty lamp channels, proportional valve, flow meter, enclosure materials, assembly supplies and temporary bench accessories. It does not authorize substitutions in the Revision D schematic. There is no flashable Arduino application yet; simulator tests do not qualify assembled electronics.
 
 ## Cost and purchase status
 
-The conservative **buy-everything planning total is approximately $731**, excluding a bench supply and tools that may already be owned. This is **not a delivered quotation**: $339 of the $610 merchandise budget consists of explicit allowances. These include $90 for the three unpriced driver boards, $85 for wiring/assembly materials, and allowances for plumbing and secondary housings. Actual purchases may be lower when suitable materials are reused, or higher when unresolved parts are quoted.
+The conservative **buy-everything planning total is approximately $746**, excluding a bench supply and tools that may already be owned. This is **not a delivered quotation**: $301 of the $613 merchandise budget consists of explicit allowances. These include $90 for the three unpriced driver boards, $75 for wiring/assembly materials, and allowances for plumbing and secondary housings. Actual purchases may be lower when suitable materials are reused, or higher when unresolved parts are quoted.
 
 | Budget component | USD |
 | :--- | ---: |
-| Items with observed published prices, including the backordered relay | 270.67 |
-| Merchandise allowances, including the lamp pack and unpriced drivers | 338.99 |
-| Merchandise subtotal | 609.66 |
-| Combined shipping allowances | 46.00 |
+| Items with observed published prices, including small parts and spares | 312.00 |
+| Merchandise allowances, including unpriced drivers and assembly supplies | 301.00 |
+| Merchandise subtotal | 613.00 |
+| Combined shipping allowances | 56.00 |
 | Unquoted tariff/fee reserve | 20.00 |
-| Estimated tax at 8.25% on the above | 55.74 |
-| **Planning total; supply and additional tools excluded** | **731.40** |
+| Estimated tax at 8.25% on the above | 56.84 |
+| **Planning total; supply and additional tools excluded** | **745.84** |
 
-The earlier $200 goal is not met by this design. The valve, meter, lamp pack, Nano and command/feedback boards alone are approximately $225 before tax, drivers or housing. Substituting an inexpensive Arduino clone would not solve that gap. A firm $200 ceiling would require a substantially simpler design and a new electrical review. The current list should not be interpreted as a recommendation to purchase $731 of parts immediately.
+The earlier $200 goal is not met by this design. The valve, meter, lamp pack, Nano and command/feedback boards alone are approximately $225 before tax, drivers or housing. Substituting an inexpensive Arduino clone would not solve that gap. A firm $200 ceiling would require a substantially simpler design and a new electrical review. The current list should not be interpreted as a recommendation to purchase $746 of parts immediately.
 
 **Resolve these before placing the complete order:**
 
 - **Driver procurement:** PCB0046 HSD V2 price and retail stock could not be verified. Its $30/unit allowance is invented only as an editable budget assumption, not a supplier offer. Confirm the exact V2 boards before buying the rest of the harness or cutting the enclosure.
-- **Relay availability:** DigiKey lists TQ2-5V at $2.36 but shows zero stock and an expected November 4 replenishment. [Mouser lists the same part](https://www.mouser.com/en/ProductDetail/Panasonic-Industry/TQ2-5V?qs=HLLy2pIPwutHaTSpVfb1kw%3D%3D); verify its US stock at checkout. Do not substitute a latching TQ2-L relay.
+- **Relay source:** [Mouser lists the exact nonlatching TQ2-5V](https://www.mouser.com/en/ProductDetail/Panasonic-Industry/TQ2-5V?qs=HLLy2pIPwutHaTSpVfb1kw%3D%3D) at **$1.94** and showed stock on 7 October. [DigiKey](https://www.digikey.com/en/products/detail/panasonic-industry/TQ2-5V/251773) remains a $2.36 backorder alternative. The shipping reserve now allows for both distributor baskets. Do not substitute a latching TQ2-L relay.
 - **Meter plumbing:** the NP4 meter has **3/8-inch NPS straight threads**. Its adapters and sealing geometry remain unselected. A generic NPT coupling or hydraulic cone-seat NPSM swivel is not automatically compatible. Obtain the mating detail from ScioSense or inspect the actual sealing faces before ordering fittings.
 - **Physical fit:** confirm board dimensions, mounting holes, connector heights, cable diameters and wire bends before drilling. Neither enclosure option below has a completed mechanical layout.
 - The electrical audit's H1–H5 machine, protection, component, valve-interface and firmware/bench holds remain open. In particular, the five-wire valve's shared returns and loop compliance still require verification.
@@ -42,14 +42,14 @@ Prices below exclude tax and shipping unless stated. A published price does not 
 | Feedback receiver, 1 | [DFRobot SEN0262](https://www.dfrobot.com/product-1755.html) | $4.90 | Its cost is small; retain the documented receiver and input filter rather than redesigning around a bare 250-ohm shunt. |
 | Input interface, 2 | [SparkFun BOB-09118](https://www.sparkfun.com/sparkfun-opto-isolator-breakout.html) | $5.95 each | Four available opto channels; use three. External resistors/diodes remain necessary. Generic PC817 boards vary in input and output wiring and are not a qualified replacement. |
 | Lamp drivers, 3 | [Serial Wombat PCB0046 HSD V2](https://www.serialwombat.com/p46) | **Unverified** | [Manufacturer's Amazon store](https://www.amazon.com/stores/SerialWombat/page/8AE4C563-9A41-45F5-B1CE-5BA3690D4918). Confirm exact model/stock. Budget contains $90 total solely as an allowance. |
-| Lamps, 10 | [Nilight TL-248BW, Amazon listing](https://www.amazon.com/Nilight-Clearance-Indicator-Trailer-Warranty/dp/B0F7XP3QZB) | $25.99 allowance / pack | Amazon checkout price unavailable. Another brand can work if it has separate blue and white positives, common negative, suitable 12 V operation and measured current. Appearance alone is insufficient. |
+| Lamps, 10 | [Nilight TL-248BW direct](https://www.nilight.com/products/3-4inch-dual-color-marker-light-10pcs-blue-to-white-auxiliary-side-marker-bullet-clearance-indicator-lights-3-plug-connector-ip68-waterproof-for-trailer-truck-pickup-camper-rv-atv-utv-van-bus) · [Amazon alternative](https://www.amazon.com/Nilight-Clearance-Indicator-Trailer-Warranty/dp/B0F7XP3QZB) | **$25.99 / ten-pack** direct | Manufacturer lists stock and free continental-US shipping over $19.99. Separate blue/white positives and common black negative. Amazon price remains unverified; compare its exact pack/seller at checkout. Confirm current on the delivered lamps. |
 | Flow meter, 1 | [ScioSense UFM-02-03NP4 at DigiKey](https://www.digikey.com/en/products/detail/sciosense/UFM-02-03NP4-3-8-NPS-PULSE-4-WIRE/29771278) | $59.66 | Four-wire pulse version, not SPI. DigiKey showed stock but warns that a US tariff may apply. Electronics need separate weather protection. |
-| Signal-disconnect relay, 1 | [Panasonic TQ2-5V](https://www.digikey.com/en/products/detail/panasonic-industry/TQ2-5V/251773) | $2.36, backorder | Use the nonlatching DPDT part specified in the drawing. It disconnects signal circuits; it is not the twenty-channel lamp driver. |
-| Relay regulator, 1 | [ST L7805ABV](https://www.digikey.com/en/products/detail/stmicroelectronics/L7805ABV/634711) | $0.96 | TO-220 part for the relay coil only. Its pin orientation and capacitors are specified in Revision D. |
+| Signal-disconnect relay, 1 | [Panasonic TQ2-5V at Mouser](https://www.mouser.com/en/ProductDetail/Panasonic-Industry/TQ2-5V?qs=HLLy2pIPwutHaTSpVfb1kw%3D%3D) | $1.94, observed in stock | Use the nonlatching DPDT part specified in the drawing. It disconnects signal circuits; it is not the twenty-channel lamp driver. |
+| Relay regulator, 1 | [ST L7805ABV](https://www.digikey.com/en/products/detail/stmicroelectronics/L7805ABV/634711) | $0.90 | TO-220 part for the relay coil only. Its pin orientation and capacitors are specified in Revision D. |
 
 The Nano Every is retained: it accepts the nominal machine supply at VIN, has 5 V logic and avoids changing every interface. Its regulated 5 V rail supplies the logic and meter; **12 V never goes to a Nano I/O pin or meter wire**. The lamp/valve power paths bypass the Nano's regulator. Actual peripheral current and enclosed temperature still need measurement.
 
-The three HSD boards serve twenty lamp colors and the proposed separate valve-power watchdog output. A PCA9685 alone is neither a 12 V power switch nor a twenty-channel replacement. Mechanical relay banks are unsuitable for the repeated animation duty. [MIKROE-6074 IPD Click](https://www.mikroe.com/ipd-click-tpd2015) is a documented eight-channel high-side alternative at $29, but the manufacturer showed it out of stock; its control interface and supervision would require a redesign. It is not included in the purchase list.
+The three HSD boards serve twenty lamp colors and the proposed separate valve-power watchdog output. A PCA9685 alone is neither a 12 V power switch nor a twenty-channel replacement. Mechanical relay banks are unsuitable for the repeated animation duty. [MIKROE-6074 IPD Click](https://www.mikroe.com/ipd-click-tpd2015) was a documented eight-channel high-side alternative at $29 in the 4 October review, when the manufacturer showed it out of stock; its control interface and supervision would require a redesign. It is not included in the purchase list.
 
 ## Enclosures and weather protection
 
@@ -58,7 +58,7 @@ The three HSD boards serve twenty lamp colors and the proposed separate valve-po
 | Option | Box price | Notes |
 | :--- | ---: | :--- |
 | [Hammond 1554VA2GY](https://www.automationdirect.com/adc/shopping/catalog/enclosures_-a-_racks/miniature_cases/1554va2gy), preferred | $43.50 | Add [1554VAPL plate](https://www.automationdirect.com/adc/shopping/catalog/enclosures_-a-_racks/subpanels/1554vapl), $9.25. Box + plate = $52.75, or **$57.10 with estimated 8.25% tax** if advertised free shipping applies. |
-| [Hammond 1554U2GY](https://www.automationdirect.com/adc/shopping/catalog/enclosures_-a-_racks/miniature_cases/1554u2gy), compact candidate | $30.50 | Nominal 200 × 120 × 90 mm. Smaller footprint, likely needs two mounting levels and more difficult cable routing. Plate extra; do not buy until fit is demonstrated. |
+| [Hammond 1554U2GY](https://www.automationdirect.com/adc/shopping/catalog/enclosures_-a-_racks/miniature_cases/1554u2gy), compact candidate | $30.50 | Nominal 200 × 120 × 91 mm. Smaller footprint, likely needs two mounting levels and more difficult cable routing. Plate extra; do not buy until fit is demonstrated. |
 | Generic Amazon gasketed box | Not quoted | Only consider a documented UV-resistant polycarbonate model with a credible ingress rating and usable internal dimensions. Many inexpensive look-alikes are ABS; no exact generic model is approved here. |
 
 [Hammond documents UV stabilization and IP66/IP67/IP68 testing for these polycarbonate models](https://www.hammfg.com/electronics/small-case/plastic/1554). Select **1554VA2GY**, with the `A`: the similarly named 1554V2GY has different published enclosure ratings. Ratings apply to the manufactured enclosure; drilled holes, lamp penetrations and cable entries need their own appropriate seals. An IP68 marking does not mean unlimited submersion or pressure-washer resistance.
@@ -81,19 +81,20 @@ Do not fill the first build with epoxy, polyester casting resin or household sil
 
 These are required even though several are inexpensive. Prefer specified components from an authorized distributor rather than unidentified assortments where voltage rating, dielectric or tolerance cannot be verified.
 
-| Circuit item | Installed quantity | Purchase specification |
-| :--- | ---: | :--- |
-| R1–R3 | 3 | 1 kΩ, 1%, **0.5 W**, axial |
-| R4, R8, R9 | 3 | 1 kΩ, 1%, 0.25 W minimum; the same 0.5 W stock is acceptable if it fits |
-| R5 | 1 | 100 kΩ, 1%, 0.25 W minimum |
-| R6, R7 | 2 | 4.7 kΩ, 1%, 0.25 W minimum |
-| D1–D4 | 4 | 1N4148 axial; identify cathode band |
-| C1, C2, C5, C10, C11, C12 | 6 | 100 nF, X7R, 50 V; suitable leaded package |
-| C4 | 1 | 330 nF, X7R, 50 V |
-| C7–C9 | 3 | 47 µF, 35 V, 105 °C electrolytic; polarity and lead spacing matter |
-| Removable DAC test load | 1, bench only | 250 Ω, 0.1%, 0.5 W; **not a permanent valve/feedback shunt** |
+| Circuit references | Installed / buy | Exact part and supplier link | Specification | Lot cost |
+| :--- | :--- | :--- | :--- | ---: |
+| R1, R2, R3, R4, R8, R9 | 6 / 10 | [MFR-50FTE52-1K](https://www.digikey.com/en/products/detail/yageo/MFR-50FTE52-1K/9147015) | 1 kohm, 1%, 0.5 W axial | $0.76 |
+| R5 | 1 / 10 | [MFR-25FBF52-100K](https://www.digikey.com/en/products/detail/yageo/MFR-25FBF52-100K/13473) | 100 kohm, 1%, 0.25 W axial | $0.42 |
+| R6, R7 | 2 / 10 | [MFR-25FBF52-4K7](https://www.digikey.com/en/products/detail/yageo/MFR-25FBF52-4K7/9138176) | 4.7 kohm, 1%, 0.25 W axial | $0.44 |
+| D1, D2, D3, D4 | 4 / 10 | [1N4148 (onsemi)](https://www.digikey.com/en/products/detail/onsemi/1N4148/458603) | 1N4148 axial DO-35; band = cathode | $0.60 |
+| C1, C2, C5, C10, C11, C12 | 6 / 10 | [C315C104K5R5TA](https://www.digikey.com/en/products/detail/kemet/C315C104K5R5TA/12701330) | 100 nF, 50 V, X7R, radial | $4.88 |
+| C4 | 1 / 2 | [SR305C334KARTR1](https://www.digikey.com/en/products/detail/kyocera-avx/SR305C334KARTR1/9948632) | 330 nF, 50 V, X7R, radial | $2.96 |
+| C7, C8, C9 | 3 / 5 | [EEU-FC1V470B](https://www.digikey.com/en/products/detail/panasonic-industry/EEU-FC1V470B/16639056) | 47 uF, 35 V, 105 C, polarized radial | $2.40 |
+| Bench only; no schematic reference | 1 / 1 | [Vishay RN65E2500BB14](https://www.digikey.com/en/products/detail/vishay-dale/RN65E2500BB14/3193953) | 250 Ω, 0.1%, 0.5 W; removable DAC test load | $3.36 |
 
-The workbook allows $10 for the installed passives plus small spares, and $2 for the test resistor. [DigiKey](https://www.digikey.com/) or [Mouser](https://www.mouser.com/) can consolidate these with sensors/regulator/relay. Confirm quantity breaks and packaging rather than buying an unnecessary reel.
+The seven installed-component purchase lots total **$12.46**, including the spare quantities above. The separate bench resistor adds **$3.36**. These are observed DigiKey cut-tape/small-quantity prices, before tax, shipping and possible tariffs. Select the listed quantity and packaging; do not order a full reel. The 0.5 W 1 kΩ stock also covers the three positions requiring only 0.25 W minimum. Check lead spacing and clearance on the carrier board. Electrolytic capacitors are polarized; identify the negative marking before soldering.
+
+All **49 schematic references** are accounted for by the purchased modules, passives, three distribution buses, ten lamps and reused connector. The workbook has the same reference mapping and a linked small-parts subtotal. R10, C3, C6, TS1 and TS2 are absent; no temperature probes or their branch parts are purchased.
 
 | Assembly type | Planning quantity / budget | Selection guidance and shopping link |
 | :--- | :--- | :--- |
@@ -139,7 +140,7 @@ Keep the multimeter black lead in COM and the red lead in V/Ω for these voltage
 
 A fixed battery cannot test the full 9–16 V input range, and a basic multimeter cannot establish short pulse integrity, I2C rise time or brief brownout behavior. Those audit items remain unverified until suitable borrowed equipment or another qualified test method is available. A successful battery test is progress toward qualification, not proof that every hardware fault detector works.
 
-If not already owned, separately allow roughly $35 for a temperature-controlled soldering tool, $30 for appropriate stripping/crimping/drilling tools, and $15 for electronics solder/flux/cleaning materials. Connector choice may require a more expensive matched crimper. These estimates are excluded from the $731 build budget. A computer and data-capable Micro-USB cable are needed for programming; the workbook includes a $5 cable allowance that can be set to zero if owned.
+If not already owned, separately allow roughly $35 for a temperature-controlled soldering tool, $30 for appropriate stripping/crimping/drilling tools, and $15 for electronics solder/flux/cleaning materials. Connector choice may require a more expensive matched crimper. These estimates are excluded from the $746 build budget. A computer and data-capable Micro-USB cable are needed for programming; the workbook includes a $5 cable allowance that can be set to zero if owned.
 
 ## Shipping, tax and coupons
 
@@ -150,18 +151,18 @@ The workbook uses **8.25% as a Helotes-area planning rate**, based on the [Texas
 | U.S. Solid | $10 allowance | [Weight-based rates at checkout](https://ussolid.com/policies/shipping-policy); no destination quote obtained. |
 | SparkFun | $8 allowance | Combine Nano and two opto boards. |
 | DFRobot | $8 allowance | Combine DAC and receiver. Manufacturer notice says direct shipping resumes October 8 after its holiday closure. |
-| DigiKey / possible Mouser split | $10 allowance | DigiKey advertises shipping from $4.99, not a quote for this basket. A second supplier may add shipping. Several part pages flag possible US tariffs. |
+| DigiKey + Mouser | $20 combined allowance | Exact relay comes from Mouser; meter, passives and regulator from DigiKey. No destination checkout quote obtained. Several DigiKey pages flag possible US tariffs. |
 | AutomationDirect | $0 assumed | Advertises free eligible shipping over $49; the box and plate total $52.75. Confirm split/drop-ship conditions at checkout. |
-| Amazon / local / other | $10 allowance | Prime eligibility, seller terms and final item choices are unknown. |
+| Amazon / local / other | $10 allowance | Prime eligibility, seller terms and final item choices are unknown. The Nilight ten-pack separately qualifies for its advertised free continental-US shipping; no extra lamp shipping is budgeted. |
 
 The separate **$20 tariff/fee reserve is not a calculated tariff or an upper limit**. Replace it with the actual charges when known. The model uses one shipping allowance per basket, not one per component.
 
 The only directly observed product-specific coupon in this pass was **FNIRSI DPS154 ($4)**. It is advertised on the product page but was not redeemed in checkout. It is optional and is not deducted from the installed-system budget. No verified U.S. Solid or Amazon coupon is included. Third-party “up to” coupon listings and account-specific offers were not counted as savings. No mailing-list registration, account creation or order was performed.
 
-Amazon's signed-in checkout was inaccessible in the available browser, so ZIP-specific Amazon shipping, tax, coupons and exact seller prices could not be verified. The links, dated published prices and explicit allowances remain useful for comparison; they should not be relabeled as checkout totals.
+ZIP-specific Amazon checkout shipping, tax, coupons and exact seller prices could not be verified. Manufacturer/distributor prices above were checked on their public product pages; no destination checkout was completed. The links, dated published prices and explicit allowances remain useful for comparison; they should not be relabeled as checkout totals.
 
 ## Using the workbook
 
-The **Shopping** tab contains editable quantities/prices, formula line totals, category totals, tax, one set of shipping allowances, a fee reserve and a discount input. Set an item's quantity to zero only when it is already owned or deliberately removed from the scope. Prices marked “Allowance” are assumptions. The **Options** tab is separate and is not included in the main total, avoiding double-counting alternative controllers, enclosures and power supplies. Links and source/basis notes accompany each entry. The source data is also available in [JSON](shopping-data.json).
+The **Shopping** tab contains editable quantities/prices, formula line totals, category totals, tax, one set of shipping allowances, a fee reserve and a discount input. Set an item's quantity to zero only when it is already owned or deliberately removed from the scope. Prices marked “Allowance” are assumptions. A detailed small-parts table below the shipping section supplies the installed quantity, purchase quantity, part number and source for each lot; its sum feeds the main basket without double-counting. The **Options** tab is separate and is not included in the main total, avoiding double-counting alternative controllers, enclosures and power supplies. Links and source/basis notes accompany each entry. The source data is also available in [JSON](shopping-data.json).
 
 Purchase the small, independently testable electronics first if beginning immediately. Delay nonreturnable or layout-dependent purchases until the driver source, meter fittings and enclosure layout are established. No potting is included in the initial assembly plan.

@@ -2,7 +2,9 @@
 
 7 October 2026 · Revision D · External temperature sensing removed
 
-The [complete schematic PDF](assets/hardware/water-controller-single-page-rev-d.pdf) contains all six circuit sections, the complete wire register, component schedule, internal common connections and unused terminals on **one A0 landscape page**. The [SVG](assets/hardware/water-controller-single-page-rev-d.svg) is also available. Zoom electronically or print at A0; letter/A4 reduction makes the connection register too small for assembly work.
+The [complete schematic PDF](assets/hardware/water-controller-single-page-rev-d.pdf) is **one continuous wiring drawing on one A0 landscape page**. All 126 external wires connect their named terminals; all 49 components appear in the same layout. Supply and return rails, individual lamp leads, signal paths, internal-common notes and unused terminals are shown together. No separate circuit sheets are tiled into this page. The [SVG](assets/hardware/water-controller-single-page-rev-d.svg) is also available. Zoom electronically or print at A0; letter/A4 reduction is too small for assembly work. The [multipage audit booklet](assets/hardware/water-controller-audit-rev-d.pdf) remains unchanged as the detailed companion.
+
+This layout revision preserves the audited Revision D netlist. It changes the presentation and procurement documentation, not the circuit topology. Terminal locations are functional drawing positions, not a board or connector footprint; use the detailed orientation sheet before soldering physical parts.
 
 ## Three verification passes
 
@@ -10,7 +12,7 @@ The [complete schematic PDF](assets/hardware/water-controller-single-page-rev-d.
 | :--- | :--- |
 | Connectivity and change review | 126 wire records, 49 component references, 230 declared terminals and 46 nets are accounted for. Nineteen electrical-document checks cover terminal completeness, separated supply domains, component values, channel mapping, deliberate wiring corruption and the exact Revision C-to-D change. The comparison verifies that removing TS1, TS2, R10, C3 and C6 removes only their branch; all retained connections, internal commons, addresses and watchdog assignments remain unchanged. D7 is unused. |
 | Manufacturer interfaces | Rechecked the retained primary-source documents listed below against the circuit, including signal direction, voltage domains, polarity and physical viewing direction. The TPS4H160 diagnostic review confirms that THER is an input and the shared FAULT indication is not a unique temperature measurement. No external temperature fault is claimed. Physical compatibility holds remain explicit. |
-| Export and visual inspection | The PDF has exactly one page. Each of the 126 wire IDs appears once in its text, and every component is represented. The six source SVG sections are embedded with separate IDs; their hashes and the wire/component registers are checked automatically. The PDF, SVG and PNG hashes are recorded together to reject stale exports. The full rendered page and enlarged circuit/table areas were reviewed for readability, polarity, crossings, missing labels and clipping. |
+| Export and visual inspection | The PDF has exactly one page. Each of the 126 wire IDs appears once in its text, and every component is represented. Automated checks compare actual visible conductor endpoints with terminal coordinates and the audited netlist. They reject different-net collinear overlaps and external wires routed through component bodies. The generator also rejects a junction at an unrelated crossing; unconnected crossings are drawn with gaps. PDF, SVG and PNG hashes reject stale exports. The rendered full page and enlarged input, driver, valve and meter areas were reviewed for labels, polarity, crossings and clipping. |
 
 ## Critical connections
 
@@ -45,4 +47,4 @@ node --test tests/hardware-netlist.test.cjs
 npm run check
 ```
 
-Generation requires Python 3, ReportLab, pypdf, DejaVu fonts and Inkscape. Review PDF renders after a circuit or layout change. The generator checks PDF page count and wire coverage; documentation checks compare the netlist, embedded circuits and export hashes. Simulator and browser results for the published commit are available in [GitHub Actions](https://github.com/aeae1/Rock-Saw-Water-Control/actions).
+Generation requires Python 3, ReportLab, pypdf, DejaVu fonts and Inkscape. Review PDF renders after a circuit or layout change. The generator checks PDF page count and wire coverage; documentation checks compare the netlist, visible wire geometry, component references and export hashes. Procurement checks require every component reference to be represented once by a purchase or a reused item and verify the passive-lot subtotal. Simulator and browser results for the published commit are available in [GitHub Actions](https://github.com/aeae1/Rock-Saw-Water-Control/actions).

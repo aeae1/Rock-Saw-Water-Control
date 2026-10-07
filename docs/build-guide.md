@@ -4,7 +4,7 @@ Reviewed 7 October 2026 · Revision D bench design · Hardware release on hold
 
 **Use the [Revision D electrical audit and schematic](hardware-audit-2026-10-07.md) as the current connection reference.** It supersedes the earlier conceptual wiring and specifies every external connection. Download the [printable package](assets/hardware/water-controller-audit-rev-d.pdf), [wire schedule](../hardware/rev-d/connections.csv), and [parts schedule](../hardware/rev-d/bom.csv).
 
-For the complete circuit on one sheet, use the [single-page schematic PDF](assets/hardware/water-controller-single-page-rev-d.pdf), compiled 7 October 2026. It includes all six circuit sections and all 126 connections, with a [three-pass verification record](single-page-schematic-review-2026-10-07.md). Zoom or print at A0; use the existing booklet for smaller individual pages.
+For the complete circuit on one sheet, use the [single-page schematic PDF](assets/hardware/water-controller-single-page-rev-d.pdf), drawn 7 October 2026. This is one continuous terminal-to-terminal drawing with all 126 wires and 49 components, joined power/ground rails and no off-sheet wire destinations. The [verification record](single-page-schematic-review-2026-10-07.md) describes the checks. Zoom or print at A0; use the existing booklet for smaller individual pages and physical pin orientation.
 
 The selected assembly uses an Arduino Nano Every, a 1/2-inch stainless U.S. Solid USS-MSV50030 proportional valve, a four-wire ScioSense UFM-02-03NP4 flow meter, and ten common-negative 12 V blue/white lamps. Three Serial Wombat PCB0046 HSD V2 boards provide twenty lamp channels and a proposed supervised valve-power channel. Two documented SparkFun BOB-09118 input boards with external resistors condition G/H/J.
 
@@ -39,7 +39,7 @@ The detailed audit includes component pin numbers, relay bottom-view orientation
 
 ## Budget status
 
-The [4 October procurement guide](shopping-guide.md) and [editable workbook](assets/procurement/shopping-list.xlsx) supersede earlier partial estimates for purchasing. The conservative buy-everything budget is approximately $731 including estimated tax, shipping and fees, but excluding a bench supply and additional tools. It includes $339 in merchandise allowances, including $90 for unpriced driver boards; it is not a checkout quotation. Reuse of suitable wiring, fittings and supplies can reduce purchases.
+The [7 October procurement guide](shopping-guide.md) and [editable workbook](assets/procurement/shopping-list.xlsx) supersede earlier partial estimates for purchasing. The conservative buy-everything budget is approximately $746 including estimated tax, shipping and fees, but excluding a bench supply and additional tools. It includes $301 in merchandise allowances, including $90 for unpriced driver boards; it is not a checkout quotation. Exact small-part numbers and purchase quantities are linked individually. Reuse of suitable wiring, fittings and supplies can reduce purchases.
 
 **The current design does not fit a $200 complete-build budget.** Driver availability, meter sealing adapters and the enclosure layout must be established before placing a complete order. Unpriced items in [the budget BOM](bom.csv) are not free. The [Rev D parts schedule](../hardware/rev-d/bom.csv) controls circuit values; [shopping data](shopping-data.json) distinguishes observed prices from estimates.
 

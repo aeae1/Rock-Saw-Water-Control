@@ -1,56 +1,628 @@
 {
-  "reviewed": "2026-10-04",
+  "reviewed": "2026-10-07",
   "currency": "USD",
   "taxRate": 0.0825,
-  "scope": "Revision D planning budget. Published prices are not checkout quotations. Allowances are estimates, not verified offers. Exact delivered total remains unavailable. External temperature sensors removed on 7 October; prices retain the 4 October review date.",
+  "scope": "Revision D planning budget. Published prices were observed on public supplier pages; they are not destination checkout quotations. Allowances are unverified estimates. External temperature sensors are excluded. No hardware firmware or field release is supplied.",
   "items": [
-    {"category":"Control","item":"Arduino Nano Every ABX00028","qty":1,"unit":"board","price":13.7,"basis":"Published","vendor":"SparkFun","note":"Combine with opto boards; Arduino direct is $12.90 before separate shipping. Headers required.","url":"https://www.sparkfun.com/arduino-nano-every.html"},
-    {"category":"Water","item":"U.S. Solid USS-MSV50030 / JFMSV50030","qty":1,"unit":"valve","price":105.29,"basis":"Published","vendor":"U.S. Solid","note":"1/2-inch stainless; 9–24 V; five-wire 4–20 mA command and feedback. H4 qualification pending.","url":"https://ussolid.com/products/1-2-proportional-motorized-ball-valve-stainless-steel-dc-9-24v-4-20ma-control-5-wire-ip67-full-port"},
-    {"category":"Control","item":"DFRobot DFR1229 current command","qty":1,"unit":"board","price":15.9,"basis":"Published","vendor":"DFRobot","note":"3.3–5 V supply; keep exact SKU. Direct shipping resumes Oct 8.","url":"https://www.dfrobot.com/product-3073.html"},
-    {"category":"Control","item":"DFRobot SEN0262 feedback receiver","qty":1,"unit":"board","price":4.9,"basis":"Published","vendor":"DFRobot","note":"120-ohm receiver; analog output. Do not add a 250-ohm shunt in parallel.","url":"https://www.dfrobot.com/product-1755.html"},
-    {"category":"Control","item":"SparkFun BOB-09118 v1.2 input boards","qty":2,"unit":"board","price":5.95,"basis":"Published","vendor":"SparkFun","note":"Three channels used; external input resistors/diodes still required.","url":"https://www.sparkfun.com/sparkfun-opto-isolator-breakout.html"},
-    {"category":"Display","item":"Serial Wombat PCB0046 HSD V2","qty":3,"unit":"board","price":30,"basis":"Allowance","vendor":"Serial Wombat","note":"PRICE/STOCK UNVERIFIED. $30 each is a budgeting placeholder, not a quotation. Procurement hold.","url":"https://www.serialwombat.com/p46"},
-    {"category":"Display","item":"Nilight TL-248BW blue/white lamps","qty":1,"unit":"10-pack","price":25.99,"basis":"Allowance","vendor":"Amazon / Nilight","note":"Historical/reference price only; Amazon checkout unavailable. Confirm common negative and both color leads.","url":"https://www.amazon.com/Nilight-Clearance-Indicator-Trailer-Warranty/dp/B0F7XP3QZB"},
-    {"category":"Water","item":"ScioSense UFM-02-03NP4","qty":1,"unit":"meter","price":59.66,"basis":"Published","vendor":"DigiKey","note":"3/8-inch NPS, pulse, four wires. Possible tariff is additional; fittings and weather protection unresolved.","url":"https://www.digikey.com/en/products/detail/sciosense/UFM-02-03NP4-3-8-NPS-PULSE-4-WIRE/29771278"},
-    {"category":"Control","item":"Panasonic TQ2-5V nonlatching DPDT","qty":1,"unit":"relay","price":2.36,"basis":"Published","vendor":"DigiKey / Mouser","note":"DigiKey backorder; check Mouser. No TQ2-L latching substitution. Footprint/pins matter.","url":"https://www.digikey.com/en/products/detail/panasonic-industry/TQ2-5V/251773"},
-    {"category":"Control","item":"ST L7805ABV TO-220","qty":1,"unit":"regulator","price":0.96,"basis":"Published","vendor":"DigiKey","note":"Dedicated relay-coil supply only; retain specified capacitors.","url":"https://www.digikey.com/en/products/detail/stmicroelectronics/L7805ABV/634711"},
-    {"category":"Assembly","item":"Exact resistors, diodes and capacitors","qty":1,"unit":"small lot","price":10,"basis":"Allowance","vendor":"DigiKey / Mouser","note":"Full quantities and ratings are in shopping guide and Rev D BOM. Buy small spare quantities.","url":"https://www.digikey.com/"},
-    {"category":"Assembly","item":"FR4 perfboard, Nano headers and sockets","qty":1,"unit":"set","price":8,"basis":"Allowance","vendor":"Amazon","note":"Soldered carrier with secure mounting; ordinary loose Dupont jumpers are for bench use only.","url":"https://www.amazon.com/s?k=FR4+perfboard+2.54mm+headers+female+socket"},
-    {"category":"Assembly","item":"12 V, 5 V and ground distribution terminals","qty":1,"unit":"set","price":10,"basis":"Allowance","vendor":"Amazon","note":"Three separate labeled buses. Quantity depends on harness layout; size to verified fuse and loads.","url":"https://www.amazon.com/s?k=covered+barrier+terminal+block+bus+bar"},
-    {"category":"Assembly","item":"Stranded copper internal hookup wire","qty":1,"unit":"assortment","price":10,"basis":"Allowance","vendor":"Amazon","note":"22 AWG signal wire planning only; load/feed gauges subject to H2. Avoid copper-clad aluminum.","url":"https://www.amazon.com/s?k=stranded+copper+hookup+wire+22+awg+kit"},
-    {"category":"Assembly","item":"Jacketed outdoor harness cable","qty":1,"unit":"length allowance","price":20,"basis":"Allowance","vendor":"Amazon / local","note":"Measure runs first. Lamp loom needs twenty color conductors plus suitably sized common return(s).","url":"https://www.amazon.com/s?k=outdoor+multiconductor+copper+control+cable"},
-    {"category":"Assembly","item":"Locking sealed cable connectors","qty":1,"unit":"set","price":12,"basis":"Allowance","vendor":"Amazon / distributor","note":"Use genuine rated parts with matching wire seals. Reused 14-pin machine connector excluded.","url":"https://www.amazon.com/s?k=Deutsch+DT+sealed+connector+kit"},
-    {"category":"Assembly","item":"Heat shrink, ferrules, loom and labels","qty":1,"unit":"small lot","price":8,"basis":"Allowance","vendor":"Amazon","note":"Adhesive-lined shrink at splices; secure cable strain relief. Reduce if already owned.","url":"https://www.amazon.com/s?k=adhesive+lined+heat+shrink+ferrules+wire+labels"},
-    {"category":"Assembly","item":"Standoffs, fasteners and mounting brackets","qty":1,"unit":"small lot","price":7,"basis":"Allowance","vendor":"Amazon / local","note":"Insulated board clearance above steel plate; mounting should not puncture the sealing cavity.","url":"https://www.amazon.com/s?k=nylon+pcb+standoff+M3+kit"},
-    {"category":"Enclosure","item":"Hammond 1554VA2GY opaque polycarbonate","qty":1,"unit":"box","price":43.5,"basis":"Published","vendor":"AutomationDirect","note":"Nominal 240 x 160 x 90 mm. Preferred planning size; confirm physical layout before drilling.","url":"https://www.automationdirect.com/adc/shopping/catalog/enclosures_-a-_racks/miniature_cases/1554va2gy"},
-    {"category":"Enclosure","item":"Hammond 1554VAPL mounting plate","qty":1,"unit":"plate","price":9.25,"basis":"Published","vendor":"AutomationDirect","note":"Box plus plate clears advertised $49 free-shipping threshold; checkout confirmation still required.","url":"https://www.automationdirect.com/adc/shopping/catalog/enclosures_-a-_racks/subpanels/1554vapl"},
-    {"category":"Enclosure","item":"Bimed BM-ENX-2S-W cable glands","qty":1,"unit":"5-pack","price":3.25,"basis":"Published","vendor":"AutomationDirect","note":"M12 x 1.5; jacket OD 3–6.5 mm. Use only where cable diameter fits; mounting hardware included.","url":"https://www.automationdirect.com/adc/shopping/catalog/wire_-a-_cable_management/cable_glands/metric_thread/bm-enx-2s-w"},
-    {"category":"Enclosure","item":"Larger glands, sealing plugs and seals","qty":1,"unit":"allowance","price":8,"basis":"Allowance","vendor":"AutomationDirect","note":"Machine/display cable may need larger glands or matched multi-hole inserts; measure first.","url":"https://www.automationdirect.com/adc/overview/catalog/wire_-a-_cable_management/cable_glands"},
-    {"category":"Enclosure","item":"Ten-lamp rail / rear wiring cover","qty":1,"unit":"assembly allowance","price":15,"basis":"Allowance","vendor":"Local / Amazon","note":"Plan approximately 300 mm long; verify actual grommet diameter/pitch. No rated finished housing selected.","url":"https://www.amazon.com/s?k=aluminum+u+channel+12+inch"},
-    {"category":"Enclosure","item":"Meter electronics protection","qty":1,"unit":"assembly allowance","price":15,"basis":"Allowance","vendor":"Local / distributor","note":"Dedicated splash/impact protection, supported plumbing and sealed terminations; exact housing pending geometry.","url":"https://www.polycase.com/wp-series"},
-    {"category":"Water","item":"Manual shutoff and cleanable inlet strainer","qty":1,"unit":"set allowance","price":20,"basis":"Allowance","vendor":"Amazon / local","note":"Reuse existing suitable items; select pressure rating and mesh for nozzle/meter requirements.","url":"https://www.amazon.com/s?k=garden+hose+shut+off+valve+inline+filter+brass"},
-    {"category":"Water","item":"Correct NPS meter adapters and seals","qty":1,"unit":"pair allowance","price":20,"basis":"Allowance","vendor":"Plumbing supplier","note":"PROCUREMENT HOLD: straight NPS thread and actual seal geometry must match; NPT or cone-seat swivel is not assumed compatible.","url":"https://www.sciosense.com/ufm-02-ultrasonic-flow-sensing-module/"},
-    {"category":"Water","item":"Garden-hose to valve NPT fittings","qty":1,"unit":"set allowance","price":15,"basis":"Allowance","vendor":"Amazon / local","note":"US garden hose thread is 3/4 GHT, distinct from 1/2 NPT valve threads. Include removable unions as required.","url":"https://www.amazon.com/s?k=3%2F4+GHT+to+1%2F2+NPT+brass+adapter"},
-    {"category":"Water","item":"Straight pipe, washers, supports and sealant","qty":1,"unit":"small lot","price":8,"basis":"Allowance","vendor":"Local","note":"Respect meter straight lengths and seal type. Do not seal NPS solely with PTFE tape.","url":"https://www.sciosense.com/ufm-02-ultrasonic-flow-sensing-module/"},
-    {"category":"Enclosure","item":"MG Chemicals 422C coating, small bottle","qty":1,"unit":"bottle allowance","price":20,"basis":"Allowance","vendor":"Amazon / distributor","note":"Later, after testing; mask contacts, connectors and vents. Not a substitute for the gasketed box.","url":"https://www.amazon.com/s?k=MG+Chemicals+422C+55ml"},
-    {"category":"Bench","item":"Temporary fused battery lead and small fuses","qty":1,"unit":"set allowance","price":10,"basis":"Allowance","vendor":"Amazon / local","note":"Bench only, close to battery; size fuse to test stage and weakest wire. Not a new machine fuse block.","url":"https://www.amazon.com/s?k=inline+ATO+fuse+holder+1A+2A+fuse"},
-    {"category":"Bench","item":"250-ohm 0.1% 0.5 W removable test resistor","qty":1,"unit":"resistor allowance","price":2,"basis":"Allowance","vendor":"DigiKey / Mouser","note":"DAC test load only. Expected 1/3/5 V at 4/12/20 mA; remove before valve wiring.","url":"https://www.digikey.com/en/products?keywords=250%20ohm%200.1%25%200.5W%20resistor"},
-    {"category":"Bench","item":"Micro-USB data cable","qty":1,"unit":"cable allowance","price":5,"basis":"Allowance","vendor":"Amazon / existing","note":"Set quantity to zero if owned. Must carry data, not charging-only.","url":"https://www.amazon.com/s?k=micro+usb+data+cable"}
+    {
+      "category": "Control",
+      "item": "Arduino Nano Every ABX00028",
+      "qty": 1,
+      "unit": "board",
+      "price": 13.7,
+      "basis": "Published",
+      "vendor": "SparkFun",
+      "note": "Combine with opto boards; Arduino direct is $12.90 before separate shipping. Headers required.",
+      "url": "https://www.sparkfun.com/arduino-nano-every.html",
+      "refs": [
+        "U1"
+      ]
+    },
+    {
+      "category": "Water",
+      "item": "U.S. Solid USS-MSV50030 / JFMSV50030",
+      "qty": 1,
+      "unit": "valve",
+      "price": 105.29,
+      "basis": "Published",
+      "vendor": "U.S. Solid",
+      "note": "1/2-inch stainless; 9–24 V; five-wire 4–20 mA command and feedback. H4 qualification pending.",
+      "url": "https://ussolid.com/products/1-2-proportional-motorized-ball-valve-stainless-steel-dc-9-24v-4-20ma-control-5-wire-ip67-full-port",
+      "refs": [
+        "V1"
+      ]
+    },
+    {
+      "category": "Control",
+      "item": "DFRobot DFR1229 current command",
+      "qty": 1,
+      "unit": "board",
+      "price": 15.9,
+      "basis": "Published",
+      "vendor": "DFRobot",
+      "note": "3.3–5 V supply; keep exact SKU. Direct shipping resumes Oct 8.",
+      "url": "https://www.dfrobot.com/product-3073.html",
+      "refs": [
+        "U2"
+      ]
+    },
+    {
+      "category": "Control",
+      "item": "DFRobot SEN0262 feedback receiver",
+      "qty": 1,
+      "unit": "board",
+      "price": 4.9,
+      "basis": "Published",
+      "vendor": "DFRobot",
+      "note": "120-ohm receiver; analog output. Do not add a 250-ohm shunt in parallel.",
+      "url": "https://www.dfrobot.com/product-1755.html",
+      "refs": [
+        "U3"
+      ]
+    },
+    {
+      "category": "Control",
+      "item": "SparkFun BOB-09118 v1.2 input boards",
+      "qty": 2,
+      "unit": "board",
+      "price": 5.95,
+      "basis": "Published",
+      "vendor": "SparkFun",
+      "note": "Three channels used; external input resistors/diodes still required.",
+      "url": "https://www.sparkfun.com/sparkfun-opto-isolator-breakout.html",
+      "refs": [
+        "O1",
+        "O2"
+      ]
+    },
+    {
+      "category": "Display",
+      "item": "Serial Wombat PCB0046 HSD V2",
+      "qty": 3,
+      "unit": "board",
+      "price": 30,
+      "basis": "Allowance",
+      "vendor": "Serial Wombat",
+      "note": "PRICE/STOCK UNVERIFIED. $30 each is a budgeting placeholder, not a quotation. Procurement hold.",
+      "url": "https://www.serialwombat.com/p46",
+      "refs": [
+        "HSD1",
+        "HSD2",
+        "HSD3"
+      ]
+    },
+    {
+      "category": "Display",
+      "item": "Nilight TL-248BW blue/white lamps",
+      "qty": 1,
+      "unit": "10-pack",
+      "price": 25.99,
+      "basis": "Published",
+      "vendor": "Nilight direct",
+      "note": "Exact TL-248BW ten-pack: $25.99 observed; advertised free continental-US shipping over $19.99. Amazon price unverified. Common negative, separate blue/white positives; measure current.",
+      "url": "https://www.nilight.com/products/3-4inch-dual-color-marker-light-10pcs-blue-to-white-auxiliary-side-marker-bullet-clearance-indicator-lights-3-plug-connector-ip68-waterproof-for-trailer-truck-pickup-camper-rv-atv-utv-van-bus",
+      "refs": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5",
+        "L6",
+        "L7",
+        "L8",
+        "L9",
+        "L10"
+      ]
+    },
+    {
+      "category": "Water",
+      "item": "ScioSense UFM-02-03NP4",
+      "qty": 1,
+      "unit": "meter",
+      "price": 59.66,
+      "basis": "Published",
+      "vendor": "DigiKey",
+      "note": "3/8-inch NPS, pulse, four wires. Possible tariff is additional; fittings and weather protection unresolved.",
+      "url": "https://www.digikey.com/en/products/detail/sciosense/UFM-02-03NP4-3-8-NPS-PULSE-4-WIRE/29771278",
+      "refs": [
+        "FM1"
+      ]
+    },
+    {
+      "category": "Control",
+      "item": "Panasonic TQ2-5V nonlatching DPDT",
+      "qty": 1,
+      "unit": "relay",
+      "price": 1.94,
+      "basis": "Published",
+      "vendor": "Mouser",
+      "note": "Mouser showed stock at $1.94 on 7 Oct. DigiKey $2.36 backorder is an alternate. Exact nonlatching TQ2-5V only; verify physical pin orientation.",
+      "url": "https://www.mouser.com/en/ProductDetail/Panasonic-Industry/TQ2-5V?qs=HLLy2pIPwutHaTSpVfb1kw%3D%3D",
+      "refs": [
+        "K1"
+      ]
+    },
+    {
+      "category": "Control",
+      "item": "ST L7805ABV TO-220",
+      "qty": 1,
+      "unit": "regulator",
+      "price": 0.9,
+      "basis": "Published",
+      "vendor": "DigiKey",
+      "note": "Dedicated relay-coil supply only; retain specified capacitors.",
+      "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/L7805ABV/634711",
+      "refs": [
+        "U4"
+      ]
+    },
+    {
+      "category": "Assembly",
+      "item": "Exact resistors, diodes and capacitors",
+      "qty": 1,
+      "unit": "small lot",
+      "price": 12.46,
+      "basis": "Published",
+      "vendor": "DigiKey",
+      "note": "Seven exact part numbers, including modest spares; detailed installed/buy quantities and links below. $12.46 at observed quantity breaks.",
+      "url": "https://www.digikey.com/en/products/detail/yageo/MFR-50FTE52-1K/9147015"
+    },
+    {
+      "category": "Assembly",
+      "item": "FR4 perfboard, Nano headers and sockets",
+      "qty": 1,
+      "unit": "set",
+      "price": 8,
+      "basis": "Allowance",
+      "vendor": "Amazon",
+      "note": "Soldered carrier with secure mounting; ordinary loose Dupont jumpers are for bench use only.",
+      "url": "https://www.amazon.com/s?k=FR4+perfboard+2.54mm+headers+female+socket"
+    },
+    {
+      "category": "Assembly",
+      "item": "12 V, 5 V and ground distribution terminals",
+      "qty": 1,
+      "unit": "set",
+      "price": 10,
+      "basis": "Allowance",
+      "vendor": "Amazon",
+      "note": "Three separate labeled buses. Quantity depends on harness layout; size to verified fuse and loads.",
+      "url": "https://www.amazon.com/s?k=covered+barrier+terminal+block+bus+bar",
+      "refs": [
+        "TB12",
+        "TB5",
+        "TB0"
+      ]
+    },
+    {
+      "category": "Assembly",
+      "item": "Stranded copper internal hookup wire",
+      "qty": 1,
+      "unit": "assortment",
+      "price": 10,
+      "basis": "Allowance",
+      "vendor": "Amazon",
+      "note": "22 AWG signal wire planning only; load/feed gauges subject to H2. Avoid copper-clad aluminum.",
+      "url": "https://www.amazon.com/s?k=stranded+copper+hookup+wire+22+awg+kit"
+    },
+    {
+      "category": "Assembly",
+      "item": "Jacketed outdoor harness cable",
+      "qty": 1,
+      "unit": "length allowance",
+      "price": 20,
+      "basis": "Allowance",
+      "vendor": "Amazon / local",
+      "note": "Measure runs first. Lamp loom needs twenty color conductors plus suitably sized common return(s).",
+      "url": "https://www.amazon.com/s?k=outdoor+multiconductor+copper+control+cable"
+    },
+    {
+      "category": "Assembly",
+      "item": "Locking sealed cable connectors",
+      "qty": 1,
+      "unit": "set",
+      "price": 12,
+      "basis": "Allowance",
+      "vendor": "Amazon / distributor",
+      "note": "Use genuine rated parts with matching wire seals. Reused 14-pin machine connector excluded.",
+      "url": "https://www.amazon.com/s?k=Deutsch+DT+sealed+connector+kit"
+    },
+    {
+      "category": "Assembly",
+      "item": "Heat shrink, ferrules, loom and labels",
+      "qty": 1,
+      "unit": "small lot",
+      "price": 8,
+      "basis": "Allowance",
+      "vendor": "Amazon",
+      "note": "Adhesive-lined shrink at splices; secure cable strain relief. Reduce if already owned.",
+      "url": "https://www.amazon.com/s?k=adhesive+lined+heat+shrink+ferrules+wire+labels"
+    },
+    {
+      "category": "Assembly",
+      "item": "Standoffs, fasteners and mounting brackets",
+      "qty": 1,
+      "unit": "small lot",
+      "price": 7,
+      "basis": "Allowance",
+      "vendor": "Amazon / local",
+      "note": "Insulated board clearance above steel plate; mounting should not puncture the sealing cavity.",
+      "url": "https://www.amazon.com/s?k=nylon+pcb+standoff+M3+kit"
+    },
+    {
+      "category": "Enclosure",
+      "item": "Hammond 1554VA2GY opaque polycarbonate",
+      "qty": 1,
+      "unit": "box",
+      "price": 43.5,
+      "basis": "Published",
+      "vendor": "AutomationDirect",
+      "note": "Nominal 240 x 160 x 90 mm. Preferred planning size; confirm physical layout before drilling.",
+      "url": "https://www.automationdirect.com/adc/shopping/catalog/enclosures_-a-_racks/miniature_cases/1554va2gy"
+    },
+    {
+      "category": "Enclosure",
+      "item": "Hammond 1554VAPL mounting plate",
+      "qty": 1,
+      "unit": "plate",
+      "price": 9.25,
+      "basis": "Published",
+      "vendor": "AutomationDirect",
+      "note": "Box plus plate clears advertised $49 free-shipping threshold; checkout confirmation still required.",
+      "url": "https://www.automationdirect.com/adc/shopping/catalog/enclosures_-a-_racks/subpanels/1554vapl"
+    },
+    {
+      "category": "Enclosure",
+      "item": "Bimed BM-ENX-2S-W cable glands",
+      "qty": 1,
+      "unit": "5-pack",
+      "price": 3.25,
+      "basis": "Published",
+      "vendor": "AutomationDirect",
+      "note": "M12 x 1.5; jacket OD 3–6.5 mm. Use only where cable diameter fits; mounting hardware included.",
+      "url": "https://www.automationdirect.com/adc/shopping/catalog/wire_-a-_cable_management/cable_glands/metric_thread/bm-enx-2s-w"
+    },
+    {
+      "category": "Enclosure",
+      "item": "Larger glands, sealing plugs and seals",
+      "qty": 1,
+      "unit": "allowance",
+      "price": 8,
+      "basis": "Allowance",
+      "vendor": "AutomationDirect",
+      "note": "Machine/display cable may need larger glands or matched multi-hole inserts; measure first.",
+      "url": "https://www.automationdirect.com/adc/overview/catalog/wire_-a-_cable_management/cable_glands"
+    },
+    {
+      "category": "Enclosure",
+      "item": "Ten-lamp rail / rear wiring cover",
+      "qty": 1,
+      "unit": "assembly allowance",
+      "price": 15,
+      "basis": "Allowance",
+      "vendor": "Local / Amazon",
+      "note": "Plan approximately 300 mm long; verify actual grommet diameter/pitch. No rated finished housing selected.",
+      "url": "https://www.amazon.com/s?k=aluminum+u+channel+12+inch"
+    },
+    {
+      "category": "Enclosure",
+      "item": "Meter electronics protection",
+      "qty": 1,
+      "unit": "assembly allowance",
+      "price": 15,
+      "basis": "Allowance",
+      "vendor": "Local / distributor",
+      "note": "Dedicated splash/impact protection, supported plumbing and sealed terminations; exact housing pending geometry.",
+      "url": "https://www.polycase.com/wp-series"
+    },
+    {
+      "category": "Water",
+      "item": "Manual shutoff and cleanable inlet strainer",
+      "qty": 1,
+      "unit": "set allowance",
+      "price": 20,
+      "basis": "Allowance",
+      "vendor": "Amazon / local",
+      "note": "Reuse existing suitable items; select pressure rating and mesh for nozzle/meter requirements.",
+      "url": "https://www.amazon.com/s?k=garden+hose+shut+off+valve+inline+filter+brass"
+    },
+    {
+      "category": "Water",
+      "item": "Correct NPS meter adapters and seals",
+      "qty": 1,
+      "unit": "pair allowance",
+      "price": 20,
+      "basis": "Allowance",
+      "vendor": "Plumbing supplier",
+      "note": "PROCUREMENT HOLD: straight NPS thread and actual seal geometry must match; NPT or cone-seat swivel is not assumed compatible.",
+      "url": "https://www.sciosense.com/ufm-02-ultrasonic-flow-sensing-module/"
+    },
+    {
+      "category": "Water",
+      "item": "Garden-hose to valve NPT fittings",
+      "qty": 1,
+      "unit": "set allowance",
+      "price": 15,
+      "basis": "Allowance",
+      "vendor": "Amazon / local",
+      "note": "US garden hose thread is 3/4 GHT, distinct from 1/2 NPT valve threads. Include removable unions as required.",
+      "url": "https://www.amazon.com/s?k=3%2F4+GHT+to+1%2F2+NPT+brass+adapter"
+    },
+    {
+      "category": "Water",
+      "item": "Straight pipe, washers, supports and sealant",
+      "qty": 1,
+      "unit": "small lot",
+      "price": 8,
+      "basis": "Allowance",
+      "vendor": "Local",
+      "note": "Respect meter straight lengths and seal type. Do not seal NPS solely with PTFE tape.",
+      "url": "https://www.sciosense.com/ufm-02-ultrasonic-flow-sensing-module/"
+    },
+    {
+      "category": "Enclosure",
+      "item": "MG Chemicals 422C coating, small bottle",
+      "qty": 1,
+      "unit": "bottle allowance",
+      "price": 20,
+      "basis": "Allowance",
+      "vendor": "Amazon / distributor",
+      "note": "Later, after testing; mask contacts, connectors and vents. Not a substitute for the gasketed box.",
+      "url": "https://www.amazon.com/s?k=MG+Chemicals+422C+55ml"
+    },
+    {
+      "category": "Bench",
+      "item": "Temporary fused battery lead and small fuses",
+      "qty": 1,
+      "unit": "set allowance",
+      "price": 10,
+      "basis": "Allowance",
+      "vendor": "Amazon / local",
+      "note": "Bench only, close to battery; size fuse to test stage and weakest wire. Not a new machine fuse block.",
+      "url": "https://www.amazon.com/s?k=inline+ATO+fuse+holder+1A+2A+fuse"
+    },
+    {
+      "category": "Bench",
+      "item": "250-ohm 0.1% 0.5 W removable test resistor",
+      "qty": 1,
+      "unit": "resistor allowance",
+      "price": 3.36,
+      "basis": "Published",
+      "vendor": "DigiKey",
+      "note": "Vishay RN65E2500BB14: 250 ohm, 0.1%, 0.5 W. Removable DAC bench load only; never add as a permanent valve/feedback shunt.",
+      "url": "https://www.digikey.com/en/products/detail/vishay-dale/RN65E2500BB14/3193953"
+    },
+    {
+      "category": "Bench",
+      "item": "Micro-USB data cable",
+      "qty": 1,
+      "unit": "cable allowance",
+      "price": 5,
+      "basis": "Allowance",
+      "vendor": "Amazon / existing",
+      "note": "Set quantity to zero if owned. Must carry data, not charging-only.",
+      "url": "https://www.amazon.com/s?k=micro+usb+data+cable"
+    }
   ],
-  "shipping": [{"vendor": "U.S. Solid", "budget": 10, "basis": "Allowance; weight-based checkout quote unavailable", "url": "https://ussolid.com/policies/shipping-policy"}, {"vendor": "SparkFun", "budget": 8, "basis": "Allowance; combine Nano and both opto boards", "url": "https://www.sparkfun.com/"}, {"vendor": "DFRobot", "budget": 8, "basis": "Allowance; combine both modules; shipping resumes Oct 8", "url": "https://www.dfrobot.com/product-3073.html"}, {"vendor": "DigiKey / possible Mouser split", "budget": 10, "basis": "Allowance; DigiKey advertises rates from $4.99, not a basket quote", "url": "https://www.digikey.com/en/products/detail/panasonic-industry/TQ2-5V/251773"}, {"vendor": "AutomationDirect", "budget": 0, "basis": "Advertised free shipping over $49; assumed eligible box/plate/glands basket", "url": "https://www.automationdirect.com/adc/shopping/catalog/enclosures_-a-_racks/miniature_cases/1554va2gy"}, {"vendor": "Amazon / local / other", "budget": 10, "basis": "Allowance; Prime and seller shipping are not verified", "url": "https://www.amazon.com/"}],
+  "shipping": [
+    {
+      "vendor": "U.S. Solid",
+      "budget": 10,
+      "basis": "Allowance; weight-based checkout quote unavailable",
+      "url": "https://ussolid.com/policies/shipping-policy"
+    },
+    {
+      "vendor": "SparkFun",
+      "budget": 8,
+      "basis": "Allowance; combine Nano and both opto boards",
+      "url": "https://www.sparkfun.com/"
+    },
+    {
+      "vendor": "DFRobot",
+      "budget": 8,
+      "basis": "Allowance; combine both modules; shipping resumes Oct 8",
+      "url": "https://www.dfrobot.com/product-3073.html"
+    },
+    {
+      "vendor": "DigiKey + Mouser",
+      "budget": 20,
+      "basis": "Combined allowance for two supplier baskets; neither is a destination quote",
+      "url": "https://www.mouser.com/en/ProductDetail/Panasonic-Industry/TQ2-5V?qs=HLLy2pIPwutHaTSpVfb1kw%3D%3D"
+    },
+    {
+      "vendor": "AutomationDirect",
+      "budget": 0,
+      "basis": "Advertised free shipping over $49; assumed eligible box/plate/glands basket",
+      "url": "https://www.automationdirect.com/adc/shopping/catalog/enclosures_-a-_racks/miniature_cases/1554va2gy"
+    },
+    {
+      "vendor": "Amazon / local / other",
+      "budget": 10,
+      "basis": "Allowance for Amazon/local/other purchases. Nilight advertises free continental-US shipping over $19.99; no additional lamp shipping included.",
+      "url": "https://www.amazon.com/"
+    }
+  ],
   "feeReserve": 20,
   "feeNote": "Unquoted tariff/fee reserve only. Not an actual tariff calculation or a maximum. Several DigiKey product pages warn of possible US tariffs.",
   "discount": 0,
   "options": [
-    {"category":"Enclosure","option":"Smaller Hammond 1554U2GY","price":30.5,"basis":"Published; box only","preference":"200 x 120 x 90 mm; consider only after measured two-level layout. Plate extra; smaller is harder to wire/service.","url":"https://www.automationdirect.com/adc/shopping/catalog/enclosures_-a-_racks/miniature_cases/1554u2gy"},
-    {"category":"Controller","option":"Nano Every from Arduino USA","price":12.9,"basis":"Published; shipping extra below threshold","preference":"Same exact ABX00028; $0.80 cheaper but separate shipping may cost more.","url":"https://store-usa.arduino.cc/products/nano-every"},
-    {"category":"Bench supply","option":"FNIRSI DPS-150, without input adapter","price":57.99,"basis":"Published; optional","preference":"CC/CV. Advertised DPS154 code subtracts $4 if accepted. Requires suitable higher-voltage DC/USB-C PD input; not an all-in-one AC supply.","url":"https://www.fnirsi.com/products/dps-150"},
-    {"category":"Bench supply","option":"Jesverty SPS-3010 AC bench supply","price":60,"basis":"Allowance only; Amazon price unverified","preference":"Simpler all-in-one option if 110/120 V US version is near $60. Adjustable CC/CV; 10 A rating is not the current-limit setting.","url":"https://www.amazon.com/dp/B09YSJQWRG"},
-    {"category":"Lamp drivers","option":"MIKROE-6074 IPD Click TPD2015","price":29,"basis":"Published; manufacturer out of stock","preference":"Eight high-side channels, but not a drop-in: different interface, extra I/O hardware and watchdog/diagnostic redesign. Do not buy as a substitute.","url":"https://www.mikroe.com/ipd-click-tpd2015"},
-    {"category":"Valve command","option":"DFRobot DFR0972","price":9.9,"basis":"Published comparison price","preference":"Not selected: 18–24 V power requirement adds another converter to this nominal-12 V project.","url":"https://www.dfrobot.com/product-3073.html"},
-    {"category":"Tools","option":"Temperature-controlled soldering iron kit","price":35,"basis":"Allowance; only if not owned","preference":"Includes suitable tip/stand; buy electronics solder and flux, not plumbing acid flux.","url":"https://www.amazon.com/s?k=temperature+controlled+soldering+iron+kit"},
-    {"category":"Tools","option":"Stripper, appropriate crimper and step bit","price":30,"basis":"Allowance; only if not owned","preference":"Match crimper to chosen contacts/ferrules. Ordinary pliers do not replace the correct contact crimp tool.","url":"https://www.amazon.com/s?k=wire+stripper+ferrule+crimper+step+drill+bit"},
-    {"category":"Consumables","option":"Electronics solder, flux and cleaning supplies","price":15,"basis":"Allowance; only if not owned","preference":"Allow complete cleaning/drying before coating. Reuse existing suitable supplies.","url":"https://www.amazon.com/s?k=electronics+solder+rosin+flux+isopropyl+alcohol"}
+    {
+      "category": "Enclosure",
+      "option": "Smaller Hammond 1554U2GY",
+      "price": 30.5,
+      "basis": "Published; box only",
+      "preference": "200 x 120 x 91 mm; consider only after measured two-level layout. Plate extra; smaller is harder to wire/service.",
+      "url": "https://www.automationdirect.com/adc/shopping/catalog/enclosures_-a-_racks/miniature_cases/1554u2gy"
+    },
+    {
+      "category": "Controller",
+      "option": "Nano Every from Arduino USA",
+      "price": 12.9,
+      "basis": "Published; shipping extra below threshold",
+      "preference": "Same exact ABX00028; $0.80 cheaper but separate shipping may cost more.",
+      "url": "https://store-usa.arduino.cc/products/nano-every"
+    },
+    {
+      "category": "Bench supply",
+      "option": "FNIRSI DPS-150, without input adapter",
+      "price": 57.99,
+      "basis": "Published; optional",
+      "preference": "CC/CV. Advertised DPS154 code subtracts $4 if accepted. Requires suitable higher-voltage DC/USB-C PD input; not an all-in-one AC supply.",
+      "url": "https://www.fnirsi.com/products/dps-150"
+    },
+    {
+      "category": "Bench supply",
+      "option": "Jesverty SPS-3010 AC bench supply",
+      "price": 60,
+      "basis": "Allowance only; Amazon price unverified",
+      "preference": "Simpler all-in-one option if 110/120 V US version is near $60. Adjustable CC/CV; 10 A rating is not the current-limit setting.",
+      "url": "https://www.amazon.com/dp/B09YSJQWRG"
+    },
+    {
+      "category": "Lamp drivers",
+      "option": "MIKROE-6074 IPD Click TPD2015",
+      "price": 29,
+      "basis": "Published 4 Oct; out of stock at that review; excluded comparison only",
+      "preference": "Eight high-side channels, but not a drop-in: different interface, extra I/O hardware and watchdog/diagnostic redesign. Do not buy as a substitute.",
+      "url": "https://www.mikroe.com/ipd-click-tpd2015"
+    },
+    {
+      "category": "Valve command",
+      "option": "DFRobot DFR0972",
+      "price": 9.9,
+      "basis": "Published comparison price observed 4 Oct; excluded option",
+      "preference": "Not selected: 18–24 V power requirement adds another converter to this nominal-12 V project.",
+      "url": "https://www.dfrobot.com/product-3073.html"
+    },
+    {
+      "category": "Tools",
+      "option": "Temperature-controlled soldering iron kit",
+      "price": 35,
+      "basis": "Allowance; only if not owned",
+      "preference": "Includes suitable tip/stand; buy electronics solder and flux, not plumbing acid flux.",
+      "url": "https://www.amazon.com/s?k=temperature+controlled+soldering+iron+kit"
+    },
+    {
+      "category": "Tools",
+      "option": "Stripper, appropriate crimper and step bit",
+      "price": 30,
+      "basis": "Allowance; only if not owned",
+      "preference": "Match crimper to chosen contacts/ferrules. Ordinary pliers do not replace the correct contact crimp tool.",
+      "url": "https://www.amazon.com/s?k=wire+stripper+ferrule+crimper+step+drill+bit"
+    },
+    {
+      "category": "Consumables",
+      "option": "Electronics solder, flux and cleaning supplies",
+      "price": 15,
+      "basis": "Allowance; only if not owned",
+      "preference": "Allow complete cleaning/drying before coating. Reuse existing suitable supplies.",
+      "url": "https://www.amazon.com/s?k=electronics+solder+rosin+flux+isopropyl+alcohol"
+    }
   ],
-  "designUpdated": "2026-10-07"
+  "designUpdated": "2026-10-07",
+  "smallParts": [
+    {
+      "refs": [
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R8",
+        "R9"
+      ],
+      "spec": "1 kohm, 1%, 0.5 W axial",
+      "part": "MFR-50FTE52-1K",
+      "installed": 6,
+      "buy": 10,
+      "price": 0.076,
+      "url": "https://www.digikey.com/en/products/detail/yageo/MFR-50FTE52-1K/9147015"
+    },
+    {
+      "refs": [
+        "R5"
+      ],
+      "spec": "100 kohm, 1%, 0.25 W axial",
+      "part": "MFR-25FBF52-100K",
+      "installed": 1,
+      "buy": 10,
+      "price": 0.042,
+      "url": "https://www.digikey.com/en/products/detail/yageo/MFR-25FBF52-100K/13473"
+    },
+    {
+      "refs": [
+        "R6",
+        "R7"
+      ],
+      "spec": "4.7 kohm, 1%, 0.25 W axial",
+      "part": "MFR-25FBF52-4K7",
+      "installed": 2,
+      "buy": 10,
+      "price": 0.044,
+      "url": "https://www.digikey.com/en/products/detail/yageo/MFR-25FBF52-4K7/9138176"
+    },
+    {
+      "refs": [
+        "D1",
+        "D2",
+        "D3",
+        "D4"
+      ],
+      "spec": "1N4148 axial DO-35; band = cathode",
+      "part": "1N4148 (onsemi)",
+      "installed": 4,
+      "buy": 10,
+      "price": 0.06,
+      "url": "https://www.digikey.com/en/products/detail/onsemi/1N4148/458603"
+    },
+    {
+      "refs": [
+        "C1",
+        "C2",
+        "C5",
+        "C10",
+        "C11",
+        "C12"
+      ],
+      "spec": "100 nF, 50 V, X7R, radial",
+      "part": "C315C104K5R5TA",
+      "installed": 6,
+      "buy": 10,
+      "price": 0.488,
+      "url": "https://www.digikey.com/en/products/detail/kemet/C315C104K5R5TA/12701330"
+    },
+    {
+      "refs": [
+        "C4"
+      ],
+      "spec": "330 nF, 50 V, X7R, radial",
+      "part": "SR305C334KARTR1",
+      "installed": 1,
+      "buy": 2,
+      "price": 1.48,
+      "url": "https://www.digikey.com/en/products/detail/kyocera-avx/SR305C334KARTR1/9948632"
+    },
+    {
+      "refs": [
+        "C7",
+        "C8",
+        "C9"
+      ],
+      "spec": "47 uF, 35 V, 105 C, polarized radial",
+      "part": "EEU-FC1V470B",
+      "installed": 3,
+      "buy": 5,
+      "price": 0.48,
+      "url": "https://www.digikey.com/en/products/detail/panasonic-industry/EEU-FC1V470B/16639056"
+    }
+  ],
+  "reusedParts": [
+    {
+      "refs": [
+        "X1"
+      ],
+      "item": "Existing 14-pin machine connector and harness",
+      "price": 0,
+      "note": "Confirm actual cavity assignments; no new connector or separate machine power lead."
+    }
+  ]
 }

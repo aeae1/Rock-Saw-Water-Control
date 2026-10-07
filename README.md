@@ -14,19 +14,13 @@ A configurable attachment water controller for machines that provide three indep
 
 *Updated 7 October 2026. Physical arrangement concept; component appearance, wire routing, sensor packaging and fittings are illustrative. Use the single-page schematic and connection schedule for electrical assembly.*
 
-## Wiring overview
-
-[![Revision D electrical overview showing the machine connector, Nano Every, input boards, lamp drivers, command and feedback modules, supervised valve-power branch, flow meter](docs/assets/hardware/water-controller-wiring-flow.png)](docs/assets/hardware/water-controller-wiring-flow.svg)
-
-*Revision D wiring; documentation updated 7 October 2026. The overview groups conductors by function. Select the image for the full-size vector drawing. Use the circuit sheets and connection schedule below for terminal details. The package remains a bench design with explicit hardware release holds.*
-
-## Detailed schematic
+## Wiring schematic
 
 **[Open the complete single-page schematic — PDF](docs/assets/hardware/water-controller-single-page-rev-d.pdf)** · [Zoomable SVG](docs/assets/hardware/water-controller-single-page-rev-d.svg) · [Schematic and audit booklet](docs/assets/hardware/water-controller-audit-rev-d.pdf)
 
-The single-page A0 sheet contains all six circuit sections, all 126 external connections, all 49 component references, internal common connections and unused terminals. It is a vector document: zoom in for individual connections, or print at A0 for the intended text size. [Single-page verification record](docs/single-page-schematic-review-2026-10-07.md) · [Every-wire connection schedule](hardware/rev-d/connections.csv) · [Parts schedule](hardware/rev-d/bom.csv)
+The overall A0 sheet is **one continuous wiring drawing**: all 126 external wires reach their terminals, with all 49 components, joined power/ground rails and individual lamp leads shown together. Junction dots identify connections; gaps identify unconnected crossings. Component terminals are arranged for tracing and are not physical footprints. Zoom the vector PDF/SVG or print at A0. The detailed multipage booklet remains available for individual circuits, pin orientation and qualification instructions. [Single-page verification record](docs/single-page-schematic-review-2026-10-07.md) · [Every-wire connection schedule](hardware/rev-d/connections.csv) · [Parts schedule](hardware/rev-d/bom.csv)
 
-[![Complete single-page Revision D schematic with all six circuit sections and connection register](docs/assets/hardware/water-controller-single-page-rev-d.png)](docs/assets/hardware/water-controller-single-page-rev-d.pdf)
+[![Continuous single-page Revision D wiring schematic with all 126 wires and 49 components](docs/assets/hardware/water-controller-single-page-rev-d.png)](docs/assets/hardware/water-controller-single-page-rev-d.pdf)
 
 <details>
 <summary>Valve circuit detail and individual sheets</summary>
@@ -108,7 +102,7 @@ The current simulator uses valve-opening percentages. The planned hardware will 
 
 ## Architecture
 
-The current bench direction is the [electrical overview](#electrical-overview): an Arduino Nano Every, conditioned machine inputs, prebuilt high-side lamp drivers, and a wired proportional valve with 4–20 mA command and feedback. Ten dual-color lamps require twenty independently switched power channels. The valve includes its motor, gearbox, and motor controller; it needs no separate motor or H-bridge.
+The current bench direction is the [wiring schematic](#wiring-schematic): an Arduino Nano Every, conditioned machine inputs, prebuilt high-side lamp drivers, and a wired proportional valve with 4–20 mA command and feedback. Ten dual-color lamps require twenty independently switched power channels. The valve includes its motor, gearbox, and motor controller; it needs no separate motor or H-bridge.
 
 The [build guide](docs/build-guide.md) describes wiring relationships and the programming sequence. The [procurement guide](docs/shopping-guide.md) and [editable shopping workbook](docs/assets/procurement/shopping-list.xlsx) provide dated prices, explicit allowances, enclosure choices and a battery-first test plan. The complete quoted cost remains open because driver-board pricing and several assembly choices are unverified. The [valve-control research](docs/valve-control-research.md) retains the cheaper reversing-valve and Tuya alternatives. Local Tuya percentage control has not been verified for the candidate smart valve.
 
@@ -140,7 +134,7 @@ npm ci
 npm run check
 ```
 
-Edit `simulator/source.html`, then run `npm run build`. The build extracts the simulator into committed HTML, CSS and JavaScript under `docs/`. The suite contains 225 deterministic tests: 206 simulator checks and 19 electrical-document checks. Coverage includes 2,000 level/cap/on-off remapping combinations, 100 paused-indicator combinations, all 72 ordered pairs of supported faults, 4,000 seeded stress actions, startup lamp tests, held controls, interrupted gestures and G/H-independent fault recovery. Code 9 is reserved; regression tests keep stuck J on lamp 10 and preserve the full reset sweep. Wiring checks also verify that Revision D removes only the temperature branch from Revision C. Documentation checks validate local links, all 126 connections, all 49 parts, six embedded circuits and the single-page export hashes. GitHub Actions runs deterministic tests on Node.js 22 and 24 and 69 browser cases across desktop Chromium, mobile Chromium and mobile WebKit. Reports and failure traces are retained as workflow artifacts. See the [validation record](docs/validation.md) and [single-page review](docs/single-page-schematic-review-2026-10-07.md) for evidence and limits.
+Edit `simulator/source.html`, then run `npm run build`. The build extracts the simulator into committed HTML, CSS and JavaScript under `docs/`. The suite contains 225 deterministic tests: 206 simulator checks and 19 electrical-document checks. Coverage includes 2,000 level/cap/on-off remapping combinations, 100 paused-indicator combinations, all 72 ordered pairs of supported faults, 4,000 seeded stress actions, startup lamp tests, held controls, interrupted gestures and G/H-independent fault recovery. Code 9 is reserved; regression tests keep stuck J on lamp 10 and preserve the full reset sweep. Wiring checks also verify that Revision D removes only the temperature branch from Revision C. Documentation checks validate local links, all 126 drawn connections, all 49 parts, continuous wire geometry, shopping-list coverage and the single-page export hashes. GitHub Actions runs deterministic tests on Node.js 22 and 24 and 69 browser cases across desktop Chromium, mobile Chromium and mobile WebKit. Reports and failure traces are retained as workflow artifacts. See the [validation record](docs/validation.md) and [single-page review](docs/single-page-schematic-review-2026-10-07.md) for evidence and limits.
 
 To run browser checks locally:
 
