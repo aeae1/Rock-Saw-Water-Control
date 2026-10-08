@@ -1,28 +1,28 @@
 # Procurement and Enclosure Plan
 
-Prices reviewed 7 October 2026 · Design updated 8 October 2026 · USD · Revision F
+Prices reviewed 7 October 2026 · Design updated 8 October 2026 · USD · Revision G
 
-**[Open the shopping list (Markdown)](shopping-list.md)** · [Continuous single-page schematic](assets/hardware/water-controller-single-page-rev-f.pdf) · [Electrical audit](hardware-audit-rev-f.md) · [Exact circuit parts](../hardware/rev-f/bom.csv)
+**[Open the shopping list (Markdown)](shopping-list.md)** · [Continuous single-page schematic](assets/hardware/water-controller-single-page-rev-g.pdf) · [Electrical audit](hardware-audit-rev-g.md) · [Exact circuit parts](../hardware/rev-g/bom.csv)
 
 The Markdown list is the primary purchasing reference. It includes quantities, sellers, links, prices, alternatives and the complete budget without requiring a spreadsheet. This guide supplies the detailed enclosure and testing notes.
 
-This guide includes the controller, twenty lamp channels, proportional valve, enclosure materials, assembly supplies and temporary bench accessories. It does not authorize substitutions in the Revision F schematic. There is no flashable Arduino application yet; simulator tests do not qualify assembled electronics.
+This guide includes the controller, twenty lamp channels, proportional valve, enclosure materials, assembly supplies and temporary bench accessories. It does not authorize substitutions in the Revision G schematic. Firmware v1 is supplied and compiled; software tests do not qualify assembled electronics.
 
 ## Cost and purchase status
 
-The conservative **buy-everything planning total is approximately $627**, excluding a bench supply and tools that may already be owned. This is **not a delivered quotation**: $266 of the $513 merchandise budget consists of explicit allowances. These include $90 for the three unpriced driver boards, $75 for wiring/assembly materials, and allowances for plumbing and secondary housings. Actual purchases may be lower when suitable materials are reused, or higher when unresolved parts are quoted.
+The conservative **buy-everything planning total is approximately $626**, excluding a bench supply and tools that may already be owned. This is **not a delivered quotation**: $266 of the $512 merchandise budget consists of explicit allowances. These include $90 for the three unpriced driver boards, $75 for wiring/assembly materials, and allowances for plumbing and secondary housings. Actual purchases may be lower when suitable materials are reused, or higher when unresolved parts are quoted.
 
 | Budget component | USD |
 | :--- | ---: |
-| Items with observed published prices, including small parts and spares | 246.95 |
+| Items with observed published prices, including small parts and spares | 246.10 |
 | Merchandise allowances, including unpriced drivers and assembly supplies | 266.00 |
-| Merchandise subtotal | 512.95 |
+| Merchandise subtotal | 512.10 |
 | Combined shipping allowances | 46.00 |
 | Unquoted tariff/fee reserve | 20.00 |
-| Estimated tax at 8.25% on the above | 47.76 |
-| **Planning total; supply and additional tools excluded** | **626.71** |
+| Estimated tax at 8.25% on the above | 47.69 |
+| **Planning total; supply and additional tools excluded** | **625.79** |
 
-Revision F removes the signal relay, coil regulator and associated parts, adds three inexpensive host-reset components, and eliminates a separate distributor shipping allowance. This lowers the prior $642.90 planning total to $626.71. The earlier $200 target is still unmet. Reuse supplies and resolve unpriced drivers before purchasing; these allowances are not a delivered quote.
+Revision G removes Q1/R11/R12 and retains the internal Nano watchdog. Its planning total is $625.79, compared with $626.71 for Revision F. The earlier $200 target is still unmet. Reuse supplies and resolve unpriced drivers before purchasing; these allowances are not a delivered quote.
 
 **Resolve these before placing the complete order:**
 
@@ -46,7 +46,7 @@ Prices below exclude tax and shipping unless stated. A published price does not 
 
 The Nano Every is retained: it accepts the nominal machine supply at VIN, has 5 V logic and avoids changing every interface. Its regulated 5 V rail supplies the logic modules; **12 V never goes to a Nano I/O pin**. The valve position receiver remains installed. The lamp/valve power paths bypass the Nano's regulator. Actual peripheral current and enclosed temperature still need measurement.
 
-The three HSD boards serve twenty lamp colors and the proposed host-reset watchdog output. A PCA9685 alone is neither a 12 V power switch nor a twenty-channel replacement. Mechanical relay banks are unsuitable for the repeated animation duty. [MIKROE-6074 IPD Click](https://www.mikroe.com/ipd-click-tpd2015) was a documented eight-channel high-side alternative at $29 in the 4 October review, when the manufacturer showed it out of stock; its control interface and supervision would require a redesign. It is not included in the purchase list.
+The three HSD boards serve twenty lamp colors; HSD3 CH4–CH7 are unused. A PCA9685 alone is neither a 12 V power switch nor a twenty-channel replacement. Mechanical relay banks are unsuitable for the repeated animation duty. [MIKROE-6074 IPD Click](https://www.mikroe.com/ipd-click-tpd2015) was a documented eight-channel high-side alternative at $29 in the 4 October review, when the manufacturer showed it out of stock; its control interface and supervision would require a redesign. It is not included in the purchase list.
 
 ## Enclosures and weather protection
 
@@ -64,7 +64,7 @@ Plan a removable plate with boards on standoffs, access to USB, separate load an
 
 For cable entries, [Bimed BM-ENX-2S-W](https://www.automationdirect.com/adc/shopping/catalog/wire_-a-_cable_management/cable_glands/metric_thread/bm-enx-2s-w) is a documented **$3.25 five-pack**, M12 × 1.5, for **3–6.5 mm cable outside diameter**, with mounting hardware. Other cables will need different sizes. A normal gland seals around one round cable jacket; several loose wires shoved through one hole leave leak paths. Use a matching multi-hole insert or proper jacketed cable. Put entries low or downward with drip loops and strain relief. Seal unused holes with rated plugs.
 
-The ten lamps also need a mounting rail and protection for rear connections. Approximately 300 mm overall length is a starting layout allowance, not a drill template; measure the supplied grommets and choose readable spacing. A weather-rated lamp body does not establish a watertight cable connector or panel penetration. The Markdown budget allows $15 for this rail/cover but no finished rated assembly is selected. No separate meter housing is purchased in Revision F. Keep possible plumbing leaks away from control boards.
+The ten lamps also need a mounting rail and protection for rear connections. Approximately 300 mm overall length is a starting layout allowance, not a drill template; measure the supplied grommets and choose readable spacing. A weather-rated lamp body does not establish a watertight cable connector or panel penetration. The Markdown budget allows $15 for this rail/cover but no finished rated assembly is selected. No separate meter housing is purchased in Revision G. Keep possible plumbing leaks away from control boards.
 
 ### Coating and potting
 
@@ -78,7 +78,7 @@ Do not fill the first build with epoxy, polyester casting resin or household sil
 
 These are required even though several are inexpensive. Prefer specified components from an authorized distributor rather than unidentified assortments where voltage rating, dielectric or tolerance cannot be verified.
 
-The [small-parts section of the Markdown shopping list](shopping-list.md#small-electronic-parts) is the authoritative purchase table. Seven exact DigiKey lots total **$9.91**, including spares. The separate removable 250-ohm bench load adds $3.36. R1–R4 and R12 share the 1 kohm, 0.5 W part. Q1 is onsemi 2N3904BU, with emitter/base/collector pins 1/2/3; R11 is 4.7 kohm, 0.25 W. Fit these on the existing carrier. No additional reset board is required.
+The [small-parts section of the Markdown shopping list](shopping-list.md#small-electronic-parts) is the authoritative purchase table. Five exact DigiKey lots total **$9.06**, including spares. The separate removable 250-ohm bench load adds $3.36. R1–R4 share the 1 kohm, 0.5 W part. Q1/R11/R12 are omitted. Retain the three local HSD bypass capacitor pairs.
 
 All **41 schematic references** are covered by modules, small parts, three buses, ten lamps and the reused connector. K1/U4/D4/C4/C5 are removed. All three HSD local 47 uF / 100 nF pairs remain. There are no flow or temperature sensors.
 
@@ -117,18 +117,18 @@ The bench supply is not part of the installed machine. Start it at 12.0 V with a
 For the battery route:
 
 1. **Prepare a removable test harness.** Put the inline fuse close to battery positive and use insulated, polarity-labeled connections on a nonconductive surface. Keep the machine harness, valve and water disconnected. Select the fuse from the expected test-stage load and the weakest conductor, not from the battery's capacity. Do not increase it to cure an unexplained blown fuse. This bench lead is separate from the final existing-fuse machine installation.
-2. **Check unpowered work.** Confirm every connection, diode band, capacitor polarity and module orientation against Revision F. Use continuity/resistance only with power removed. A capacitor can briefly affect readings; investigate a persistent short rather than treating every initial beep as one.
+2. **Check unpowered work.** Confirm every connection, diode band, capacitor polarity and module orientation against Revision G. Use continuity/resistance only with power removed. A capacitor can briefly affect readings; investigate a persistent short rather than treating every initial beep as one.
 3. **Test the Nano alone.** Disconnect USB and all external modules. Measure battery polarity/voltage first, then connect positive to **VIN**, negative to **GND**. Measure the 5 V header relative to ground before attaching anything to it. Expect approximately 5 V; stop for an unexpected reading or rapid heating. Recheck after each added load.
-4. **Add one inexpensive interface at a time, power removed between changes.** Test the input boards and their completed resistor/diode circuits before connecting Nano input pins. Never apply battery voltage directly to a logic terminal. Complete programming/functional tests need suitable firmware; there is no upload-ready application in this repository yet.
+4. **Add one inexpensive interface at a time, power removed between changes.** Test the input boards and their completed resistor/diode circuits before connecting Nano input pins. Never apply battery voltage directly to a logic terminal. Use the [firmware v1 upload guide](../firmware/README.md) for the supplied Nano Every application; physical functional tests remain necessary.
 5. **Test the command module on its resistor, not the valve.** Across the removable 250-ohm resistor, 4, 12 and 20 mA should produce approximately 1, 3 and 5 V. This lets the meter stay in DC-voltage mode. Test the feedback receiver separately with a known current source before exposing the Arduino ADC.
-6. **Test one lamp and one output before the full bar.** Confirm color leads and current, then add channels. Prove the Q1 reset circuit and bounded watchdog pulse with the valve disconnected. Ordinary lamp animation must never exercise reserved CH4. Check both internal and Wombat recovery.
+6. **Test one lamp and one output before the full bar.** Confirm color leads and current, then add channels. Test the internal Nano watchdog with the valve disconnected. HSD3 CH4–CH7 must remain off. Check bounded communication recovery after a peripheral reset.
 7. **Connect the valve last.** First resolve signal-return and loop-compliance questions. Dry motion and feedback tests precede water tests. Keep the manual shutoff accessible, start at low pressure and support the plumbing.
 
 Keep the multimeter black lead in COM and the red lead in V/Ω for these voltage checks. **Do not place a meter set to amps across the battery.** Current measurement requires a different, series connection and the correct fused meter input; it is not necessary for the first voltage checks above.
 
 A fixed battery cannot test the full 9–16 V input range, and a basic multimeter cannot establish short pulse integrity, I2C rise time or brief brownout behavior. Those audit items remain unverified until suitable borrowed equipment or another qualified test method is available. A successful battery test is progress toward qualification, not proof that every hardware fault detector works.
 
-If not already owned, separately allow roughly $35 for a temperature-controlled soldering tool, $30 for appropriate stripping/crimping/drilling tools, and $15 for electronics solder/flux/cleaning materials. Connector choice may require a more expensive matched crimper. These estimates are excluded from the $627 build budget. A computer and data-capable Micro-USB cable are needed for programming; the Markdown budget includes a $5 cable allowance that can be set to zero if owned.
+If not already owned, separately allow roughly $35 for a temperature-controlled soldering tool, $30 for appropriate stripping/crimping/drilling tools, and $15 for electronics solder/flux/cleaning materials. Connector choice may require a more expensive matched crimper. These estimates are excluded from the $626 build budget. A computer and data-capable Micro-USB cable are needed for programming; the Markdown budget includes a $5 cable allowance that can be set to zero if owned.
 
 ## Shipping, tax and coupons
 

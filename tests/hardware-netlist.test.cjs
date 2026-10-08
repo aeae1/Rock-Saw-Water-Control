@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const base = JSON.parse(fs.readFileSync(path.join(__dirname, '../hardware/rev-f/netlist.json')));
+const base = JSON.parse(fs.readFileSync(path.join(__dirname, '../hardware/rev-g/netlist.json')));
 
 // This checks documentation topology, not semiconductor behavior or actual wiring.
 function audit(n) {
@@ -35,7 +35,7 @@ function audit(n) {
   }
   const rails = ['TB12.rail','TB5.rail','TB0.rail'];
   for(let i=0;i<rails.length;i++) for(let j=i+1;j<rails.length;j++) separate(rails[i],rails[j]);
-  expect('X1.1','TB12.rail');expect('X1.2','TB0.rail');expect('U1.VIN','TB12.rail');expect('U1.5V','TB5.rail');
+  expect('IN.12V','TB12.rail');expect('IN.0V','TB0.rail');expect('U1.VIN','TB12.rail');expect('U1.5V','TB5.rail');
   for(const p of ['A0','A4','A5','D2','D3','D4','D7','D8','D9','3V3']) separate('U1.'+p,'TB12.rail');
   for(const h of ['HSD1','HSD2','HSD3']) {
     expect(h+'.VIN','TB12.rail');expect(h+'.V','TB5.rail');expect(h+'.LOAD_GND','TB0.rail');
@@ -54,20 +54,15 @@ function audit(n) {
   separate('U2.OUT','U1.A0');separate('U2.OUT','TB5.rail');
   expect('U2.OUT','V1.GREEN');expect('V1.YELLOW','U3.I+');
   expect('V1.RED','TB12.rail');separate('HSD3.CH4','V1.RED');
-  expect('HSD3.CH4','R11.1');expect('R11.2','Q1.2');expect('R12.1','Q1.2');
-  expect('Q1.1','TB0.rail');expect('R12.2','TB0.rail');
-  expect('Q1.3','U1.RESET1');expect('U1.RESET1','U1.RESET2');
-  for(const pin of ['HSD3.CH4','Q1.1','Q1.2','TB5.rail','TB12.rail'])separate('U1.RESET1',pin);
-  separate('R11.1','R11.2');separate('Q1.1','Q1.2');
-  assert.equal(n.components.Q1.part,'onsemi 2N3904BU TO-92');
-  assert.equal(n.components.R11.resistance_ohms,4700);
-  assert.equal(n.components.R12.resistance_ohms,1000);
+  for(const p of ['HSD3.CH4','HSD3.CH5','HSD3.CH6','HSD3.CH7','U1.RESET1','U1.RESET2'])assert(nc.has(p));
+  for(const r of ['Q1','R11','R12','X1'])assert(!n.components[r]);
+  assert.equal(n.components.IN.kind,'wire_boundary');
   expect('U3.SIGNAL','R4.1');expect('R4.2','U1.A0');expect('R5.1','U1.A0');expect('C1.1','U1.A0');
   expect('R5.2','TB0.rail');expect('C1.2','TB0.rail');separate('U3.SIGNAL','U1.A0');
   for (const [i,o,input,output,pin] of [[1,'O1','IN1','OUT1','D2'],[2,'O1','IN2','OUT2','D3'],[3,'O2','IN1','OUT1','D4']]) {
-    expect(`X1.${i+2}`,`R${i}.1`);expect(`R${i}.2`,`${o}.${input}`);expect(`D${i}.K`,`${o}.${input}`);
+    expect(`IN.${['G','H','J'][i-1]}`,`R${i}.1`);expect(`R${i}.2`,`${o}.${input}`);expect(`D${i}.K`,`${o}.${input}`);
     expect(`D${i}.A`,'TB0.rail');expect(`${o}.${output}`,`U1.${pin}`);expect(`${o}.HV`,'TB5.rail');
-    separate(`X1.${i+2}`,`${o}.${input}`);separate(`X1.${i+2}`,`U1.${pin}`);
+    separate(`IN.${['G','H','J'][i-1]}`,`${o}.${input}`);separate(`IN.${['G','H','J'][i-1]}`,`U1.${pin}`);
   }
   for(const pin of ['D7','D8','D9']) assert(nc.has('U1.'+pin),`Unused ${pin} must remain unconnected`);
   for(const ref of ['TS1','TS2','R10','C3','C6','FM1','R6','R7','R8','R9','C2','K1','U4','D4','C4','C5']) assert(!n.components[ref], 'Removed component '+ref);
@@ -82,14 +77,11 @@ function audit(n) {
   for(const p of outputPins) {separate(p,'V1.RED');separate(p,'TB0.rail');separate(p,'TB5.rail');separate(p,'TB12.rail');}
   const addresses=Object.values(n.addresses).flat();assert.equal(new Set(addresses).size,7);
   assert.deepEqual(n.addresses,{U2:[0x58],HSD1:[0x60,0x61],HSD2:[0x62,0x63],HSD3:[0x64,0x65]});
-  assert.equal(n.watchdog.channel,4);assert.equal(n.watchdog.address,0x64);assert.equal(n.watchdog.return_delay,100);
-  assert.equal(n.watchdog.default,'LOW');assert.equal(n.watchdog.timeout,'HIGH');
-  assert.equal(n.watchdog.purpose,'host_reset_only');assert.equal(n.watchdog.reset_wombat,false);
-  assert(n.watchdog.timeout_ms_proposed>n.watchdog.feed_ms_proposed*5);
+  assert.deepEqual(n.watchdog,{type:'ATmega4809_internal',timeout_ms_proposed:2048,external:false,qualified:false});
   assert.equal(n.watchdog.qualified,false);assert.equal(n.status,'BENCH_DESIGN_HOLD_H1_H5');
   return { pins:pins.size,wires:n.wires.length };
 }
-test('Revision F: every declared terminal and every external wire has a consistent topology',()=>audit(base));
+test('Revision G: every declared terminal and every external wire has a consistent topology',()=>audit(base));
 test('Revision D removes only the external temperature branch from Revision C',()=>{
   const base=JSON.parse(fs.readFileSync(path.join(__dirname,'../hardware/rev-d/netlist.json')));
   const old=JSON.parse(fs.readFileSync(path.join(__dirname,'../hardware/rev-c/netlist.json')));
@@ -129,19 +121,13 @@ function bridge(n,a,b,net='0V') {n.wires.push({id:'BAD',net,from:a,to:b});n.nets
 damage('removed meter input D8 accidentally connected',n=>bridge(n,'U1.D8','TB5.rail','LOGIC_5V'));
 damage('12 V on Arduino signal input',n=>bridge(n,'TB12.rail','U1.D2','MACHINE_12V'));
 damage('reset tied to 12 V',n=>bridge(n,'U1.RESET1','TB12.rail','MACHINE_12V'));
-damage('12 V HSD output connected directly to RESET',n=>bridge(n,'HSD3.CH4','U1.RESET1','WATCHDOG_12V'));
-damage('base current-limiting resistor bypassed',n=>bridge(n,'R11.1','R11.2','WATCHDOG_12V'));
+damage('12 V HSD output connected directly to RESET',n=>bridge(n,'HSD3.CH4','U1.RESET1','0V'));
 damage('two lamp colors joined',n=>bridge(n,'L1.BLUE','L1.WHITE','L1_BLUE'));
 damage('missing position receiver ground conductor',n=>{n.wires=n.wires.filter(w=>w.to!=='U3.GND');});
-damage('reset transistor collector/emitter reversed',n=>{for(const w of n.wires){if(w.to==='Q1.1')w.to='Q1.3';else if(w.to==='Q1.3')w.to='Q1.1';}});
 damage('duplicate I2C address pair',n=>{n.addresses.HSD3=[0x62,0x63];});
 damage('extra HSD I2C pull-ups enabled',n=>{n.jumper_configuration.HSD2.SJSDA=true;});
-damage('a spare lamp-animation pin used for the watchdog',n=>{n.watchdog.channel=7;});
 damage('unknown/misspelled terminal',n=>{n.wires[0].to='U1.NOT_A_PIN';});
 damage('floating ADC bias omitted',n=>{n.wires=n.wires.filter(w=>w.to!=='R5.2');});
-damage('reset transistor pulldown disconnected',n=>{n.wires=n.wires.filter(w=>w.from!=='R12.2'&&w.to!=='R12.2');});
-damage('watchdog permanently holds host in reset',n=>{n.watchdog.return_delay=65535;});
-damage('watchdog asserts reset in normal operation',n=>{n.watchdog.default='HIGH';});
 damage('input resistor value reduced to 100 ohms',n=>{n.components.R1.resistance_ohms=100;});
 damage('input resistor power rating too small',n=>{n.components.R1.power_w=.125;});
 test('analog scaling and component dissipation bounds are consistent with the stated design',()=>{
@@ -155,10 +141,11 @@ test('analog scaling and component dissipation bounds are consistent with the st
   const current=(16-1)/(minimumExternal+209), power=current*current*minimumExternal;
   assert(current<.013);assert(power<.17);assert(power<base.components.R1.power_w/2);
   assert(1000/(.8473*4700)>250e-3); // ns/ohms -> nF: ~251 pF.
-  assert.equal(2*112+2*16,256,'Proposed persistence allocation fits Nano Every EEPROM exactly');
+  assert(2*24<=256,'Two transactional firmware records fit Nano Every EEPROM');
 });
 
 test('Revision F removes only the relay branch, changes three valve wires, and adds host reset',()=>{
+  const base=JSON.parse(fs.readFileSync(path.join(__dirname,'../hardware/rev-f/netlist.json')));
   const old=JSON.parse(fs.readFileSync(path.join(__dirname,'../hardware/rev-e/netlist.json')));
   const removed=new Set(['K1','U4','D4','C4','C5']);
   assert.deepEqual(Object.keys(base.components).sort(),[...Object.keys(old.components).filter(r=>!removed.has(r)),'Q1','R11','R12'].sort());
@@ -172,7 +159,7 @@ test('Revision F removes only the relay branch, changes three valve wires, and a
   assert.equal(base.wires.filter(w=>Number(w.id.slice(1))>=127).length,6);
 });
 test('host reset has base drive at 9 V, leakage margin, and resistor thermal margin at 16 V',()=>{
-  const b=base.components;
+  const b=JSON.parse(fs.readFileSync(path.join(__dirname,'../hardware/rev-f/netlist.json'))).components;
   const minDrive=(9-.85)/(b.R11.resistance_ohms*1.05)-.85/(b.R12.resistance_ohms*.99);
   assert(minDrive>.0007); // >700 uA available; RESET pull-up load is about 50 uA.
   assert(minDrive*10>5/100000); // conservative forced beta of 10 after capacitor discharge.
@@ -180,4 +167,16 @@ test('host reset has base drive at 9 V, leakage margin, and resistor thermal mar
   assert(seriesPower<b.R11.power_w/4);
   assert(.85**2/(b.R12.resistance_ohms*.99)<b.R12.power_w/100);
   assert(100e-6*b.R12.resistance_ohms*1.01<.2); // conservative 100 uA off-leak assumption.
+});
+
+damage('external watchdog restored without approval',n=>{n.watchdog.external=true;});
+damage('spare HSD3 channel assigned to a load',n=>bridge(n,'HSD3.CH4','L1.BLUE','L1_BLUE'));
+test('Revision G removes only external reset components and renames the five incoming endpoints',()=>{
+ const old=JSON.parse(fs.readFileSync(path.join(__dirname,'../hardware/rev-f/netlist.json')));
+ const removed=new Set(['Q1','R11','R12']);
+ const renamed={'X1.1':'IN.12V','X1.2':'IN.0V','X1.3':'IN.G','X1.4':'IN.H','X1.5':'IN.J'};
+ const wires=old.wires.filter(w=>!removed.has(w.from.split('.')[0])&&!removed.has(w.to.split('.')[0])).map(w=>({...w,from:renamed[w.from]||w.from,to:renamed[w.to]||w.to}));
+ assert.deepEqual(base.wires,wires);assert.equal(base.wires.length,102);assert.equal(Object.keys(base.components).length,38);
+ for(const [r,c] of Object.entries(base.components))if(r!=='IN')assert.deepEqual(c,old.components[r]);
+ for(const f of ['addresses','lamp_channels','jumper_configuration','pullups'])assert.deepEqual(base[f],old[f]);
 });

@@ -1,8 +1,8 @@
 # Conceptual Connections
 
-Reviewed 2026-10-07 · Revision F functional overview
+Reviewed 2026-10-08 · Revision G functional overview
 
-These diagrams show functions, not terminal-level construction wiring. G/H/J mean increase, decrease and trigger; they are not verified machine connector cavities. Use the [Revision F audit and detailed schematic](hardware-audit-rev-f.md) for terminal wiring, board configuration and release holds.
+These diagrams show functions, not terminal-level construction wiring. G/H/J mean increase, decrease and trigger; they are not verified machine connector cavities. Use the [Revision G audit and detailed schematic](hardware-audit-rev-g.md) for terminal wiring, board configuration and release holds.
 
 ## Control and feedback
 
@@ -16,8 +16,6 @@ flowchart TD
     R -->|"Analog voltage to A0"| C
     C -->|"Local I²C"| H["Three PCB0046 HSD boards"]
     H -->|"20 switched 12 V color leads"| L["Ten blue/white lamps"]
-    H -->|"Watchdog channel 4"| P["Q1 + two resistors"]
-    P -->|"RESET pull-down"| C
 ```
 
 The receiver uses an analog input. The proportional actuator includes its motor and controller; no external reversing H-bridge is involved. The HSD boards combine I/O expansion and high-side switching.
@@ -31,9 +29,9 @@ The receiver uses an analog input. The proportional actuator includes its motor 
 | Nano 5 V rail, after load/thermal verification | HSD logic, DFR1229, SEN0262, input board HV |
 | Twenty HSD switched outputs | One blue or white lamp-positive lead each |
 | Lamp common negatives | Ground distribution, sized for combined current |
-| HSD3 channel 4 | R11 to Q1 base; R12 base pull-down; Q1 collector to Nano RESET |
+| HSD3 channels 4-7 | Unconnected; initialized OFF |
 
-This reference installation uses the existing machine fuse and assumes clean nominal 12 V. No additional fuse block or separate source is included. Constant power does not identify key state. Fuse/wire coordination, key-off behavior and the proposed watchdog/reset circuit must be qualified before field use. Never power lamps or the valve through Nano GPIO or the 5 V logic rail.
+This reference installation uses the existing machine fuse and assumes clean nominal 12 V. No additional fuse block or separate source is included. Constant power does not identify key state. Fuse/wire coordination, key-off behavior and the internal watchdog recovery must be qualified before field use. Never power lamps or the valve through Nano GPIO or the 5 V logic rail.
 
 ## One lamp, repeated ten times
 

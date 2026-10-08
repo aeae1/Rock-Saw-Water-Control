@@ -68,7 +68,7 @@ If an active cause blocks reset, the row shows staggered blue/white. At three se
 
 ## Power and simulator notes
 
-The simulated power switch retains saved settings and latched faults, but discards an unfinished maximum edit. Reloading the page starts a new simulation. Physical settings storage is a firmware requirement, not a browser feature.
+The simulated power switch retains saved settings and latched faults, but discards an unfinished maximum edit. Reloading the page starts a new simulation. Firmware v1 saves settings and fault latches in two CRC-checked EEPROM records; the browser does not emulate EEPROM wear or interrupted writes.
 
 Removing electrical power does not guarantee that a motorized ball valve closes. On restart, opening commands remain locked until closing completes and the controls remain released/centered for 0.1 seconds. Commands made during recovery are discarded.
 

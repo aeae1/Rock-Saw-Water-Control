@@ -1,87 +1,125 @@
-# Firmware Integration Contract
+# Firmware v1.0.0-bench
 
-Revision 1.0 · Updated 2026-10-07
+A complete, flashable **Arduino Nano Every / ATmega4809** sketch for the [Revision G circuit](../docs/hardware-audit-rev-g.md). It controls the proportional valve, reads position feedback and three operator inputs, and drives all twenty lamp-color outputs. The internal watchdog is enabled; there is no external watchdog circuit.
 
-No flashable firmware is supplied. The browser simulator is an executable operator-interface reference, not Arduino firmware. The current hardware direction is Nano Every, DFR1229 command, SEN0262 feedback to A0, three PCB0046 boards, with no flow meter or external temperature sensors. See the [Revision F electrical audit](../docs/hardware-audit-rev-f.md) for the complete proposed circuit and release holds.
+**Release status:** compiled for the real target and tested on a host computer. No assembled controller or valve was available for physical testing. This is a bench prototype, not a field-qualified release. The five hardware acceptance items H1–H5 in the electrical audit remain open. [Test evidence and limits](TESTING.md).
 
-## Revision F hardware integration requirements
+## Install and upload
 
-- D2/D3/D4 are active-high G/H/J inputs after the selected opto boards. D7/D8/D9 are unused; configure them without a required sensor acquisition or missing-meter fault.
-- A control input may already be electrically asserted when the main supply returns. Preserve startup-neutral qualification and consume those assertions; never replay them as a new gesture. Off-state input backfeed and LED current are hardware acceptance checks, not behaviors a sleeping or unpowered sketch can enforce.
-- HSD3 CH4 is reserved for a SW8B watchdog driving Q1/R11/R12 to Nano RESET. It never powers the valve. Normal LOW, timeout HIGH, proposed timeout 2000 ms, feed 100 ms, return LOW after 100 ms, Wombat self-reset disabled. Channels 5–7 remain OFF. Qualify/disable CH4 open-load diagnostics for its deliberately small reset-circuit load; do not apply lamp-current thresholds to it. Exclude CH4 from lamp writes and sweeps.
-- Enable the Nano ATmega4809 internal watchdog at approximately 1.024 s. Feed both watchdogs only after useful bounded progress; a handled fault is valid progress. Do not create reboot loops just because a hardware fault remains latched.
-- Configure both Wombat watchdog packets with checked transfers. The convenience library defaults to a 65535 ms return delay with self-reset disabled; override it to the proposed 100 ms or the Nano can remain held in reset. The return-delay countdown must be reinitialized after a timeout; merely feeding the timer does not restore it. Prove timeout polarity, pulse release, partial initialization and repeated recovery on the actual SW8B firmware before connecting the valve.
-- The reviewed GP8XXX convenience driver discards ordinary I2C write results. Use bounded, checked transactions for the DAC and Wombats. On reset, write a validated 4 mA close command; do not rely on retained peripheral state. Valve power remains present during Nano reset.
-- There is no actuator-current measurement in Revision F. Code 2 is a simulator-only scenario with no fitted hardware detector. Wombat current/thermal diagnostics cover its lamp/reset loads; HSD VIN uses the default 11:1 divider.
-- A0's 1 kohm series resistor and 100 kohm pull-down introduce a 100/101 nominal attenuation. Calibrate the complete chain. Do not use a 0-5 V feedback assumption.
-- No flow acquisition, automatic sweep, live GPM, no-flow detector or flow-while-closed detector is present. Optional manual flow calibration supplies a validated lookup table; store an explicit opening-scale versus calibrated-scale mode. Position feedback remains mandatory, and a closed-position indication is not proof of hydraulic shutoff.
-- The audit's fault-logging section specifies a bounded RAM history and a small redundant EEPROM last-fault/reset summary. Neither exists as running firmware. No external log memory or real-time clock is in the circuit.
-- Recovery checks supply, communication and position independently. A fresh acknowledgement may authorize one bounded closing/requalification attempt after the physical problem is corrected. Never resume ON or Flush automatically. A failed feedback path leaves closure unknown; do not substitute calculated travel for measured position. No reset action can physically isolate a jammed actuator in this design.
+1. Download this repository using GitHub **Code → Download ZIP**, and extract it.
+2. Install Arduino IDE 2. In Boards Manager, install **Arduino megaAVR Boards 1.8.8**.
+3. Open [RockSawWaterControl/RockSawWaterControl.ino](RockSawWaterControl/RockSawWaterControl.ino). Keep all the adjacent `.h` files in that same folder. No third-party Arduino libraries are needed; EEPROM is supplied by the board package.
+4. Select **Arduino Nano Every**, its USB port, and **Registers emulation: None (ATMEGA4809)**. A classic Nano or ESP board is not interchangeable with this sketch.
+5. For USB-only programming, unplug machine power and disconnect the complete valve cable; close the manual water shutoff. USB can energize the DAC through the Nano's 5 V rail even when actuator power is absent.
+6. Connect a Micro-USB **data** cable, click Verify, then Upload. Remove USB before reconnecting the machine/valve for standalone testing. Check voltage and polarity before energizing the assembly.
 
-## Processing order
+Uploading does not authorize a water command. The firmware always starts OFF, sends 4 mA CLOSED and requires startup/closed-feedback checks. A bare Nano without the required modules/feedback will report faults; it is not a standalone lamp demonstration.
 
-Use a monotonic, nonblocking main loop with explicit budgets. A recommended order is acquisition → fault evaluation → startup/recovery → gesture/mode processing → valve request → lamp update → storage/service. A fault takes precedence over a gesture becoming eligible in the same cycle. Animations must never delay acquisition, fault response or closure.
+Equivalent command-line build:
 
-| Layer | Required behavior |
+```sh
+arduino-cli core update-index
+arduino-cli core install arduino:megaavr@1.8.8
+arduino-cli compile --warnings all --fqbn arduino:megaavr:nona4809:mode=off --output-dir build/firmware firmware/RockSawWaterControl
+arduino-cli upload --fqbn arduino:megaavr:nona4809:mode=off --port YOUR_PORT firmware/RockSawWaterControl
+```
+
+The committed [bench HEX](releases/v1.0.0-bench/RockSawWaterControl-NanoEvery.hex) and [build manifest](releases/v1.0.0-bench/build.json) match the shipped default configuration. They are for Nano Every only. The GitHub Actions **Firmware checks** workflow also builds a downloadable HEX/ELF artifact. Use the IDE source upload for initial commissioning; it makes the selected board and configuration visible.
+
+## Hardware mapping
+
+| Nano / bus connection | Function |
 | :--- | :--- |
-| Raw input acquisition | Read all three conditioned inputs in every state, including startup, faults and Flush; normalize polarity |
-| Debounce | Qualify press/release and G/H conflict duration using measured switch/input behavior; a continuously active G or H is normal |
-| Startup/recovery | Request closed; startup also runs the two-second lamp test concurrently and requires J released / G/H centered for 100 ms. Fault recovery only requires J released for 100 ms after verified closure; G/H may stay held. Consume earlier activations; do not repeat the lamp test on acknowledgement |
-| Gestures | Fresh press and matching release; <500 ms tap, 500–1499 ms cancel, 1500 ms mode change; one mode transition per press |
-| Fault acknowledgement | Fresh 3000 ms J hold after independently observable causes clear; actuator-dependent checks may remain pending one bounded requalification attempt. Ordinary opening stays inhibited until that attempt passes. G/H position/movement does not affect acknowledgement or edit settings; a new cause or interrupted J hold cancels |
-| Stuck trigger | 30000 ms continuous powered assertion, including startup; compare elapsed time even if scheduling was delayed |
-| Valve interface | Explicit 4–20 mA range/scaling, initialized closed command and verified feedback; bounded motion deadline and progress checks |
-| Lamp interface | Twenty output channels, one color per lamp, old color off before replacement; initialize off and poll diagnostics |
-| Bus handling | Bound transactions and retry count; report failed initialization/transfers; never wait forever for an I²C device |
-| Persistence | Version, checksum, bounds, redundant committed records and wear-conscious writes; never restore an ON or Flush command |
-| Supervision | Internal watchdog and characterized external host-reset pulse; bounded progress required; no independent output-inhibit circuit |
+| VIN / GND | Verified incoming nominal 12 V / 0 V |
+| D2 / D3 / D4 | Conditioned active-high G / H / J; never connect raw 12 V directly |
+| A0 | SEN0262 position feedback through R4/R5/C1 |
+| A4 / A5 | Open-drain software SDA / SCL, local bus below 100 kHz |
+| 0x58 | DFR1229 GP8600 command DAC |
+| 0x60/61 | HSD1 outputs / diagnostics, lamps 1–4 |
+| 0x62/63 | HSD2 outputs / diagnostics, lamps 5–8 |
+| 0x64/65 | HSD3 outputs / diagnostics, lamps 9–10 |
+| HSD3 CH4–CH7, Nano RESET | Unconnected; spare HSD outputs initialized OFF |
 
-## Revision F physical fault response
+Each lamp uses channel `2 × lamp-index` for BLUE and the next channel for WHITE, on the appropriate board. Opposite colors are separated by an acknowledged OFF packet and at least 2 ms before the new color is enabled. HSD3's upper bank is unused and omitted from aggregate lamp-fault reads.
 
-The browser retains its earlier simulated movement-inhibit policy. It is an operator-interface reference, not the physical fault-response implementation for this relay-free design. Do not translate its `inhibited` state into a claim that the actuator is deenergized.
+Open all HSD SDA/SCL pull-up jumpers; use the DFR1229's existing pull-ups. HSD1 address jumpers all open; HSD2 A1 closed; HSD3 A2 closed. Keep the I²C wiring local to the electronics enclosure. Source-checked SW08B packet handling is in [Protocol.h](RockSawWaterControl/Protocol.h); actual installed board versions must still be verified. `boards` prints the six reported version strings.
 
-On a detected fault, clear the requested ON/Flush state and prohibit opening. If the command path is usable, issue one best-effort 4 mA closed command independent of saved calibration. Monitor feedback with an original bounded deadline; additional faults do not extend it. If command or feedback fails, mark closure unknown and retain the fault record. No automatic reverse/retry is allowed. There is no independent actuator power cut and no measured motor-current detector. A jammed valve may remain powered; isolate water manually and remove machine power for repair when needed.
+## Operation
 
-Do not label every unavailable detector as healthy. Code 2 (actuator overcurrent) is not fitted; code 9 remains reserved. Position/progress failures use codes 5/8 after characterization. Driver code 4 pertains to HSD outputs, not the directly powered actuator. A display/bus failure may prevent a warning from appearing.
+| Mode | Action |
+| :--- | :--- |
+| Normal | J tap under 0.5 s toggles water. G/H changes one level per activation; a held rocker does not repeat. |
+| Set Max | Hold J for 1.5 s, release, adjust with G/H, tap J to save. Running water holds its measured opening while editing. |
+| Flush | From Set Max, release J and hold again for 1.5 s. Opens fully, bypassing the cap. A fresh J press returns immediately to the prior Normal ON/OFF state. |
 
-Acknowledgement keeps water requested OFF. After correction, confirm closed position or allow one bounded reference attempt, then require J released for 100 ms. G/H may remain held during fault clearing and rearming; consume their earlier activations. Return the lamps to the normal OFF indication immediately after acknowledgement, while separately gating opening on completed requalification. The electrical audit defines the remaining H1–H5 bench checks.
+Hold indication starts after 0.5 s; release between 0.5 and 1.5 s cancels the gesture. Saving a cap chooses the nearest repeatable valve position under that cap, ties upward. OFF stays OFF. Flush from an OFF session requires qualified closed position at the start of the hold.
 
-## Fault display contract
+Startup commands CLOSED and tests all ten lamps: **all white for a full second, then all blue for a full second**. Timing starts only after the hardware has applied each complete color frame. Inputs are locked out. Faults override the test. Then position must be qualified closed, J released and G/H centered for 100 ms. Held startup inputs are discarded.
 
-Implement independent active-cause and latched-code bitsets. Show all latched codes concurrently: white/off while active, blue/off after a cause clears (600 ms phases). A valid fresh three-second reset hold keeps every code lamp solid blue while white fill advances across all ten physical positions at 300 ms per position. Overlay blue codes on that fill; their positions still consume time. Do not redistribute the three seconds among only unoccupied lamps. Code 9 remains reserved, so lamp 9 participates in the ordinary white progress sweep even when every supported code is latched. Immediately after acknowledgement, end the reset animation and restore the normal OFF-command display: white saved-level bar with the maximum marker blinking blue (steady blue with reduced motion). Closing/requalification and 100 ms of released J still gate all opening commands; G/H may stay held; the held reset input is consumed. Do not interpret acknowledgement as verified hardware recovery; retain the actual fault record until requalification succeeds as specified above.
+Paused lamps show the saved level in white and the cap marker blinking blue: blue/OFF above the bar, blue/white within it. Fill/drain follows reported actuator position; it is an animation, not measured flow.
 
-Reset eligibility is captured at the start of the press. Clearing causes during a blocked hold cannot authorize it. Holds blocked by active causes stagger blue/white at 600 ms phases; reaching three seconds with a cause still active gives a 1.5-second warning with 250 ms phases, then resumes the normal fault indication without retrying. With all causes cleared but a fresh J press still required, retain blue-code blinking instead; do not show an active-cause warning or reset progress. Clearing the final cause ends the warning immediately without authorizing the existing hold. Use the same eligibility state for reset completion and its lamp indication. Any new fault cancels an eligible hold; G/H movement does not. After acknowledgement, retain closure and 100 ms of released J before rearming normal commands. G/H position or movement must not block rearming or replay an old setting command. A fault always outranks animation. See the [fault reference](../docs/faults.md) for the complete simulator contract, including reduced motion. This is a firmware requirement, not implemented Arduino code.
+## Faults and acknowledgement
 
-## Startup lamp test
+Every fitted fault latches OFF and requests CLOSED when the command path can still operate. There is **no independent valve-power cutoff**. A broken bus, failed DAC, jammed actuator or loss of power can leave water flowing. Use the manual shutoff if closure is uncertain; power-cycle the controller if needed. Do not interpret an unresponsive lamp bar as a healthy controller.
 
-After successful output initialization, test only the twenty explicitly mapped lamp channels: all ten lamps white for one second, then all ten blue for one second. Clear all previous lamp-color channels before setting the next color; never energize both colors of a lamp simultaneously. HSD1/HSD2 channels 0–7 and HSD3 channels 0–3 are the lamp allowlist; HSD3 channel 4 remains owned exclusively by host-reset supervision, and channels 5–7 remain OFF. Never implement a sweep over every driver output or a bulk clear that changes the reset output.
+| Lamp | Implemented cause | What removes the active cause |
+| :--- | :--- | :--- |
+| 1 | HSD-reported supply outside 9–16 V for 200 ms; remembered watchdog/brownout reset | Stable supply; reset reason remains recorded and needs acknowledgement |
+| 2 | Not fitted; browser-only scenario | No actuator-current sensor is installed |
+| 3 | Failed DAC/I²C transfer, incompatible board response, or stopped/reset Wombat frame counter | Successful reinitialization, diagnostics from all boards and 500 ms healthy communication |
+| 4 | Active-low lamp-bank FAULT held for 100 ms | Hardware FAULT returns healthy; investigate wiring/load/temperature rather than assuming a unique cause |
+| 5 | More than 15 s continuous unfinished movement, or 4 s without 1% position progress | A valid closed position settles for 200 ms after the obstruction/interface problem is corrected |
+| 6 | Both saved records invalid or compile-time calibration invalid | Acknowledge to restore default settings; an invalid compiled curve requires corrected firmware |
+| 7 | G and H both asserted for 100 ms after input debounce | Contradictory input combination removed |
+| 8 | Out-of-range feedback for 250 ms after the first 1 s | Feedback returns to its valid electrical range; closing still must finish |
+| 9 | Reserved; no temperature probe | Not generated |
+| 10 | J held for 30 s, including startup | Release J |
 
-Run this as a nonblocking elapsed-time state alongside acquisition, supervision and closed-position recovery. Inhibit opening/gestures until the test and closure complete, then qualify neutral controls. A fault or failed lamp-driver transaction aborts the test immediately; faults have priority even at its completion deadline. Do not run over a latched fault or replay it after acknowledgement. A healthy controller power-up/reset restarts it; repeated loop iterations do not. The same all-white/all-blue sequence applies to reduced-motion mode. Ignore operator commands during the test while continuing raw-input monitoring and stuck-trigger detection.
+These voltage/timing thresholds are bench defaults, not measured limits of the installed assembly. Firmware cannot detect blocked nozzles, actual GPM, a leaking closed valve, true actuator overcurrent, or a position sensor that falsely reports closed. HSD FAULT is an aggregate driver indication; per-lamp current diagnostics are not implemented.
 
-This checks visibility and harness/color assignment for the operator. It does not prove electrical health automatically. Current diagnostics need separate qualified thresholds. Bench acceptance must verify every color, break-before-make switching, test interruption, held controls, timer rollover, and that all lamp-test writes leave the host-reset channel unchanged. No test code may delay closure, watchdog servicing or fault evaluation.
+Active causes blink white; cleared, still-latched codes blink blue. All latched codes appear together. Correct every active cause, release J, then hold it freshly for **3 s**. Fault lamps stay solid blue; a white sweep advances behind them across all ten positions. Active causes block reset; a new cause cancels an eligible hold. G/H can remain held or move without affecting acknowledgement or changing settings.
 
-The simulator's 5-second full stroke and 200 ms minimum move are visual-model values. They are not hardware motion deadlines. Characterize the actual valve and feedback before selecting timeouts, tolerances, settle windows and current thresholds.
+Successful acknowledgement immediately restores the normal OFF display. Water remains commanded closed; after closure and 100 ms with J released, a fresh tap works even with G/H still held. A tap does not bypass incomplete closure. Fault 5 will not clear merely because a timer expired: restore actual closed feedback after fixing the cause. If a stuck valve cannot close, shut off water and repair it; there is no automatic opening/reversal to clear a jam.
 
-## Required state distinctions
+## Watchdog and bounded recovery
 
-Keep the requested water command, requested valve target, measured position, position validity and fault latch separate. An OFF command is not proof of closure. Do not declare reference complete merely because an estimated travel timer expired. Check feedback plausibility and target arrival for a stable interval. On feedback failure, do not replace the lost measurement with the old target and claim it is actual position.
+The ATmega4809 internal hardware watchdog has a nominal 2.048 s period. It is fed at the end of completed foreground iterations, not within serial or bus waits. Software I²C times out each transaction after 20 ms and attempts at most nine recovery clocks. Failed initialization is retried about once per second while OFF and fault-latched. The DAC closed command precedes display initialization; commands refresh every 500 ms.
 
-Set Max holds the actual opening reached at entry when running; an existing OFF command continues closing. Verify that commanding the latest feedback position actually produces a stable hold on this actuator. Saving selects the nearest repeatable target under the new cap. Flush bypasses the cap and consumes its exit press, including the later release. A reset never resumes Flush or a previous run.
+Wombat frame counters are checked on both chips of each board to detect a peripheral reset/freeze even if it still acknowledges I²C. Reinitialization restores outputs and diagnostics. Physical retry timing, electrical bus behavior, core brownout configuration and reset under real loads require bench tests. The watchdog cannot fix dead hardware or guarantee valve closure. No reset output is assigned to a Wombat channel.
 
-## Memory and time budget
+## Settings and logging
 
-The Nano Every has limited EEPROM and RAM. Its [datasheet](https://docs.arduino.cc/resources/datasheets/ABX00028-datasheet.pdf) lists 256 bytes EEPROM and 6 kB SRAM. Do not assume a large JSON calibration table or an unbounded fault log will fit. Establish the compiled memory footprint of three HSD objects, command library, bus buffers and service output before release. Avoid dynamic allocation in the operating loop and bound serial logging so a disconnected host cannot stall it.
+Default level is **4/10**, cap **100%**, water **OFF**. Only level, cap, latched fault mask, last saved reset flags and calibration signature are persisted. Normal settings wait two seconds before saving; fault changes request a save immediately. Two alternating 24-byte EEPROM records use a CRC and commit marker written last, one byte per loop. Old valid data survives interrupted writes. Both records invalid causes fault 6; completely erased factory EEPROM uses defaults without a corruption fault. EEPROM wear is finite; state changes are coalesced rather than written every loop.
 
-A possible storage budget is two 112-byte settings/calibration slots plus two 16-byte fault/reset records, totaling 256 bytes. This is a planning example, not an implemented layout. A compact 21-point table of two uint16 values per point requires 84 bytes per slot; headers, settings, sequence and CRC must fit the remaining 28 bytes. Assert the final packed size and test interrupted writes at every byte boundary. Commit markers must be written last; validate both copies before selecting the newest valid sequence, including sequence rollover. If neither record is valid, latch the settings fault and wait for acknowledgement before restoring defaults.
+ON, Flush and an unfinished cap edit are never restored. A sudden power cut may lose the latest pending save/fault. No design can promise that the last instant before total power loss is logged without additional energy/storage hardware.
 
-Use unsigned subtraction for elapsed durations and test around the 32-bit millisecond rollover (about 49.7 days). Keep durations well below half the counter range. Compare elapsed time when processing a release, not only when an earlier timer was scheduled. The browser's floating-point clock does not validate MCU rollover behavior.
+A 16-event **RAM ring** records uptime plus active/latched fault masks. It is lost on reboot and is not a persistent chronological log. EEPROM retains the latest completed snapshot, not all events. At 115200 baud with newline ending, the read-only serial commands are:
 
-## Driver and fault acceptance
+| Command | Output |
+| :--- | :--- |
+| `status` | Version, current reset flags, mode, level, cap, target, ADC mV, three VIN estimates, fault masks and armed state |
+| `log` | Up to 16 fault-state changes since boot; masks combine codes using bit 0 for code 1 through bit 9 for code 10 |
+| `boards` | Six Wombat reported firmware strings |
+| `help` | Command list |
 
-Before USB-only programming, disconnect the machine harness and valve cable and isolate water. USB can energize the DAC while the actuator has no main supply. Shared machine power does not establish safe signal behavior during separate connector loss or rail decay.
+There is no serial command to open water, bypass faults or change settings. Use the USB isolation procedure above; continuous logging with powered water hardware needs a separately qualified service connection.
 
-Measure the DAC's reset/power-loss/retained-output behavior. A Nano reset does not necessarily reset the separately powered DAC or lamp boards. Never assume a disconnected command means close. Current-output compliance into the valve, feedback load/common connections and startup, shutdown and signal-loss behavior remain open hardware tests.
+## Calibration and bench commissioning
 
-Fault 2 has no fitted actuator-current detector in Revision F and must not be emitted as measured hardware overcurrent. Fault 9 remains reserved. HSD drivers retain built-in thermal protection; generic FAULT maps to code 4 without claiming a unique thermal diagnosis. There is no ambient or actuator temperature acquisition. Observe actual actuator response and reset recovery; a passing simulator test is not physical validation.
+Edit [Config.h](RockSawWaterControl/Config.h) only after measurements. Positions use **basis points: 0–10000 = 0–100%**.
 
-Before field release, compile for the exact Nano Every/core/library revisions, record flash/RAM use, test all inputs and bus failures with hardware, stop the MCU deliberately, interrupt settings writes, exercise repeated power cycles and perform hot-soak and motion tests. Record results in [Validation](../docs/validation.md). No board firmware is represented as ready until those checks pass.
+- Set `ADC_REFERENCE_MV` to measured Nano reference/5 V voltage. Measure the actual A0 voltages with the valve at closed and fully open, then update `FEEDBACK_CLOSED_MV` and `FEEDBACK_OPEN_MV`. Nominal values are 475 and 2376 mV. Verify adequate error margin and monotone feedback through the stroke.
+- Without water calibration, the identity `OPENING_AT_FLOW` table means valve opening, not flow. For calibrated operation, bucket-test the actual nozzles/hose at representative pressure and construct the strictly increasing inverse table of openings for 0,10,…100% reference flow. Set `CALIBRATED_FLOW=true` to mark the changed calibration signature. Values and endpoint choices need measurement; no curve is invented by firmware. See [manual flow calibration](../docs/flow-calibration.md).
+- Firmware requires curve endpoints 0 and 10000 and strictly increasing entries. A saturated flow curve with a long flat plateau needs a deliberate full-open endpoint and distinct intermediate positions; do not enter duplicate/nonmonotone values. Pressure changes still change actual flow.
+- Changing the curve/signature invalidates older settings records deliberately; acknowledge fault 6 to restore defaults. Verify all ten cap/level positions with the new table.
+- Confirm actual stroke speed before accepting 15 s travel and 4 s no-progress deadlines. Do not increase them to conceal a jam or incorrect feedback.
+
+Start with the valve electrically disconnected and water isolated: verify 12/5 V rails, input polarity and main-power-OFF input behavior, individual lamp colors and the full lamp test. Test the DAC into the removable 250-ohm load; 4/12/20 mA corresponds to 1/3/5 V across that resistor. This firmware normally keeps a missing-feedback system closed/faulted: use the manufacturer's separate DAC example for the three isolated output measurements, then reflash this sketch. Do not bypass the controller's feedback fault just to drive an unverified valve.
+
+Next qualify the command/feedback interface and valve without pressurized water. Then test actual nozzles and water, all modes, unplugged bus/feedback, held controls, power interruption and internal watchdog recovery. Use only current-limited or appropriately fused bench leads. A battery and multimeter support staged checks but do not prove fast timing or all fault transients. Keep modules replaceable and defer coating/potting until these measurements and hot-enclosure tests pass.
+
+## Source and maintenance
+
+The control core, storage, packets, lamp scheduler and bounded transport are portable C++ headers. The `.ino` file is the Nano hardware adapter. No dynamic allocation is used by project code; fixed-size event and serial buffers bound memory use. Arduino core code and hardware drivers remain external dependencies.
+
+Packet layouts were checked against [Serial Wombat's official library](https://github.com/BroadwellConsultingInc/SerialWombatArdLib) (`PCB0046_HSD.h`, digital I/O, analog input, public data and frame counters) and [DFRobot GP8XXX](https://github.com/DFRobot/DFRobot_GP8XXX). These sources establish protocol intent, not confirmation that an untested assembly behaves correctly. The browser remains an interface simulator with some deliberately broader fault scenarios; it is not the executing firmware.

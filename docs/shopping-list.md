@@ -1,18 +1,20 @@
-# Shopping List — Revision F
+# Shopping List — Revision G
 
-Design updated 8 October 2026. USD. Retained prices reviewed 7 October; Q1 and R11 checked 8 October. **This is a planning budget, not a delivered quote to 78023.** Actual address, checkout, stock, shipping and tax remain unverified. No coupon discount is assumed. The 8.25% tax allowance is a budgeting assumption, not an address-specific tax determination.
+Design updated 8 October 2026. USD. Retained product prices reviewed 7 October. **Planning budget, not a delivered quote to 78023.** Stock, shipping, checkout tax and coupons have not been reconfirmed. The 8.25% tax allowance is a budgeting assumption.
 
-[Single-page schematic](assets/hardware/water-controller-single-page-rev-f.pdf) · [Electrical audit](hardware-audit-rev-f.md) · [Enclosure and bench notes](shopping-guide.md)
+[Single-page schematic](assets/hardware/water-controller-single-page-rev-g.pdf) · [Firmware v1](../firmware/README.md) · [Electrical audit](hardware-audit-rev-g.md) · [Enclosure and bench notes](shopping-guide.md)
 
 | Budget item | USD |
 | :--- | ---: |
-| Merchandise, including allowances | 512.95 |
+| Merchandise, including allowances | 512.10 |
 | Shipping allowance | 46.00 |
 | Unquoted fee/tariff reserve | 20.00 |
-| Planning tax at 8.25% | 47.76 |
-| **Planning total** | **626.71** |
+| Planning tax at 8.25% | 47.69 |
+| **Planning total** | **625.79** |
 
-The prior Revision E estimate was $642.90. The relay-free change saves about $16 in this budget, including removal of the separate distributor shipping allowance. Existing suitable supplies reduce purchases. The earlier $200 target remains unmet; the retained prebuilt architecture is not a $200 build. HSD price/stock is still a procurement hold.
+Revision G removes Q1, R11 and R12. This saves $0.85 in purchased component lots ($0.92 including budgeted tax); the existing ten-pack of 1 kohm resistors remains. No reset transistor or extra watchdog board is required. The earlier $200 target remains unmet with the retained prebuilt architecture.
+
+**Purchase order:** confirm PCB0046 HSD V2 availability and price with Serial Wombat first; its $30-per-board figure remains an unverified allowance. Then obtain the exact Nano, valve, DAC, receiver, input boards and lamps for bench verification. Buy enclosure glands, wire lengths and fittings after measuring the actual layout. Reuse suitable tools, connector, wiring and plumbing where available.
 
 ## Control
 
@@ -43,7 +45,7 @@ The prior Revision E estimate was $642.90. The relay-free change saves about $16
 
 | Quantity | Item / seller | Unit USD | Basis and notes |
 | :--- | :--- | ---: | :--- |
-| 1 small lot | [Small electronic parts](https://www.digikey.com/en/products/detail/yageo/MFR-50FTE52-1K/9147015) — DigiKey | 9.91 | Published. Seven exact resistor/diode/capacitor/transistor purchase lots with spares; includes Q1/R11/R12 host reset. |
+| 1 small lot | [Small electronic parts](https://www.digikey.com/en/products/detail/yageo/MFR-50FTE52-1K/9147015) — DigiKey | 9.06 | Published. Five exact resistor/diode/capacitor lots with spares. No Q1/R11/R12; retain three HSD bypass pairs. |
 | 1 set | [FR4 perfboard, Nano headers and sockets](https://www.amazon.com/s?k=FR4+perfboard+2.54mm+headers+female+socket) — Amazon | 8.00 | Allowance. Soldered carrier with secure mounting; ordinary loose Dupont jumpers are for bench use only. |
 | 1 set | [12 V, 5 V and ground distribution terminals](https://www.amazon.com/s?k=covered+barrier+terminal+block+bus+bar) — Amazon | 10.00 | Allowance. Three separate labeled buses. Quantity depends on harness layout; size to verified fuse and loads. |
 | 1 assortment | [Stranded copper internal hookup wire](https://www.amazon.com/s?k=stranded+copper+hookup+wire+22+awg+kit) — Amazon | 10.00 | Allowance. 22 AWG signal wire planning only; load/feed gauges subject to H2. Avoid copper-clad aluminum. |
@@ -73,25 +75,23 @@ The prior Revision E estimate was $642.90. The relay-free change saves about $16
 
 ## Small electronic parts
 
-Included in the main subtotal; do not count twice. All seven lots are from DigiKey. Purchase quantities include modest spares.
+Included above; do not add again.
 
-| References | Exact part / specification | Installed / buy | Unit USD | Lot USD |
-| :--- | :--- | :--- | ---: | ---: |
-| R1, R2, R3, R4, R12 | [MFR-50FTE52-1K](https://www.digikey.com/en/products/detail/yageo/MFR-50FTE52-1K/9147015) — 1 kohm, 1%, 0.5 W axial | 5 / 10 | 0.076 | 0.76 |
-| R5 | [MFR-25FBF52-100K](https://www.digikey.com/en/products/detail/yageo/MFR-25FBF52-100K/13473) — 100 kohm, 1%, 0.25 W axial | 1 / 10 | 0.042 | 0.42 |
-| D1, D2, D3 | [1N4148 (onsemi)](https://www.digikey.com/en/products/detail/onsemi/1N4148/458603) — 1N4148 axial DO-35; band = cathode | 3 / 10 | 0.060 | 0.60 |
-| C1, C10, C11, C12 | [C315C104K5R5TA](https://www.digikey.com/en/products/detail/kemet/C315C104K5R5TA/12701330) — 100 nF, 50 V, X7R, radial | 4 / 10 | 0.488 | 4.88 |
-| C7, C8, C9 | [EEU-FC1V470B](https://www.digikey.com/en/products/detail/panasonic-industry/EEU-FC1V470B/16639056) — 47 uF, 35 V, 105 C, polarized radial | 3 / 5 | 0.480 | 2.40 |
-| R11 | [CF14JT4K70](https://www.digikey.com/en/products/detail/stackpole-electronics-inc/CF14JT4K70/1741428) — 4.7 kohm, 5%, 0.25 W axial | 1 / 10 | 0.027 | 0.27 |
-| Q1 | [onsemi 2N3904BU](https://www.digikey.com/en/products/detail/onsemi/2N3904BU/1413) — NPN TO-92; pin 1 emitter, 2 base, 3 collector | 1 / 2 | 0.290 | 0.58 |
+| References | Product / seller / specification | Installed / buy | Unit USD | Lot USD |
+| :--- | :--- | ---: | ---: | ---: |
+| R1, R2, R3, R4 | [MFR-50FTE52-1K](https://www.digikey.com/en/products/detail/yageo/MFR-50FTE52-1K/9147015) — DigiKey; 1 kohm, 1%, 0.5 W axial | 4 / 10 | 0.076 | 0.76 |
+| R5 | [MFR-25FBF52-100K](https://www.digikey.com/en/products/detail/yageo/MFR-25FBF52-100K/13473) — DigiKey; 100 kohm, 1%, 0.25 W axial | 1 / 10 | 0.042 | 0.42 |
+| D1, D2, D3 | [1N4148 (onsemi)](https://www.digikey.com/en/products/detail/onsemi/1N4148/458603) — DigiKey; 1N4148 axial DO-35; band = cathode | 3 / 10 | 0.060 | 0.60 |
+| C1, C10, C11, C12 | [C315C104K5R5TA](https://www.digikey.com/en/products/detail/kemet/C315C104K5R5TA/12701330) — DigiKey; 100 nF, 50 V, X7R, radial | 4 / 10 | 0.488 | 4.88 |
+| C7, C8, C9 | [EEU-FC1V470B](https://www.digikey.com/en/products/detail/panasonic-industry/EEU-FC1V470B/16639056) — DigiKey; 47 uF, 35 V, 105 C, polarized radial | 3 / 5 | 0.480 | 2.40 |
 
-Component lots total **$9.91**. Q1/R11/R12 mount on the existing carrier; no extra board is required. Retain all three 47 µF / 100 nF HSD bypass pairs. Match transistor pin numbers to its datasheet, not appearance.
+Component lots total **$9.06**. Keep all three HSD 47 µF / 100 nF bypass pairs.
 
 ## Alternatives and optional tools
 
-These are comparisons, not drop-in schematic substitutions. Optional tools are excluded from the total.
+Excluded from the main basket.
 
-| Type | Option / link | USD | Notes |
+| Type | Option | USD | Notes |
 | :--- | :--- | ---: | :--- |
 | Enclosure | [Smaller Hammond 1554U2GY](https://www.automationdirect.com/adc/shopping/catalog/enclosures_-a-_racks/miniature_cases/1554u2gy) | 30.50 | Published; box only. 200 x 120 x 91 mm; consider only after measured two-level layout. Plate extra; smaller is harder to wire/service. |
 | Controller | [Nano Every from Arduino USA](https://store-usa.arduino.cc/products/nano-every) | 12.90 | Published; shipping extra below threshold. Same exact ABX00028; $0.80 cheaper but separate shipping may cost more. |
@@ -114,6 +114,4 @@ These are comparisons, not drop-in schematic substitutions. Optional tools are e
 | [AutomationDirect](https://www.automationdirect.com/adc/shopping/catalog/enclosures_-a-_racks/miniature_cases/1554va2gy) | 0.00 | Advertised free shipping over $49; assumed eligible box/plate/glands basket |
 | [Amazon / local / other](https://www.amazon.com/) | 10.00 | Allowance for Amazon/local/other purchases. Nilight advertises free continental-US shipping over $19.99; no additional lamp shipping included. |
 
-Reuse the existing 14-pin connector and machine fuse. No separate battery source, new machine connector, relay, relay regulator, flow meter or temperature probes are purchased. The temporary battery fuse is only a bench accessory. Inventory wire, tools and plumbing before ordering.
-
-Do not order the entire list until HSD availability and the valve interface are confirmed. Buy one input/lamp channel and qualify it before completing the harness. Use the exact manufacturer parts in the electrical schedule; generic Amazon search links identify supplies, not qualified replacements.
+Reuse the existing 14-pin machine connector; it is not a purchase item. The schematic represents it only by incoming wires named **12 V, 0 V, J, H, G**. IN is that drawing boundary. No flow meter, temperature probe, relay, external watchdog or Q1/R11/R12 is required. Existing multimeter and 12 V battery are assumed. A temporary fused battery test lead is included only for the bench, not as a new machine fuse block.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the Rev F bench-design netlist, diagrams and printable audit.
+"""Generate the Rev G bench-design netlist, diagrams and printable audit.
 
 Requires Python 3, reportlab, pypdf and Inkscape for PNG rendering.
 No firmware, hardware state or external repository is modified.
@@ -20,14 +20,14 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from pypdf import PdfReader, PdfWriter
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / 'hardware/rev-f'
+DATA = ROOT / 'hardware/rev-g'
 OUT = ROOT / 'docs/assets/hardware'
 DATA.mkdir(parents=True, exist_ok=True)
 OUT.mkdir(parents=True, exist_ok=True)
 for name, file in [('DejaVu','DejaVuSans.ttf'), ('DejaVu-Bold','DejaVuSans-Bold.ttf')]:
     pdfmetrics.registerFont(TTFont(name, '/usr/share/fonts/truetype/dejavu/' + file))
 
-N = {'revision':'F','date':'2026-10-07','status':'BENCH_DESIGN_HOLD_H1_H5',
+N = {'revision':'G','date':'2026-10-08','status':'BENCH_DESIGN_HOLD_H1_H5',
      'components':{},'nets':{},'wires':[], 'internal_connections':[], 'no_connect':[],
      'addresses':{'U2':[88],'HSD1':[96,97],'HSD2':[98,99],'HSD3':[100,101]},
      'hold_points':['H1 machine pinout','H2 fuse/conductors','H3 actual parts','H4 valve loops','H5 firmware/bench'],
@@ -138,7 +138,7 @@ N['watchdog']={'board':'HSD3','address':100,'channel':4,'timeout_ms_proposed':50
 N['pullups']={'SDA':{'ohms':4700,'onboard':'U2'},'SCL':{'ohms':4700,'onboard':'U2'},
               'FLOW_RAW':'R6','FLOW_ERROR_RAW':'R7'}
 N['jumper_configuration']={h:{'A1':h=='HSD2','A2':h=='HSD3','A3':False,'SJSDA':False,'SJSCL':False,'MAX_AMP':False} for h in ['HSD1','HSD2','HSD3']}
-# Revision F removes the optional metering branch before any export.
+# Revision G removes the optional metering branch before any export.
 # Keep surviving W-numbers stable so existing harness labels remain meaningful.
 removed = {'FM1','R6','R7','R8','R9','C2'}
 retained = lambda pin: pin.split('.')[0] not in removed and pin not in {'U1.D8','U1.D9'}
@@ -149,9 +149,9 @@ for name in list(N['nets']):
     if not N['nets'][name]['pins']: del N['nets'][name]
 N['no_connect'] += ['U1.D8','U1.D9']
 N['pullups'].pop('FLOW_RAW'); N['pullups'].pop('FLOW_ERROR_RAW')
-N['notes'] += ['Revision F: no flow meter or external temperature sensors. D7/D8/D9 unused.',
+N['notes'] += ['Revision G: no flow meter or external temperature sensors. D7/D8/D9 unused.',
                'Valve position feedback remains required. No automatic flow acquisition or water-stop detection.']
-# Revision F: shared valve power, direct signal loops, solid-state host reset.
+# Revision G: shared valve power, direct signal loops, solid-state host reset.
 removed_f = {'K1','U4','D4','C4','C5'}
 N['components'] = {ref:c for ref,c in N['components'].items() if ref not in removed_f}
 N['wires'] = [w for w in N['wires'] if w['id'] not in {'W096','W098'} and
@@ -185,10 +185,32 @@ N['watchdog']={'board':'HSD3','address':100,'channel':4,'purpose':'host_reset_on
     'timeout_ms_proposed':2000,'feed_ms_proposed':100,'default':'LOW','timeout':'HIGH',
     'return_delay':100,'reset_wombat':False,'qualified':False,
     'mcu_timeout_ms_proposed':1024,'one_shot_until_rearmed':True}
-N['notes'] += ['Revision F: K1/U4/D4/C4/C5 removed. Valve uses shared machine power and direct command/feedback.',
+N['notes'] += ['Revision G: K1/U4/D4/C4/C5 removed. Valve uses shared machine power and direct command/feedback.',
  'Wombat CH4 drives Q1 through R11; R12 holds the base low. It resets the host; it does not disconnect or close the valve.',
  'Code 2 overcurrent detection is unavailable for the directly supplied valve. Code 9 temperature remains reserved.',
  'Retained wire IDs unchanged except W086/W095/W097; new reset wiring W127-W132.']
+# Revision G: delete the external host-reset branch; represent the interface as five wires.
+removed_g={'Q1','R11','R12'}
+for ref in removed_g: del N['components'][ref]
+N['wires']=[w for w in N['wires'] if all(p.split('.')[0] not in removed_g for p in [w['from'],w['to']])]
+N['internal_connections']=[v for v in N['internal_connections'] if 'U1.RESET1' not in v]
+N['no_connect'] += ['U1.RESET1','U1.RESET2','HSD3.CH4']
+N['components'].pop('X1')
+comp('IN','Five incoming machine wires',['12V','0V','J','H','G'],'wire_boundary','No connector symbol; map these signals to the existing machine wiring')
+rename={'X1.1':'IN.12V','X1.2':'IN.0V','X1.3':'IN.G','X1.4':'IN.H','X1.5':'IN.J'}
+for w in N['wires']:
+    w['from']=rename.get(w['from'],w['from']);w['to']=rename.get(w['to'],w['to'])
+domains={k:v['domain'] for k,v in N['nets'].items()};N['nets']={}
+for w in N['wires']:
+    net=N['nets'].setdefault(w['net'],{'domain':domains[w['net']],'pins':[]})
+    for pin in [w['from'],w['to']]:
+        if pin not in net['pins']:net['pins'].append(pin)
+N['watchdog']={'type':'ATmega4809_internal','timeout_ms_proposed':2048,'external':False,'qualified':False}
+N['notes']=['Firmware v1 is a compiled bench prototype; no physical qualification performed.',
+ 'Five incoming wires are named signals, not machine connector cavity numbers.',
+ 'Revision G removes Q1/R11/R12. Nano internal watchdog only; HSD3 CH4-7 unused/off.',
+ 'No flow meter, external temperature sensor, relay, independent valve-power cut or actuator-current sensor.',
+ 'Manual connector power cycling is the recovery fallback; power loss does not close this valve.']
 (DATA/'netlist.json').write_text(json.dumps(N,indent=2)+'\n')
 with (DATA/'connections.csv').open('w',newline='') as f:
     w=csv.DictWriter(f,fieldnames=['id','net','from','to','note']);w.writeheader();w.writerows(N['wires'])
@@ -209,7 +231,7 @@ class Sheet:
         self.rect(0,0,self.w,74,NAVY)
         self.text(28,31,title,20,'#ffffff',True)
         self.text(28,56,subtitle,11,'#d7e5ef')
-        self.text(28,735,'REV F  |  07 OCT 2026  |  BENCH DESIGN - H1-H5 HOLD  |  Named nets connect across sheets',10,RED,True)
+        self.text(28,735,'REV G  |  08 OCT 2026  |  BENCH DESIGN - H1-H5 HOLD  |  Named nets connect across sheets',10,RED,True)
         self.text(28,751,'Solid dot = joined wires. Crossing without a dot = no connection. Boxes show functions, not physical footprints.',8,GRAY)
     def text(self,x,y,s,size=11,col=NAVY,bold=False):
         self.d.add(String(x,self.h-y,s,fontName='DejaVu-Bold' if bold else 'DejaVu',fontSize=size,fillColor=color(col)))
@@ -251,22 +273,22 @@ class Sheet:
 sheets=[]
 
 s=Sheet('01 / POWER AND LOCAL BUS','Supply domains, module grounds, I2C addresses and Nano connections')
-s.box(145,105,200,145,'X1 / reused connector','INTERNAL terminal labels only')
-for y,p,n,cx in [(165,'X1.1','MACHINE_12V',RED),(200,'X1.2','0V',GRAY)]:s.tagged(345,y,p,n,'right',cx)
-s.note(155,278,['X1.3 = G; X1.4 = H; X1.5 = J.','Actual machine cavities: H1 HOLD.','No additional fuse block; H2 HOLD.'])
+s.text(145,128,'INCOMING MACHINE WIRES',13,NAVY,True)
+for y,p,n,cx in [(165,'IN.12V','MACHINE_12V',RED),(200,'IN.0V','0V',GRAY)]:s.tagged(345,y,p,n,'right',cx)
+s.note(155,278,['IN.J / IN.H / IN.G are named input wires.','Actual machine cavities: H1 HOLD.','No additional fuse block; H2 HOLD.'])
 s.box(145,355,200,275,'U1 / Nano Every','Only VIN accepts machine voltage')
 for y,p,n,co in [(420,'U1.VIN','MACHINE_12V',RED),(458,'U1.GND1','0V',GRAY),(496,'U1.5V','LOGIC_5V',AMBER),(538,'U1.A4','SDA',GREEN),(576,'U1.A5','SCL',BLUE)]:s.tagged(345,y,p,n,'right',co)
 s.box(620,105,345,300,'PARALLEL SUPPLY CONNECTIONS')
 s.note(638,155,['MACHINE_12V -> TB12 -> U1 VIN + HSD1/2/3 VIN','0V -> TB0 -> all power/signal returns','LOGIC_5V -> TB5 -> U2 VCC, U3 VCC, HSD V,','O1/O2 HV (no flow meter)' ,'','HSD load GND also grounds its logic internally.','Do not carry lamp current through a logic header.','U2 OUT_GND = U2 GND internally.','U1 GND2 = U1 GND1 internally.','V1 RED also uses MACHINE_12V; no relay supply.'],10)
-s.box(620,435,345,195,'LOCAL I2C - 100 kHz')
+s.box(620,435,345,195,'LOCAL I2C - BELOW 100 kHz')
 s.note(638,485,['SDA: U1 A4 -> U2 SDA + HSD1/2/3 D','SCL: U1 A5 -> U2 SCL + HSD1/2/3 C','U2: 0x58; HSD pairs: 0x60/61, 0x62/63, 0x64/65','Use U2 onboard 4.7k pull-ups only.','Open all HSD SDA/SCL pull-up jumpers.','All bus wiring remains inside enclosure.'],10)
 s.note(145,672,['Local HSD bypass at each VIN/GND: 47 uF / 35 V (+ to VIN) in parallel with 100 nF / 50 V.','USB can energize the logic rail. Disconnect machine, valve and water before USB servicing.'],11,RED)
-sheets.append(s.save('rev-f-01-power'))
+sheets.append(s.save('rev-g-01-power'))
 
 s=Sheet('02 / G, H AND J INPUTS','SparkFun BOB-09118 v1.2: HV terminal receives 5 V, not machine voltage')
 for row,(sig,o,inp,out,dig,idx) in enumerate([('G','O1','IN1','OUT1','D2',1),('H','O1','IN2','OUT2','D3',2),('J','O2','IN1','OUT1','D4',3)]):
     y=175+155*row
-    s.text(30,y-38,f'{sig} / X1.{idx+2}',13,NAVY,True)
+    s.text(30,y-38,f'{sig} / IN.{sig}',13,NAVY,True)
     s.line((35,y),(135,y),col=RED);s.text(35,y-9,'Machine signal',9,RED)
     s.resistor(135,y,f'R{idx}','1k / 0.5 W')
     s.line((195,y),(350,y),col=GREEN);s.dot(265,y)
@@ -278,24 +300,20 @@ for row,(sig,o,inp,out,dig,idx) in enumerate([('G','O1','IN1','OUT1','D2',1),('H
     s.text(221,y+71,f'D{idx} 1N4148',9);s.text(322,y+68,'K/band to IN',9)
     s.line((265,y+80),(265,y+99));s.text(228,y+117,'A to 0V',9)
 s.note(35,660,['O1/O2 HV -> LOGIC_5V; HV-GND and INPUT_GND -> 0V. O2 IN2 -> INPUT_GND.','O2 OUT2 and both JP2 pin 1 pads unused. HIGH machine input -> HIGH Arduino input.','The three diodes are across the input LED circuits, after the external series resistors.'],11)
-sheets.append(s.save('rev-f-02-inputs'))
+sheets.append(s.save('rev-g-02-inputs'))
 
-s=Sheet('03 / DIRECT VALVE AND SOLID-STATE WATCHDOG','Shared supply; independent watchdog resets the Arduino, not the valve power')
+s=Sheet('03 / DIRECT VALVE CONNECTIONS','Shared supply; internal Nano watchdog only; no external reset or valve-power switch')
 s.box(790,110,290,330,'V1 / USS-MSV50030','One five-wire actuator cable')
 for y,p,n,co in [(177,'V1.RED','MACHINE_12V',RED),(223,'V1.BLACK','0V',GRAY),(267,'V1.WHITE','0V / SIGNAL COMMON',GRAY),(325,'V1.GREEN','U2 OUT / 4-20 mA',GREEN),(382,'V1.YELLOW','U3 I+ / FEEDBACK',BLUE)]: s.tagged(790,y,p,n,'left',co)
 s.box(35,110,360,180,'U2 / DFR1229','VCC 5 V; GND 0V; SDA A4; SCL A5')
 s.note(55,168,['OUT -> valve GREEN directly.','OUT_GND = GND -> WHITE / 0V.','Initialize to 4 mA CLOSED before controls.','0 mA is NOT the documented closed command.'],11)
 s.box(35,335,360,130,'U3 / SEN0262','VCC 5 V; GND 0V; SIGNAL -> R4 / A0')
 s.note(55,390,['I+ -> valve YELLOW directly.','I- -> WHITE / 0V. No added shunt.'],11)
-s.text(35,525,'HSD3 CH4',12,NAVY,True);s.line((35,545),(220,545),col=RED);s.resistor(220,545,'R11','4.7k / 5%')
-s.line((280,545),(475,545),col=GREEN);s.dot(360,545)
-s.box(475,493,190,129,'Q1 / 2N3904BU','1 E / 2 B / 3 C')
-s.endpoint(475,545,'Q1.2 / B','left');s.tagged(570,493,'Q1.3 / C','U1 RESET','right',BLUE)
-s.tagged(665,590,'Q1.1 / E','0V','right',GRAY)
-s.line((360,545),(360,574));s.resistor(360,574,'R12','1k / 0.5 W',True);s.line((360,624),(360,648));s.text(344,668,'0V',10)
-s.note(710,495,['CH4 LOW normally; HIGH on timeout.','Q1 pulls RESET low; never apply 12 V to RESET.','Proposed: 2 s timeout, 100 ms reset pulse.','Return LOW; no automatic repeating pulse.','Reinitialize the watchdog after every reset.'],10)
+s.box(35,500,630,158,'CONTROLLER RECOVERY / INTERNAL WATCHDOG')
+s.note(55,547,['ATmega4809 built-in watchdog: nominal 2.048 s.','No external reset circuit, relay, or watchdog board.','Nano RESET headers and HSD3 CH4-CH7 remain unconnected.','A restart requests CLOSED; it cannot guarantee water shutoff.'],11)
+s.note(710,515,['Valve power remains connected.','If recovery fails: stop work, shut off water,','then unplug/replug the machine connector.','No restored ON state after reboot.'],10)
 s.note(35,701,['No independent valve-power cut or actuator-current measurement. Reset does not guarantee closure.','Disconnect valve and machine before USB-only service. Verify power sequencing on the bench.'],11,RED)
-sheets.append(s.save('rev-f-03-valve'))
+sheets.append(s.save('rev-g-03-valve'))
 
 s=Sheet('04 / ANALOG POSITION FEEDBACK','No 12 V connection anywhere on this sheet; U2 current-loop output is not an ADC signal')
 s.box(150,117,220,205,'U3 / SEN0262','4-20 mA -> 0.48-2.40 V')
@@ -305,52 +323,55 @@ s.line((550,195),(975,195),col=GREEN);s.endpoint(975,195,'U1.A0','left');s.text(
 s.dot(615,195);s.line((615,195),(615,235));s.resistor(615,235,'R5','100k',True);s.line((615,285),(615,320));s.text(603,338,'0V',10)
 s.dot(808,195);s.line((808,195),(808,256));s.line((792,256),(824,256),width=2);s.line((792,264),(824,264),width=2);s.line((808,264),(808,320));s.text(825,259,'C1 100 nF',10);s.text(796,338,'0V',10)
 s.note(150,363,['R5 biases an open SIGNAL wire low. R4/R5 reduce the measured voltage by about 1%; calibrate.','No extra 250-ohm resistor across U3 I+/I-. C1 and R5 return locally to the Nano ground.'],10)
-s.note(150,465,['Revision F omits the flow meter and its entire interface.','Nano D8 and D9 are unused; R6-R9 and C2 are not installed.','','Valve position feedback remains required for normal control and recovery.','An indicated closed position is not an independent measurement of stopped water.','','Optional manual calibration: collect all nozzle output at known valve positions.','Store a validated monotone flow/position table; there is no automatic meter sweep.'],12)
-sheets.append(s.save('rev-f-04-feedback'))
+s.note(150,465,['Revision G omits the flow meter and its entire interface.','Nano D8 and D9 are unused; R6-R9 and C2 are not installed.','','Valve position feedback remains required for normal control and recovery.','An indicated closed position is not an independent measurement of stopped water.','','Optional manual calibration: collect all nozzle output at known valve positions.','Store a validated monotone flow/position table; there is no automatic meter sweep.'],12)
+sheets.append(s.save('rev-g-04-feedback'))
 
 s=Sheet('05 / LAMP OUTPUTS AND BOARD CONFIGURATION','Use the printed channel numbers. Each blue/white lamp needs TWO separate switched positives.')
 for h,x,ls,count,ad in [('HSD1',35,1,4,'0x60/61'),('HSD2',400,5,4,'0x62/63'),('HSD3',765,9,2,'0x64/65')]:
     s.box(x,115,320,443,h+' / PCB0046 V2',ad+'  |  LOAD VIN 12 V; VDD 5 V')
     for k in range(8):
         yy=195+k*42
-        target=(f'L{ls+k//2} '+('BLUE +' if k%2==0 else 'WHITE +')) if k<2*count else ('HOST RESET / WATCHDOG' if h=='HSD3' and k==4 else 'UNUSED / OFF')
+        target=(f'L{ls+k//2} '+('BLUE +' if k%2==0 else 'WHITE +')) if k<2*count else 'UNUSED / OFF'
         s.text(x+13,yy-6,f'CH{k}',10,NAVY,True);s.line((x+56,yy-10),(x+112,yy-10),col=BLUE if k%2==0 else GRAY)
         s.text(x+121,yy-6,target,9,GREEN if target.startswith('HOST') else NAVY)
     s.note(x+12,591,['VIN -> MACHINE_12V; LOAD GND -> 0V','D -> SDA; C -> SCL; V -> LOGIC_5V','All lamp BLACK leads -> rated 0V return'],9)
 s.note(35,667,['All HSD SDA/SCL pull-up jumpers OPEN. Address: HSD1 all open; HSD2 A1 closed; HSD3 A2 closed.','V2 component-side: printed ch7 at top, ch0 at bottom; schematic OUT1 = ch7, OUT8 = ch0.','Top supply: VIN left / G right. Bottom supply: G left / VIN right. Verify markings before power.'],11,RED)
-sheets.append(s.save('rev-f-05-lamps'))
+sheets.append(s.save('rev-g-05-lamps'))
 
 s=Sheet('06 / TERMINAL ORIENTATION AND ASSEMBLY NOTES','Physical pin references apply ONLY to the stated package and revision')
 s.box(35,115,500,320,'LOW-VOLTAGE CONNECTIONS')
-s.note(55,165,['Nano D7, D8 and D9 are unused; leave unconnected.','No external temperature probes or flow meter.','','Retain valve feedback through U3 to Nano A0.','Position feedback does not measure actual water flow.','','C1: at A0 / logic return.','Q1 / R11 / R12: solid-state host reset.','C7-C12: local HSD load-supply bypass.','Removed: FM1, R6-R10, C2, C3, C6, TS1, TS2.','Removed reference numbers are not reused.'],11)
+s.note(55,165,['Nano D7, D8 and D9 are unused; leave unconnected.','No external temperature probes or flow meter.','','Retain valve feedback through U3 to Nano A0.','Position feedback does not measure actual water flow.','','C1: at A0 / logic return.','Nano RESET headers: leave unconnected.','C7-C12: local HSD load-supply bypass.','No Q1, R11, R12 or external watchdog circuit.','Removed reference numbers are not reused.'],11)
 s.box(575,115,510,320,'POWER AND DIAGNOSTICS')
-s.note(595,165,['Valve and electronics share MACHINE_12V.','No relay or separate coil regulator.','All load returns go to rated ground distribution.','Keep lamp current out of the Nano/ADC return.','','Driver thermal protection remains built in.','Generic driver FAULT does not measure ambient heat.','THER is a control input, not a temperature output.','Codes 2 and 9: no corresponding hardware sensors.','','X1 labels are NOT verified machine pin cavities.'],11)
-s.box(35,482,500,195,'Q1 / onsemi 2N3904BU TO-92')
-s.note(55,531,['Use the exact manufacturer package drawing.','Pin 1 = emitter / 0V; pin 2 = base / R11-R12 node.','Pin 3 = collector / Nano RESET.','Do not substitute a transistor by shape alone.','No added reset pull-up: Nano has 100k to 5 V.'],11)
+s.note(595,165,['Valve and electronics share MACHINE_12V.','No relay or separate coil regulator.','All load returns go to rated ground distribution.','Keep lamp current out of the Nano/ADC return.','','Driver thermal protection remains built in.','Generic driver FAULT does not measure ambient heat.','THER is a control input, not a temperature output.','Codes 2 and 9: no corresponding hardware sensors.','','IN labels name wires, not machine pin cavities.'],11)
+s.box(35,482,500,195,'FIVE INCOMING WIRES')
+s.note(55,531,['12 V / 0 V / J / H / G enter from the left.','No connector or harness box is shown.','IN is a drawing boundary, not a purchased component.','Verify the actual reused connector before wiring.','G -> D2; H -> D3; J -> D4 through O1/O2.'],11)
 s.box(575,482,510,195,'WATCHDOG CONFIGURATION')
-s.note(595,530,['HSD3 CH4 is reserved; exclude it from lamp writes.','Normal LOW; timeout HIGH; return LOW after 100 ms.','Do NOT use 0xFFFF / permanent HIGH: reset would lock.','Verify both configuration packets and actual SW8B image.','Nano internal watchdog: proposed 1.024 s.','External pulse: proposed 2 s timeout; healthy feed 100 ms.'],10)
-sheets.append(s.save('rev-f-06-terminals'))
+s.note(595,530,['Nano internal hardware watchdog: nominal 2.048 s.','Feed only after a bounded foreground loop completes.','Every I2C transaction has a 20 ms time limit.','Reinitialize DAC and lamp boards after restart.','Keep HSD3 CH4-CH7 off and unconnected.','Verify recovery on actual hardware before field use.'],10)
+sheets.append(s.save('rev-g-06-terminals'))
 
 # Large overview, intended for identification and navigation, not a footprint guide.
 ov=Sheet('ROCK-SAW WATER CONTROL / REVISED ELECTRICAL OVERVIEW','Detailed terminal circuits: sheets 01-06. Every external wire is listed in connections.csv.')
-ov.box(35,105,240,130,'Reused machine connector','12 V + wired return + G/H/J')
-ov.box(385,105,260,130,'Arduino Nano Every','VIN -> 5 V logic; controls + sensing')
-ov.box(775,105,305,130,'Three PCB0046 HSD boards','20 lamp channels + host watchdog')
+ov.box(385,105,260,130,'Arduino Nano Every','VIN -> 5 V; built-in watchdog')
+ov.box(775,105,305,130,'Three PCB0046 HSD boards','20 lamp channels; 4 unused/off')
 ov.box(35,325,240,165,'Two BOB-09118 input boards','3 x 1k resistors + reverse diodes')
 ov.box(385,325,260,165,'DFR1229 + SEN0262','Command current / position feedback')
-ov.box(775,325,305,165,'Q1 + R11/R12 / host reset','No relay; valve uses shared supply')
 ov.box(775,595,305,90,'V1 / stainless ball valve','One five-wire actuator cable')
-ov.line((275,145),(385,145),col=RED);ov.text(283,135,'12 V / 0V',10,RED)
+for yy,label in [(125,'12 V'),(170,'0 V'),(215,'J'),(250,'H'),(285,'G')]:
+    ov.text(35,yy-8,label,11,NAVY,True)
+    ov.line((35,yy),(225,yy),col=RED if label=='12 V' else GRAY if label=='0 V' else GREEN)
+ov.text(40,85,'INCOMING MACHINE WIRES',12,NAVY,True)
+ov.line((225,125),(385,125),col=RED);ov.line((225,170),(385,170),col=GRAY)
+ov.line((225,215),(290,215),(290,307),(100,307),(100,325),col=GREEN)
+ov.line((225,250),(260,250),(260,300),(135,300),(135,325),col=GREEN)
+ov.line((225,285),(165,285),(165,325),col=GREEN)
 ov.line((645,145),(775,145),col=GREEN);ov.text(652,135,'5 V / I2C / 0V',9,GREEN)
-ov.line((150,235),(150,325),col=RED);ov.text(164,289,'G/H/J',10,RED)
 ov.line((275,374),(335,374),(335,210),(385,210),col=GREEN);ov.text(285,344,'D2/3/4',9,GREEN)
 ov.line((515,235),(515,325),col=GREEN);ov.text(531,274,'I2C / A0',10,GREEN);ov.text(531,294,'5 V / 0V',10,AMBER)
-ov.line((930,235),(930,325),col=RED);ov.text(945,281,'HSD3 ch4',10,RED)
-ov.line((775,370),(705,370),(705,205),(645,205),col=GREEN);ov.text(670,285,'RESET',10,GREEN)
 ov.line((515,490),(515,640),(775,640),col=GREEN);ov.text(540,628,'4-20 mA + signal common',10,GREEN)
-ov.line((35,185),(15,185),(15,565),(830,565),(830,595),col=RED);ov.text(120,551,'Shared MACHINE_12V + wired return directly to valve',10,RED)
+ov.line((55,125),(15,125),(15,565),(830,565),(830,595),col=RED);ov.text(120,551,'Shared MACHINE_12V + wired return directly to valve',10,RED)
+ov.note(775,340,['No external reset components.','No separately switched valve power.','RESET and HSD3 CH4-CH7 unused.','Firmware v1: bench verification required.'],11)
 ov.note(35,625,['Plumbing: manual shutoff -> strainer ->','valve -> saw sprayer. No flow meter.','No electrical wires to hose or valve body.'],11)
-ov.note(35,715,['OVERVIEW ONLY: grouped links represent multiple conductors. Use the detailed circuit sheets to assemble.'],10,RED)
+ov.note(35,715,['OVERVIEW ONLY: grouped links represent multiple conductors. Use the single-page drawing to assemble.'],10,RED)
 ov.save('water-controller-wiring-flow')
 
 # Printable vector circuit pages.
@@ -364,7 +385,7 @@ cv.save()
 
 # Convert authored Markdown into formal flowing text, keeping tables intact.
 styles={
- 'body':ParagraphStyle('body',fontName='DejaVu',fontSize=9,leading=13,spaceAfter=7),
+ 'body':ParagraphStyle('body',fontName='DejaVu',fontSize=9,leading=12.2,spaceAfter=6),
  'h1':ParagraphStyle('h1',fontName='DejaVu-Bold',fontSize=19,leading=23,spaceAfter=14),
  'h2':ParagraphStyle('h2',fontName='DejaVu-Bold',fontSize=13,leading=17,spaceBefore=14,spaceAfter=8,keepWithNext=True),
  'h3':ParagraphStyle('h3',fontName='DejaVu-Bold',fontSize=10.5,leading=15,spaceBefore=11,spaceAfter=6,keepWithNext=True),
@@ -386,9 +407,9 @@ def table(rows,widths=None):
     t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),color(NAVY)),('VALIGN',(0,0),(-1,-1),'TOP'),('LEFTPADDING',(0,0),(-1,-1),6),('RIGHTPADDING',(0,0),(-1,-1),6),('TOPPADDING',(0,0),(-1,-1),6),('BOTTOMPADDING',(0,0),(-1,-1),6),('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,color(PALE)]),('LINEBELOW',(0,0),(-1,0),.7,color(NAVY))]))
     return t
 def footer(canv,doc):
-    canv.setFont('DejaVu',8);canv.setFillColor(color(RED));canv.drawString(44,25,'REV F  |  BENCH DESIGN - RELEASE HOLDS H1-H5')
+    canv.setFont('DejaVu',8);canv.setFillColor(color(RED));canv.drawString(44,25,'REV G  |  BENCH DESIGN - RELEASE HOLDS H1-H5')
     canv.setFillColor(color(GRAY));canv.drawRightString(A4[0]-44,25,f'Audit / {doc.page}')
-story=[];lines=(ROOT/'docs/hardware-audit-rev-f.md').read_text().splitlines();i=0
+story=[];lines=(ROOT/'docs/hardware-audit-rev-g.md').read_text().splitlines();i=0
 while i<len(lines):
     line=lines[i].strip();i+=1
     if not line:continue
@@ -415,7 +436,7 @@ story.append(para('Unused external terminals','h2'));story.append(para('; '.join
 story.append(PageBreak());story.append(para('Complete parts schedule','h1'))
 story.append(para('Values specify the proposed circuit. Distribution hardware, cable sizes, sealed connectors and enclosure remain subject to physical hold points. Test instruments and the removable DAC test resistor are not installed circuit components.'))
 story.append(table([['Ref','Specification','Note']]+[[ref,v['part'],v['note']] for ref,v in N['components'].items()],[52,257,198]))
-tp=tmp/'audit.pdf';SimpleDocTemplate(str(tp),pagesize=A4,leftMargin=44,rightMargin=44,topMargin=42,bottomMargin=45,title='Water Controller - Rev F Electrical Audit',author='Rock Saw Water Control project').build(story,onFirstPage=footer,onLaterPages=footer)
+tp=tmp/'audit.pdf';SimpleDocTemplate(str(tp),pagesize=A4,leftMargin=44,rightMargin=44,topMargin=42,bottomMargin=45,title='Water Controller - Rev G Electrical Audit',author='Rock Saw Water Control project').build(story,onFirstPage=footer,onLaterPages=footer)
 writer=PdfWriter()
 text_reader=PdfReader(str(tp))
 # Put the actual release decision before any circuit drawing.
@@ -424,16 +445,16 @@ writer.append(str(cp))
 writer.append(text_reader,pages=(1,len(text_reader.pages)))
 writer.add_outline_item('Read first: release status and required evidence',0)
 writer.add_outline_item('Electrical overview',1)
-for i,label in enumerate(['Power and I2C','G/H/J inputs','Direct valve and host watchdog','Valve position feedback','Lamp channels','Terminal orientation and assembly notes'],2):
+for i,label in enumerate(['Power and I2C','G/H/J inputs','Direct valve and internal watchdog','Valve position feedback','Lamp channels','Terminal orientation and assembly notes'],2):
     writer.add_outline_item(label,i)
 for i,page in enumerate(writer.pages):
     txt=page.extract_text() or ''
     for phrase in ['Complete external connection schedule','Complete parts schedule','Source register']:
         if txt.startswith(phrase):writer.add_outline_item(phrase,i)
-writer.add_metadata({'/Title':'Rock Saw Water Control - Revision F electrical audit and schematic','/Subject':'Bench design; hardware release on hold H1-H5','/Author':'Rock Saw Water Control project'})
-with (OUT/'water-controller-audit-rev-f.pdf').open('wb') as f:writer.write(f)
+writer.add_metadata({'/Title':'Rock Saw Water Control - Revision G electrical audit and schematic','/Subject':'Bench design; hardware release on hold H1-H5','/Author':'Rock Saw Water Control project'})
+with (OUT/'water-controller-audit-rev-g.pdf').open('wb') as f:writer.write(f)
 subprocess.run(['inkscape',str(OUT/'water-controller-wiring-flow.svg'),'--export-type=png','--export-width=2800','--export-filename='+str(OUT/'water-controller-wiring-flow.png')],check=True,stdout=subprocess.DEVNULL)
-manifest={'revision':'F','wires':len(N['wires']),'components':len(N['components']),'nets':len(N['nets']),
-          'pdf_pages':len(writer.pages),'source_sha256':hashlib.sha256((ROOT/'docs/hardware-audit-rev-f.md').read_bytes()).hexdigest()}
+manifest={'revision':'G','wires':len(N['wires']),'components':len(N['components']),'nets':len(N['nets']),
+          'pdf_pages':len(writer.pages),'source_sha256':hashlib.sha256((ROOT/'docs/hardware-audit-rev-g.md').read_bytes()).hexdigest()}
 (DATA/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print(json.dumps(manifest))

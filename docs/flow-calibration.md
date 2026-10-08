@@ -1,6 +1,6 @@
 # Flow Calibration Plan
 
-Revision E has **no permanent flow meter**. Start with valve-opening levels, or add a manually measured lookup table after bench qualification. An automatic flow-measuring calibration run is not included.
+Revision G has **no permanent flow meter**. Start with valve-opening levels, or add a manually measured lookup table after bench qualification. An automatic flow-measuring calibration run is not included.
 
 The optional calibrated hardware control scale is **percentage of calibrated flow**, using measurements from the actual valve, hose and spray heads. The current simulator still uses linear actuator-opening percentages because measured calibration data has not yet been supplied. Its ball readout will continue to show physical opening even after a flow curve is added.
 
@@ -39,3 +39,7 @@ Preserve the last committed calibration until a complete replacement validates. 
 A lookup curve improves the spacing of the controls without a permanent flow sensor. It predicts flow at the conditions used for calibration. Different supply pressure, nozzle wear, blockage or hose routing can change actual flow. Label this **calibrated flow %**, not live measured GPM. Closed-loop flow regulation would require a flow meter and a separate control loop; the valve's position feedback is not a flow meter.
 
 A pressure regulator and gauge may help keep the calibration useful. The regulator requires sufficient upstream pressure and capacity; it cannot correct an inadequate source. Keep the selected valve and plumbing within their pressure limits.
+
+## Firmware v1 implementation
+
+The initial sketch uses an eleven-point inverse table in [Config.h](../firmware/RockSawWaterControl/Config.h), bounded piecewise-linear interpolation and nearest-physical-position remapping. The shipped table is identity, so it represents opening percentage. Populate it only with measured results; this release has no interactive calibration uploader, automatic fit or measuring sweep. Firmware requires strictly increasing openings and endpoints 0/10000. The [firmware guide](../firmware/README.md#calibration-and-bench-commissioning) describes endpoint, saturation and saved-record considerations.

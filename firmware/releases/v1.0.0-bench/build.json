@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0-bench",
+  "hardware_revision": "G",
+  "fqbn": "arduino:megaavr:nona4809:mode=off",
+  "arduino_cli": "1.3.1",
+  "core": "arduino:megaavr@1.8.8",
+  "compiler": "avr-gcc 7.3.0-atmel3.6.1-arduino5",
+  "flash_bytes": 15383,
+  "static_ram_bytes": 982,
+  "native_assertions": 301788,
+  "physical_tests_performed": false,
+  "hex_sha256": "232905313c87b691fd37ac6ecb180c14f1a2b1164433d79659243f10212c6b55",
+  "source_sha256": {
+    "firmware/RockSawWaterControl/Config.h": "f7384984351f26baf8fe386f7570b2bd39aa98c7d185b8c75643783c8614b6db",
+    "firmware/RockSawWaterControl/Controller.h": "cdf8963e476753d68c31c2504869319caf68b1ba9ec42a1d082a13bf58e81389",
+    "firmware/RockSawWaterControl/Diagnostics.h": "6233229a56dd5c532e60a4d283bcf89d926441da0b44487b8f06c6da384e9ee0",
+    "firmware/RockSawWaterControl/Lamps.h": "1f07f5e43565ae4851841b9b4e5d9390bfdc9c6379a56d838a26857647516a75",
+    "firmware/RockSawWaterControl/Protocol.h": "b0479a2ad198ae2f01d991edafa9f34b80762e66591d3473678330537a85b5a8",
+    "firmware/RockSawWaterControl/RockSawWaterControl.ino": "2e6afc5161b5266df77ee86564b221b2ce889c3b003a7efc4e97e0a9bc196439",
+    "firmware/RockSawWaterControl/SoftI2C.h": "c04ac623d58bc47ab3e1b8aae0071084105dde4c97789e6537dd5b56c1242db6",
+    "firmware/RockSawWaterControl/Storage.h": "84ba9439b4a2e8e4b0edb9d3f26762df6723c8814d5a6672ab372a1288d68a8f"
+  }
+}
