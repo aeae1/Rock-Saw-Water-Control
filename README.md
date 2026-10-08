@@ -8,9 +8,18 @@ A configurable attachment water controller for machines that provide three indep
 
 **Project status:** interactive simulator and Revision G electrical bench design. The [connection audit](docs/hardware-audit-rev-g.md) includes circuit sheets, 102 individual connections, parts, tests and power-up checks. Machine harness verification, protection coordination, actual component qualification, actuator characterization and firmware/bench testing remain release holds. [Firmware v1.0.0-bench](firmware/README.md) is included and compiled for the Nano Every. Physical qualification is still required.
 
-[![Revision G assembly concept with ten lamps, prebuilt driver boards and proportional valve, without a flow meter](docs/assets/hardware/assembly-concept-rev-g.png)](docs/assets/hardware/assembly-concept-rev-g.png)
+## Assembly views
 
-*Revision G physical-layout illustration: Nano internal watchdog only, four unused HSD outputs, direct valve power and signals, and five separate incoming wires. Component appearances and routing are illustrative; use the schematic for connections. [Illustration provenance](docs/assets/hardware/assembly-concept-rev-g-prompt.md).*
+[![Revision G assembly concept: complete controller with ten lamps, a separate proportional valve, and water hoses routed clear of the electronics enclosure](docs/assets/hardware/assembly-complete-rev-g.png)](docs/assets/hardware/assembly-complete-rev-g.png)
+
+*Complete assembly concept. The water hoses connect to the valve plumbing. Separate electrical cables connect the enclosure to the lamp display and valve actuator.*
+
+| Enclosure interior | Removable Arduino carrier |
+| :---: | :---: |
+| [![Proposed enclosure layout with three lamp-driver boards, Nano Every, two input boards, and valve command and feedback modules](docs/assets/hardware/assembly-interior-rev-g.png)](docs/assets/hardware/assembly-interior-rev-g.png) | [![Exploded mechanical concept showing the Nano Every, female sockets on a perfboard carrier, insulating standoffs, and mounting plate](docs/assets/hardware/assembly-carrier-rev-g.png)](docs/assets/hardware/assembly-carrier-rev-g.png) |
+| Proposed board placement and cable routing. | The Arduino plugs into sockets while the carrier remains wired. |
+
+**Illustration limits:** these AI-generated assembly concepts show the intended arrangement. Some rendered terminal counts, numbering, and component details differ from the actual boards. Enclosure dimensions, board fit, and the carrier layout remain provisional. Use the [Revision G schematic](docs/assets/hardware/water-controller-single-page-rev-g.pdf), connection schedule, and actual component markings for assembly. Select an image to view it at full size. [Illustration provenance and scope](docs/assets/hardware/assembly-views-rev-g.md).
 
 ## Wiring schematic
 
