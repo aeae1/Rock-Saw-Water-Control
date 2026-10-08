@@ -1,4 +1,18 @@
-# Validation Plan
+# Validation
+
+## Revision F checks
+
+Revision F removes K1/U4/D4/C4/C5, reroutes three valve wires and adds Q1/R11/R12 for host reset. All 108 wires and 41 components are checked against the continuous drawing and purchasing records. The single-page PDF is one A0 sheet; the detailed booklet remains separate. [Review record](single-page-schematic-review-rev-f.md) · [Current electrical audit](hardware-audit-rev-f.md).
+
+Local run: **230 tests passed** (206 simulator scenarios and 24 electrical checks); documentation checks passed for 193 local links and the complete drawing/purchase records. Browser behavior was not changed; hosted CI remains the cross-browser gate.
+
+The test suite retains 206 deterministic simulator scenarios and historical circuit comparisons. Current electrical mutation tests cover direct 12 V on RESET, a bypassed base resistor, reversed transistor terminals, missing pull-down, wrong watchdog polarity/duration, ADC/input errors and lamp/address conflicts. Resistor drive/leakage/thermal calculations are checked across the proposed 9–16 V bench envelope. These do not establish semiconductor behavior or field reliability.
+
+The browser keeps its existing gesture and fault-motion model. Revision F physical firmware is not supplied: it must use a usable command path for best-effort closure and cannot independently cut valve power or measure motor current. Simulated code 2 does not imply a fitted detector. H1–H5 remain open; new acceptance work must include shared-supply loss, USB-only separation, retained DAC state, reset pulses, broken signals, measured feedback and enclosure heat.
+
+## Historical validation records
+
+ Plan
 
 ## Revision E checks
 

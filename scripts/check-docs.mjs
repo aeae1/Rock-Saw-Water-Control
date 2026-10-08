@@ -29,11 +29,11 @@ const readme = readFileSync(resolve(root, 'README.md'), 'utf8');
 if (!readme.slice(0, 600).includes('https://aeae1.github.io/Rock-Saw-Water-Control/')) errors.push('README simulator link must remain near the top.');
 const png = readFileSync(resolve(root, 'docs/assets/hardware/water-controller-wiring-flow.png'));
 if (png.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') errors.push('Current wiring overview must be a PNG, not an error response.');
-if (!readme.includes('![Revision E circuit sheet 03:')) errors.push('README must display the current detailed schematic preview.');
-if (!readme.includes('![Revision E assembly concept')) errors.push('README must display the current meter-free assembly illustration.');
-const image = readFileSync(resolve(root, 'docs/assets/hardware/assembly-concept-rev-e.png'));
+if (!readme.includes('![Revision F circuit sheet 03:')) errors.push('README must display the current detailed schematic preview.');
+if (!readme.includes('![Revision F assembly concept')) errors.push('README must display the current meter-free assembly illustration.');
+const image = readFileSync(resolve(root, 'docs/assets/hardware/assembly-concept-rev-f.png'));
 if (image.subarray(0,8).toString('hex') !== '89504e470d0a1a0a') errors.push('Assembly illustration must be a PNG.');
-const netlistBytes = readFileSync(resolve(root, 'hardware/rev-e/netlist.json'));
+const netlistBytes = readFileSync(resolve(root, 'hardware/rev-f/netlist.json'));
 const netlist = JSON.parse(netlistBytes);
 const shopping = JSON.parse(readFileSync(resolve(root, 'docs/shopping-data.json')));
 const purchasing = [...shopping.items, ...shopping.smallParts, ...shopping.reusedParts];
@@ -43,10 +43,12 @@ for (const item of shopping.smallParts) {
   if (item.installed !== item.refs.length || item.buy < item.installed || !Number.isInteger(item.buy) || item.price <= 0 || !item.url.startsWith('https://')) errors.push(`Invalid small-parts purchase: ${item.part}`);
 }
 const passiveTotal = Math.round(shopping.smallParts.reduce((sum,item) => sum + item.buy * item.price,0)*100)/100;
-if (shopping.items.find(item => item.item === 'Exact resistors, diodes and capacitors').price !== passiveTotal) errors.push('Main passive-parts budget differs from the individual purchase lots.');
-const single = readFileSync(resolve(root, 'docs/assets/hardware/water-controller-single-page-rev-e.svg'), 'utf8');
+if (shopping.items.find(item => item.item === 'Small electronic parts').price !== passiveTotal) errors.push('Main passive-parts budget differs from the individual purchase lots.');
+const preview = readFileSync(resolve(root, 'docs/assets/hardware/water-controller-single-page-rev-f.png'));
+if (preview.subarray(-12).toString('hex') !== '0000000049454e44ae426082') errors.push('Single-page PNG is truncated or has no IEND chunk.');
+const single = readFileSync(resolve(root, 'docs/assets/hardware/water-controller-single-page-rev-f.svg'), 'utf8');
 const hash = data => createHash('sha256').update(data).digest('hex');
-const manifest = JSON.parse(readFileSync(resolve(root, 'hardware/rev-e/single-page-manifest.json')));
+const manifest = JSON.parse(readFileSync(resolve(root, 'hardware/rev-f/single-page-manifest.json')));
 if (manifest.pdf_pages !== 1 || manifest.netlist_sha256 !== hash(netlistBytes)) errors.push('Single-page export manifest is stale or not one page.');
 for (const [name, sha] of Object.entries(manifest.outputs)) {
   if (hash(readFileSync(resolve(root, 'docs/assets/hardware', name))) !== sha) errors.push('Stale single-page export: '+name);

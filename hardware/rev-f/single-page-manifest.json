@@ -1,0 +1,13 @@
+{
+  "revision": "F",
+  "drawing_type": "continuous-wiring",
+  "pdf_pages": 1,
+  "external_wires": 108,
+  "components": 41,
+  "netlist_sha256": "b4ed194300208ecde89c7be97f0506f99cc5f2ad21de2a0cdb0f27d83d9e9b02",
+  "outputs": {
+    "water-controller-single-page-rev-f.svg": "bc1250355904af674f4684c695071f4c0229f8bc3c4fb3a908a739b6efdef969",
+    "water-controller-single-page-rev-f.pdf": "792a384e9223dfea48ed0c33bcfc390305b58fb46d9b0530fd762b6801396865",
+    "water-controller-single-page-rev-f.png": "2f7cb4c93b11762a0d3e4b04201f21e721db516f10bacbc99d5ff713f0ca8766"
+  }
+}

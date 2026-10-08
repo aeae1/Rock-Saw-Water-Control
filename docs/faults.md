@@ -1,6 +1,8 @@
 # Fault Detection and Recovery
 
-Revision 0.11 · Simulator behavior and proposed firmware contract
+Revision 0.12 · Simulator behavior, with Revision F hardware limits
+
+**Revision F hardware distinction:** the following movement-inhibit behavior describes the existing browser model. The physical circuit has direct valve power and no actuator-current sensor. Firmware must attempt a closed command when possible, monitor feedback, and report uncertain closure; no software flag can physically disconnect this actuator. Code 2 remains available as a simulated scenario, but has no fitted detector.
 
 ## Common response
 
@@ -8,7 +10,7 @@ The simulator has one ON/OFF toggle for each of the nine supported fault causes.
 
 On a fault, cancel pending gestures and draft edits, clear Normal/Flush run commands and latch the code. Codes 6, 7 and 10 request one automatic close when no drive-inhibiting fault is latched. Codes 1–5 and 8 stop movement and invalidate the position reference. All opening commands are inhibited. Every latched code has its own numbered lamp; simultaneous faults are displayed together. The heading names the lowest numbered code and reports how many are latched. A blue code means that cause has cleared; any remaining white code still blocks acknowledgement of the entire set.
 
-**Stopped is not closed.** An actuator may hold an open position and continue passing water. For the proportional hardware, a fault response must be mapped to a characterized stop/power-inhibit circuit; removing a 4–20 mA signal is not assumed to close or stop it. Do not repeatedly drive a jammed actuator. Use the upstream manual shutoff if flow must stop and the actuator cannot close.
+**Stopped is not closed.** The simulator can stop its ideal movement model; the Revision F circuit cannot independently remove actuator power. A lost command may leave the valve open. Use the manual water shutoff when closure is uncertain, and isolate electrical power for a jam/repair. No signal-loss behavior is assumed.
 
 ## Automatic closing versus movement inhibition
 
@@ -21,21 +23,21 @@ A drive-inhibiting code takes priority regardless of arrival order, including wh
 
 Reset leaves water OFF. If closure is already confirmed, reset causes no additional movement. If an automatic close is underway, it retains its original deadline. Otherwise a deliberate reset authorizes one closing/reference attempt. A failure during that attempt inhibits drive again and requires correction and a new acknowledgement. J must be released for 100 ms after closure before a fresh command is accepted; G/H may remain held. Prior rocker activity is consumed.
 
-The ideal browser motion reaches its closed target on a five-second full-stroke model. Inject a jam/timeout/position fault to test an interrupted attempt; the browser does not simulate physical sensors or autonomously discover mechanical failure. Production firmware must separately validate voltage, driver/bus health, feedback progress and bounded closure time. Keep supervised valve power and the closed command available during healthy automatic closing; do not remove power merely because an operator fault latched. A watchdog or unsafe valve-path condition must still inhibit drive independently. A closed indication requires qualified position feedback, not elapsed time alone.
+The ideal browser motion reaches its closed target on a five-second full-stroke model. Inject a jam/timeout/position fault to test an interrupted attempt; the browser does not simulate physical sensors or autonomously discover mechanical failure. Revision F firmware must separately validate voltage, driver/bus health, feedback progress and bounded closure time. Shared valve power remains present; the watchdog resets the host and cannot independently inhibit actuator drive. A closed indication requires qualified position feedback, not elapsed time alone.
 
 ## Codes
 
 | Lamp | Fault | Proposed detection in firmware | Correct before reset |
 | ---: | :--- | :--- | :--- |
 | 1 | Supply / brownout | Protected-rail voltage outside its validated operating window; brownout or watchdog reset cause | Repair supply/ground; wait for stable voltage. Watchdog resets require investigation if repeated. |
-| 2 | Valve jam / overcurrent | Sustained measured current above characterized limit, or motion fails with elevated current; exclude verified startup inrush | Isolate water, clear obstruction, inspect actuator and wiring. No automatic reversal/retry. |
+| 2 | Valve jam / overcurrent | Simulator only in Revision F: no actuator-current sensor fitted; use qualified position/time diagnostics for physical motion failure | Isolate water, clear obstruction, inspect actuator and wiring. No automatic reversal/retry. |
 | 3 | Interface communication | DAC/lamp-board transfer timeout, failed initialization or stale required telemetry | Repair connector/bus/device; require repeated healthy transfers before reset. |
 | 4 | Output driver | Hardware diagnostic, short circuit, overtemperature, or commanded-vs-measured output disagreement | Remove short/overload; repair failed driver. A driver without diagnostics cannot report this reliably. |
 | 5 | Motion timeout | Target not reached within a characterized travel deadline; no progress despite valid command and feedback | Check water load, mechanical travel and feedback. Do not extend the deadline automatically. |
 | 6 | Invalid saved settings | Bad format/version, checksum, range or interrupted write with no valid redundant record | Acknowledge to restore level 4 / max 100%, still OFF; service memory if it repeats. |
 | 7 | Conflicting inputs | G and H simultaneously asserted beyond the debounce window; invalid conditioned input state | Center rocker; repair wiring. A latched G or H alone is normal and is not a fault. |
 | 8 | Position unavailable | Feedback disconnected, out of characterized electrical range, implausible change or persistent disagreement | Restore feedback and reference closed. Stale calculated travel is not a position measurement. |
-| 9 | Reserved | External temperature sensing removed in Revision D; still omitted in Revision E | Not generated or offered as a simulator cause; remaining codes keep their numbers. |
+| 9 | Reserved | External temperature sensing removed in Revision D; still omitted in Revision F | Not generated or offered as a simulator cause; remaining codes keep their numbers. |
 | 10 | Stuck J | J continuously active for 30 seconds | Release J; inspect sticking switch/shorted wiring. This detection is implemented in the simulator. |
 
 Thresholds and confirmation times are deliberately not released as hardware constants until the selected assembly is measured. The simulator uses a five-second ideal stroke; the candidate proportional valve has a different manufacturer stroke limit. Fault 8 includes failure to confirm closure during recovery. Electrical feedback health alone cannot prove physical valve movement: test feedback behavior under a jam.
@@ -81,23 +83,23 @@ A hold started while a cause is active is blocked for its entire duration. Clear
 
 The simulator retains latches through its machine-power switch, not a page reload. Firmware must use a bounded, integrity-checked persistent fault record or reset-cause handling so power cycling cannot silently resume a previously faulted run. Persist only state changes and use redundant records; do not write flash/EEPROM on every loop or animation frame.
 
-For Revision E hardware, opening the inhibit relay also removes position feedback. Recovery must first check independently observable preconditions, then permit one deliberate, bounded closing attempt to requalify powered feedback/current/closure. Keep actuator-dependent checks marked pending and retain the fault record until that attempt passes. Requiring valid powered feedback before supplying actuator power would deadlock recovery. The simulator's injected-cause controls are a proxy for these checks; they are not the hardware sequence. See the [electrical audit](hardware-audit-rev-e.md) for the proposed recovery contract.
+For Revision F hardware, position feedback stays connected whenever the shared supply is present. Recovery requires qualified supply, communication and feedback checks plus a bounded closed-position attempt where necessary. The valve has no independent power disconnect. The [electrical audit](hardware-audit-rev-f.md) and [firmware contract](../firmware/README.md) define this separate physical response.
 
 ## Limits and additional protections
 
-- Revision E has no flow meter or pressure sensor. It cannot automatically detect no water, a blocked nozzle, water leaking through a closed valve, or actual flow rate. Valve feedback reports position; it does not independently confirm hydraulic shutoff.
+- Revision F has no flow meter or pressure sensor. It cannot automatically detect no water, a blocked nozzle, water leaking through a closed valve, or actual flow rate. Valve feedback reports position; it does not independently confirm hydraulic shutoff.
 - A disconnected trigger can look exactly like a released trigger with simple digital inputs. Detecting open wires requires supervised inputs and compatible end-of-line hardware.
 - Lamp open-circuit detection needs diagnostic drivers or channel-current measurement. A software pattern test only checks commanded colors.
-- Hardware brownout handling and an independent watchdog/output-inhibit path must work if firmware freezes. A watchdog reboot is not itself a guaranteed water shutoff.
+- Hardware brownout handling and an characterized watchdog/reset path must work if firmware freezes. A watchdog reboot is not itself a guaranteed water shutoff.
 - On healthy power loss, a non-return actuator can stay open. Guaranteed electrical-failure closure requires a separately engineered normally-closed shutoff or stored-energy/spring-return system; it is outside the present BOM.
 - Opening as low as 1% is possible in the level/cap arithmetic. Verify minimum repeatable travel and useful spray on the actual valve/nozzle before finalizing physical calibration.
 
 ## Detection coverage of the current hardware direction
 
-The [Revision E circuit](hardware-audit-rev-e.md) specifies HSD supply measurement, a supervised actuator branch with current measurement and position feedback, with no flow meter or external temperature sensors. It has no completed acquisition firmware or physical qualification. Therefore none of these is claimed as implemented hardware protection. The actuator-branch current includes the relay/regulator baseline. Code 3 requires bounded communication and initialization checks; analog feedback has no I2C acknowledgement and must be checked by range, plausibility and progress instead.
+The [Revision F circuit](hardware-audit-rev-f.md) specifies HSD supply and lamp diagnostics, direct valve power, analog position feedback and host reset. It has no actuator-current sensor, flow meter or temperature probes. Code 2 is not a fitted detector. No acquisition firmware or physical qualification is supplied. Code 3 requires bounded communication checks; feedback is analog and requires range, plausibility and progress checks.
 
-For Revision E firmware, code 8 covers position/reference measurement failures and code 5 covers motion/closed-position timeouts. No flow-interface subcode or missing-meter condition is enabled. Existing lamp numbers and acknowledgement behavior remain unchanged. Detailed causes can be recorded through the [logging specification](hardware-audit-rev-e.md#does-the-arduino-log-faults).
+For Revision F firmware, code 8 covers position/reference measurement failures and code 5 covers motion/closed-position timeouts. No flow-interface subcode or missing-meter condition is enabled. Existing lamp numbers and acknowledgement behavior remain unchanged. Detailed causes can be recorded through the [logging specification](hardware-audit-rev-f.md#logging-enclosure-and-service).
 
-A fault affecting the display board or bus may prevent the fault lamp from lighting. The display must never be the mechanism that enforces valve inhibition. The physical inhibit response, feedback independence and output states during reset remain acceptance requirements in the [audit](audit-2026-10-03.md).
+A fault affecting the display board or bus may prevent the fault lamp from lighting. The display must never be the mechanism that enforces valve inhibition. The actual command response, feedback validity and peripheral states during reset remain acceptance requirements in the [audit](audit-2026-10-03.md).
 
-Revision E has no automatic enclosure or actuator-temperature measurement. The HSD chips retain intrinsic thermal shutdown. Their shared FAULT output can also indicate other conditions, so software must report code 4 without claiming a unique thermal diagnosis. THER is a behavior-control input, not a temperature-reading output. Characterize retry/latch behavior during H5; thermal hardware recovery alone must not authorize an application restart.
+Revision F has no automatic enclosure or actuator-temperature measurement. The HSD chips retain intrinsic thermal shutdown. Their shared FAULT output can also indicate other conditions, so software must report code 4 without claiming a unique thermal diagnosis. THER is a behavior-control input, not a temperature-reading output. Characterize retry/latch behavior during H5; thermal hardware recovery alone must not authorize an application restart.

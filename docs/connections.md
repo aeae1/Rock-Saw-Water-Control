@@ -1,8 +1,8 @@
 # Conceptual Connections
 
-Reviewed 2026-10-07 · Revision E functional overview
+Reviewed 2026-10-07 · Revision F functional overview
 
-These diagrams show functions, not terminal-level construction wiring. G/H/J mean increase, decrease and trigger; they are not verified machine connector cavities. Use the [Revision E audit and detailed schematic](hardware-audit-rev-e.md) for terminal wiring, board configuration and release holds.
+These diagrams show functions, not terminal-level construction wiring. G/H/J mean increase, decrease and trigger; they are not verified machine connector cavities. Use the [Revision F audit and detailed schematic](hardware-audit-rev-f.md) for terminal wiring, board configuration and release holds.
 
 ## Control and feedback
 
@@ -11,13 +11,13 @@ flowchart TD
     I["G / H / J: machine signals"] --> Q["Resistors and two opto boards"]
     Q --> C["Arduino Nano Every"]
     C -->|"Local I²C"| D["DFR1229 current command"]
-    D -->|"Command through K1 NO contact"| V["Integrated valve actuator"]
-    V -->|"Feedback through second K1 NO contact"| R["SEN0262 receiver"]
+    D -->|"Direct 4–20 mA command"| V["Integrated valve actuator"]
+    V -->|"Direct 4–20 mA feedback"| R["SEN0262 receiver"]
     R -->|"Analog voltage to A0"| C
     C -->|"Local I²C"| H["Three PCB0046 HSD boards"]
     H -->|"20 switched 12 V color leads"| L["Ten blue/white lamps"]
-    H -->|"Watchdog channel 4"| P["Valve power and signal relay"]
-    P --> V
+    H -->|"Watchdog channel 4"| P["Q1 + two resistors"]
+    P -->|"RESET pull-down"| C
 ```
 
 The receiver uses an analog input. The proportional actuator includes its motor and controller; no external reversing H-bridge is involved. The HSD boards combine I/O expansion and high-side switching.
@@ -26,14 +26,14 @@ The receiver uses an analog input. The proportional actuator includes its motor 
 
 | Source / branch | Loads and returns |
 | :--- | :--- |
-| Existing machine connector, verified 12 V | Nano VIN and HSD load inputs |
+| Existing machine connector, verified 12 V | Nano VIN, HSD load inputs and valve RED |
 | Connector wired ground | Power distribution return; separate load and analog-return routing |
 | Nano 5 V rail, after load/thermal verification | HSD logic, DFR1229, SEN0262, input board HV |
 | Twenty HSD switched outputs | One blue or white lamp-positive lead each |
 | Lamp common negatives | Ground distribution, sized for combined current |
-| HSD3 channel 4 / wired return | Valve red / black; dedicated relay-coil regulator input / return |
+| HSD3 channel 4 | R11 to Q1 base; R12 base pull-down; Q1 collector to Nano RESET |
 
-This reference installation uses the existing machine fuse and assumes clean nominal 12 V. No additional fuse block or separate source is included. Constant power does not identify key state. Fuse/wire coordination, key-off behavior and the proposed watchdog/inhibit circuit must be qualified before field use. Never power lamps or the valve through Nano GPIO or the 5 V logic rail.
+This reference installation uses the existing machine fuse and assumes clean nominal 12 V. No additional fuse block or separate source is included. Constant power does not identify key state. Fuse/wire coordination, key-off behavior and the proposed watchdog/reset circuit must be qualified before field use. Never power lamps or the valve through Nano GPIO or the 5 V logic rail.
 
 ## One lamp, repeated ten times
 

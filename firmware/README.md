@@ -1,20 +1,22 @@
 # Firmware Integration Contract
 
-Revision 0.9 · Updated 2026-10-07
+Revision 1.0 · Updated 2026-10-07
 
-No flashable firmware is supplied. The browser simulator is an executable operator-interface reference, not Arduino firmware. The current hardware direction is Nano Every, DFR1229 command, SEN0262 feedback to A0, three PCB0046 boards, with no flow meter or external temperature sensors. See the [Revision E electrical audit](../docs/hardware-audit-rev-e.md) for the complete proposed circuit and release holds.
+No flashable firmware is supplied. The browser simulator is an executable operator-interface reference, not Arduino firmware. The current hardware direction is Nano Every, DFR1229 command, SEN0262 feedback to A0, three PCB0046 boards, with no flow meter or external temperature sensors. See the [Revision F electrical audit](../docs/hardware-audit-rev-f.md) for the complete proposed circuit and release holds.
 
-## Revision E hardware integration requirements
+## Revision F hardware integration requirements
 
 - D2/D3/D4 are active-high G/H/J inputs after the selected opto boards. D7/D8/D9 are unused; configure them without a required sensor acquisition or missing-meter fault.
 - A control input may already be electrically asserted when the main supply returns. Preserve startup-neutral qualification and consume those assertions; never replay them as a new gesture. Off-state input backfeed and LED current are hardware acceptance checks, not behaviors a sleeping or unpowered sketch can enforce.
-- HSD3 channel 4 is reserved for a local SW8B watchdog controlling valve power and a signal-disconnect relay. It must never be included in lamp animation writes. Channels 5-7 remain OFF. The proposed 500 ms timeout/100 ms refresh requires physical validation.
-- The reviewed DFRobot GP8XXX driver discards ordinary I2C write return codes. Use a checked, bounded driver. Check both SW8B watchdog configuration packets; its convenience initialization also returns no status. Prove latched timeout, reset and partially completed initialization behavior before allowing opening.
-- Current feedback from HSD3 channel 4 includes the actuator and the relay/regulator baseline. Use proper channel selection/settling and measured thresholds. HSD VIN uses the default 11:1 divider.
+- HSD3 CH4 is reserved for a SW8B watchdog driving Q1/R11/R12 to Nano RESET. It never powers the valve. Normal LOW, timeout HIGH, proposed timeout 2000 ms, feed 100 ms, return LOW after 100 ms, Wombat self-reset disabled. Channels 5–7 remain OFF. Qualify/disable CH4 open-load diagnostics for its deliberately small reset-circuit load; do not apply lamp-current thresholds to it. Exclude CH4 from lamp writes and sweeps.
+- Enable the Nano ATmega4809 internal watchdog at approximately 1.024 s. Feed both watchdogs only after useful bounded progress; a handled fault is valid progress. Do not create reboot loops just because a hardware fault remains latched.
+- Configure both Wombat watchdog packets with checked transfers. The convenience library defaults to a 65535 ms return delay with self-reset disabled; override it to the proposed 100 ms or the Nano can remain held in reset. The return-delay countdown must be reinitialized after a timeout; merely feeding the timer does not restore it. Prove timeout polarity, pulse release, partial initialization and repeated recovery on the actual SW8B firmware before connecting the valve.
+- The reviewed GP8XXX convenience driver discards ordinary I2C write results. Use bounded, checked transactions for the DAC and Wombats. On reset, write a validated 4 mA close command; do not rely on retained peripheral state. Valve power remains present during Nano reset.
+- There is no actuator-current measurement in Revision F. Code 2 is a simulator-only scenario with no fitted hardware detector. Wombat current/thermal diagnostics cover its lamp/reset loads; HSD VIN uses the default 11:1 divider.
 - A0's 1 kohm series resistor and 100 kohm pull-down introduce a 100/101 nominal attenuation. Calibrate the complete chain. Do not use a 0-5 V feedback assumption.
 - No flow acquisition, automatic sweep, live GPM, no-flow detector or flow-while-closed detector is present. Optional manual flow calibration supplies a validated lookup table; store an explicit opening-scale versus calibrated-scale mode. Position feedback remains mandatory, and a closed-position indication is not proof of hydraulic shutoff.
 - The audit's fault-logging section specifies a bounded RAM history and a small redundant EEPROM last-fault/reset summary. Neither exists as running firmware. No external log memory or real-time clock is in the circuit.
-- Recovery must distinguish independent healthy preconditions from checks requiring powered actuation. With K1 open, absent position feedback is expected and remains unqualified. A fresh acknowledgement may authorize one bounded closing/requalification attempt after supply, bus and input checks; retain the fault history/latch until that attempt passes. Do not deadlock recovery by requiring powered feedback before enabling power, and do not treat zero unpowered current as proof a jam was repaired. Failure inhibits drive again without automatic retry.
+- Recovery checks supply, communication and position independently. A fresh acknowledgement may authorize one bounded closing/requalification attempt after the physical problem is corrected. Never resume ON or Flush automatically. A failed feedback path leaves closure unknown; do not substitute calculated travel for measured position. No reset action can physically isolate a jammed actuator in this design.
 
 ## Processing order
 
@@ -32,15 +34,17 @@ Use a monotonic, nonblocking main loop with explicit budgets. A recommended orde
 | Lamp interface | Twenty output channels, one color per lamp, old color off before replacement; initialize off and poll diagnostics |
 | Bus handling | Bound transactions and retry count; report failed initialization/transfers; never wait forever for an I²C device |
 | Persistence | Version, checksum, bounds, redundant committed records and wear-conscious writes; never restore an ON or Flush command |
-| Supervision | Hardware watchdog and a characterized output-inhibit path; feeding a watchdog requires successful control-loop progress |
+| Supervision | Internal watchdog and characterized external host-reset pulse; bounded progress required; no independent output-inhibit circuit |
 
-## Fault response and closing supervision
+## Revision F physical fault response
 
-Use a strict automatic-close allowlist: settings fault 6, conflicting-input fault 7 and stuck-J fault 10. These permit one supervised close only while the independent valve-control path is healthy. The closed command must not depend on a corrupt saved setting or calibration curve. Any latched code 1–5, 8 or 9 inhibits movement and takes priority over this allowlist, even when its current cause has cleared. Unknown/unclassified actuator faults must inhibit rather than authorize movement.
+The browser retains its earlier simulated movement-inhibit policy. It is an operator-interface reference, not the physical fault-response implementation for this relay-free design. Do not translate its `inhibited` state into a claim that the actuator is deenergized.
 
-Keep the valve watchdog serviced only while supervision and the close command are valid. Operator faults alone must not cut power before closure; bus, power, driver, feedback, progress or timeout failures immediately inhibit drive. Once inhibited, no cause change or new operator fault can restart an attempt; use the bounded acknowledgement/requalification procedure above. A new operator fault may preserve an already healthy closing attempt but still requires acknowledgement. Keep original closing deadlines across additional faults and acknowledgement. Do not repeatedly reset a timeout window or automatically reverse/retry.
+On a detected fault, clear the requested ON/Flush state and prohibit opening. If the command path is usable, issue one best-effort 4 mA closed command independent of saved calibration. Monitor feedback with an original bounded deadline; additional faults do not extend it. If command or feedback fails, mark closure unknown and retain the fault record. No automatic reverse/retry is allowed. There is no independent actuator power cut and no measured motor-current detector. A jammed valve may remain powered; isolate water manually and remove machine power for repair when needed.
 
-After confirmed automatic closure, acknowledgement requires no redundant movement. Otherwise finish an already-running close on its original deadline or authorize one bounded recovery attempt after independent preconditions pass. Water remains OFF, all earlier operator activations are consumed, and normal commands require verified closure plus 100 ms of released J. Unlike healthy startup, post-fault recovery does not require centering G/H. Use fresh G/H activations after rearming; a held direction must not replay a setting change. These are requirements, not compiled or hardware-tested firmware.
+Do not label every unavailable detector as healthy. Code 2 (actuator overcurrent) is not fitted; code 9 remains reserved. Position/progress failures use codes 5/8 after characterization. Driver code 4 pertains to HSD outputs, not the directly powered actuator. A display/bus failure may prevent a warning from appearing.
+
+Acknowledgement keeps water requested OFF. After correction, confirm closed position or allow one bounded reference attempt, then require J released for 100 ms. G/H may remain held during fault clearing and rearming; consume their earlier activations. Return the lamps to the normal OFF indication immediately after acknowledgement, while separately gating opening on completed requalification. The electrical audit defines the remaining H1–H5 bench checks.
 
 ## Fault display contract
 
@@ -50,11 +54,11 @@ Reset eligibility is captured at the start of the press. Clearing causes during 
 
 ## Startup lamp test
 
-After successful output initialization, test only the twenty explicitly mapped lamp channels: all ten lamps white for one second, then all ten blue for one second. Clear all previous lamp-color channels before setting the next color; never energize both colors of a lamp simultaneously. HSD1/HSD2 channels 0–7 and HSD3 channels 0–3 are the lamp allowlist; HSD3 channel 4 remains owned exclusively by valve supervision, and channels 5–7 remain OFF. Never implement a sweep over every driver output or a bulk clear that changes valve power.
+After successful output initialization, test only the twenty explicitly mapped lamp channels: all ten lamps white for one second, then all ten blue for one second. Clear all previous lamp-color channels before setting the next color; never energize both colors of a lamp simultaneously. HSD1/HSD2 channels 0–7 and HSD3 channels 0–3 are the lamp allowlist; HSD3 channel 4 remains owned exclusively by host-reset supervision, and channels 5–7 remain OFF. Never implement a sweep over every driver output or a bulk clear that changes the reset output.
 
 Run this as a nonblocking elapsed-time state alongside acquisition, supervision and closed-position recovery. Inhibit opening/gestures until the test and closure complete, then qualify neutral controls. A fault or failed lamp-driver transaction aborts the test immediately; faults have priority even at its completion deadline. Do not run over a latched fault or replay it after acknowledgement. A healthy controller power-up/reset restarts it; repeated loop iterations do not. The same all-white/all-blue sequence applies to reduced-motion mode. Ignore operator commands during the test while continuing raw-input monitoring and stuck-trigger detection.
 
-This checks visibility and harness/color assignment for the operator. It does not prove electrical health automatically. Current diagnostics need separate qualified thresholds. Bench acceptance must verify every color, break-before-make switching, test interruption, held controls, timer rollover, and that all lamp-test writes leave the valve-watchdog channel unchanged. No test code may delay closure, watchdog servicing or fault evaluation.
+This checks visibility and harness/color assignment for the operator. It does not prove electrical health automatically. Current diagnostics need separate qualified thresholds. Bench acceptance must verify every color, break-before-make switching, test interruption, held controls, timer rollover, and that all lamp-test writes leave the host-reset channel unchanged. No test code may delay closure, watchdog servicing or fault evaluation.
 
 The simulator's 5-second full stroke and 200 ms minimum move are visual-model values. They are not hardware motion deadlines. Characterize the actual valve and feedback before selecting timeouts, tolerances, settle windows and current thresholds.
 
@@ -74,8 +78,10 @@ Use unsigned subtraction for elapsed durations and test around the 32-bit millis
 
 ## Driver and fault acceptance
 
-Measure the DAC's reset/power-loss/retained-output behavior. A Nano reset does not necessarily reset the separately powered DAC or lamp boards. Never assume a disconnected command means close. Current-output compliance into the valve, feedback load/common connections and fault-inhibit behavior remain open hardware tests.
+Before USB-only programming, disconnect the machine harness and valve cable and isolate water. USB can energize the DAC while the actuator has no main supply. Shared machine power does not establish safe signal behavior during separate connector loss or rail decay.
 
-Fault 2 needs acquisition of the newly specified HSD3 channel-4 actuator branch, including its relay/regulator baseline. Fault 9 is reserved and must not be emitted by Revision E. The drivers retain their built-in thermal protection; a generic hardware FAULT maps to code 4 and does not uniquely diagnose overheating. There is no ambient or actuator temperature acquisition. A failed display or I2C bus must not disable valve inhibition. The physical response for each code must be implemented and observed, not inferred from a simulator lamp.
+Measure the DAC's reset/power-loss/retained-output behavior. A Nano reset does not necessarily reset the separately powered DAC or lamp boards. Never assume a disconnected command means close. Current-output compliance into the valve, feedback load/common connections and startup, shutdown and signal-loss behavior remain open hardware tests.
+
+Fault 2 has no fitted actuator-current detector in Revision F and must not be emitted as measured hardware overcurrent. Fault 9 remains reserved. HSD drivers retain built-in thermal protection; generic FAULT maps to code 4 without claiming a unique thermal diagnosis. There is no ambient or actuator temperature acquisition. Observe actual actuator response and reset recovery; a passing simulator test is not physical validation.
 
 Before field release, compile for the exact Nano Every/core/library revisions, record flash/RAM use, test all inputs and bus failures with hardware, stop the MCU deliberately, interrupt settings writes, exercise repeated power cycles and perform hot-soak and motion tests. Record results in [Validation](../docs/validation.md). No board firmware is represented as ready until those checks pass.

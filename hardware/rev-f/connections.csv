@@ -1,0 +1,109 @@
+id,net,from,to,note
+W001,MACHINE_12V,TB12.rail,X1.1,Existing fused machine supply; H1/H2 unresolved
+W002,MACHINE_12V,TB12.rail,U1.VIN,Existing fused machine supply; H1/H2 unresolved
+W003,MACHINE_12V,TB12.rail,HSD1.VIN,Existing fused machine supply; H1/H2 unresolved
+W004,MACHINE_12V,TB12.rail,HSD2.VIN,Existing fused machine supply; H1/H2 unresolved
+W005,MACHINE_12V,TB12.rail,HSD3.VIN,Existing fused machine supply; H1/H2 unresolved
+W006,0V,TB0.rail,X1.2,Separate load and signal returns to distribution; V1 WHITE requires H4
+W007,0V,TB0.rail,U1.GND1,Separate load and signal returns to distribution; V1 WHITE requires H4
+W008,0V,TB0.rail,U2.GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W009,0V,TB0.rail,U3.GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W010,0V,TB0.rail,HSD1.LOAD_GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W011,0V,TB0.rail,HSD2.LOAD_GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W012,0V,TB0.rail,HSD3.LOAD_GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W013,0V,TB0.rail,O1.INPUT_GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W014,0V,TB0.rail,O1.HV_GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W015,0V,TB0.rail,O2.INPUT_GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W016,0V,TB0.rail,O2.HV_GND,Separate load and signal returns to distribution; V1 WHITE requires H4
+W017,0V,TB0.rail,V1.BLACK,Separate load and signal returns to distribution; V1 WHITE requires H4
+W018,0V,TB0.rail,V1.WHITE,Separate load and signal returns to distribution; V1 WHITE requires H4
+W019,0V,TB0.rail,U3.I-,Separate load and signal returns to distribution; V1 WHITE requires H4
+W023,LOGIC_5V,TB5.rail,U1.5V,Only Nano regulator sources this rail; measure load
+W024,LOGIC_5V,TB5.rail,U2.VCC,Only Nano regulator sources this rail; measure load
+W025,LOGIC_5V,TB5.rail,U3.VCC,Only Nano regulator sources this rail; measure load
+W026,LOGIC_5V,TB5.rail,HSD1.V,Only Nano regulator sources this rail; measure load
+W027,LOGIC_5V,TB5.rail,HSD2.V,Only Nano regulator sources this rail; measure load
+W028,LOGIC_5V,TB5.rail,HSD3.V,Only Nano regulator sources this rail; measure load
+W029,LOGIC_5V,TB5.rail,O1.HV,Only Nano regulator sources this rail; measure load
+W030,LOGIC_5V,TB5.rail,O2.HV,Only Nano regulator sources this rail; measure load
+W032,SDA,U1.A4,U2.SDA,100 kHz local bus; only DAC onboard pull-up
+W033,SDA,U1.A4,HSD1.D,100 kHz local bus; only DAC onboard pull-up
+W034,SDA,U1.A4,HSD2.D,100 kHz local bus; only DAC onboard pull-up
+W035,SDA,U1.A4,HSD3.D,100 kHz local bus; only DAC onboard pull-up
+W036,SCL,U1.A5,U2.SCL,100 kHz local bus; only DAC onboard pull-up
+W037,SCL,U1.A5,HSD1.C,100 kHz local bus; only DAC onboard pull-up
+W038,SCL,U1.A5,HSD2.C,100 kHz local bus; only DAC onboard pull-up
+W039,SCL,U1.A5,HSD3.C,100 kHz local bus; only DAC onboard pull-up
+W040,MACHINE_G,X1.3,R1.1,
+W041,OPTO_G,R1.2,O1.IN1,
+W042,OPTO_G,R1.2,D1.K,
+W043,0V,O1.INPUT_GND,D1.A,Diode band faces IN terminal
+W044,G_LOGIC,O1.OUT1,U1.D2,
+W045,MACHINE_H,X1.4,R2.1,
+W046,OPTO_H,R2.2,O1.IN2,
+W047,OPTO_H,R2.2,D2.K,
+W048,0V,O1.INPUT_GND,D2.A,Diode band faces IN terminal
+W049,H_LOGIC,O1.OUT2,U1.D3,
+W050,MACHINE_J,X1.5,R3.1,
+W051,OPTO_J,R3.2,O2.IN1,
+W052,OPTO_J,R3.2,D3.K,
+W053,0V,O2.INPUT_GND,D3.A,Diode band faces IN terminal
+W054,J_LOGIC,O2.OUT1,U1.D4,
+W055,0V,O2.INPUT_GND,O2.IN2,Unused input held inactive
+W056,L1_BLUE,HSD1.CH0,L1.BLUE,
+W057,L1_WHITE,HSD1.CH1,L1.WHITE,
+W058,0V,TB0.rail,L1.BLACK,Rated lamp-return harness; do not route through Nano
+W059,L2_BLUE,HSD1.CH2,L2.BLUE,
+W060,L2_WHITE,HSD1.CH3,L2.WHITE,
+W061,0V,TB0.rail,L2.BLACK,Rated lamp-return harness; do not route through Nano
+W062,L3_BLUE,HSD1.CH4,L3.BLUE,
+W063,L3_WHITE,HSD1.CH5,L3.WHITE,
+W064,0V,TB0.rail,L3.BLACK,Rated lamp-return harness; do not route through Nano
+W065,L4_BLUE,HSD1.CH6,L4.BLUE,
+W066,L4_WHITE,HSD1.CH7,L4.WHITE,
+W067,0V,TB0.rail,L4.BLACK,Rated lamp-return harness; do not route through Nano
+W068,L5_BLUE,HSD2.CH0,L5.BLUE,
+W069,L5_WHITE,HSD2.CH1,L5.WHITE,
+W070,0V,TB0.rail,L5.BLACK,Rated lamp-return harness; do not route through Nano
+W071,L6_BLUE,HSD2.CH2,L6.BLUE,
+W072,L6_WHITE,HSD2.CH3,L6.WHITE,
+W073,0V,TB0.rail,L6.BLACK,Rated lamp-return harness; do not route through Nano
+W074,L7_BLUE,HSD2.CH4,L7.BLUE,
+W075,L7_WHITE,HSD2.CH5,L7.WHITE,
+W076,0V,TB0.rail,L7.BLACK,Rated lamp-return harness; do not route through Nano
+W077,L8_BLUE,HSD2.CH6,L8.BLUE,
+W078,L8_WHITE,HSD2.CH7,L8.WHITE,
+W079,0V,TB0.rail,L8.BLACK,Rated lamp-return harness; do not route through Nano
+W080,L9_BLUE,HSD3.CH0,L9.BLUE,
+W081,L9_WHITE,HSD3.CH1,L9.WHITE,
+W082,0V,TB0.rail,L9.BLACK,Rated lamp-return harness; do not route through Nano
+W083,L10_BLUE,HSD3.CH2,L10.BLUE,
+W084,L10_WHITE,HSD3.CH3,L10.WHITE,
+W085,0V,TB0.rail,L10.BLACK,Rated lamp-return harness; do not route through Nano
+W086,MACHINE_12V,TB12.rail,V1.RED,Shared machine supply; no independent actuator power disconnect
+W095,VALVE_COMMAND,U2.OUT,V1.GREEN,Direct command; disconnect valve during USB-only service
+W097,VALVE_FEEDBACK,V1.YELLOW,U3.I+,Direct valve-reported position feedback
+W099,POSITION_RAW,U3.SIGNAL,R4.1,
+W100,POSITION_ADC,U1.A0,R4.2,
+W101,POSITION_ADC,U1.A0,R5.1,
+W102,POSITION_ADC,U1.A0,C1.1,
+W103,0V,U1.GND1,R5.2,Local ADC return; no load current
+W104,0V,U1.GND1,C1.2,Local ADC return; no load current
+W115,MACHINE_12V,HSD1.VIN,C7.+,Local load-supply bypass; electrolytic + to VIN
+W116,MACHINE_12V,HSD1.VIN,C10.1,Local load-supply bypass; electrolytic + to VIN
+W117,0V,HSD1.LOAD_GND,C7.-,
+W118,0V,HSD1.LOAD_GND,C10.2,
+W119,MACHINE_12V,HSD2.VIN,C8.+,Local load-supply bypass; electrolytic + to VIN
+W120,MACHINE_12V,HSD2.VIN,C11.1,Local load-supply bypass; electrolytic + to VIN
+W121,0V,HSD2.LOAD_GND,C8.-,
+W122,0V,HSD2.LOAD_GND,C11.2,
+W123,MACHINE_12V,HSD3.VIN,C9.+,Local load-supply bypass; electrolytic + to VIN
+W124,MACHINE_12V,HSD3.VIN,C12.1,Local load-supply bypass; electrolytic + to VIN
+W125,0V,HSD3.LOAD_GND,C9.-,
+W126,0V,HSD3.LOAD_GND,C12.2,
+W127,WATCHDOG_12V,HSD3.CH4,R11.1,Host reset only; never connect 12 V directly to RESET
+W128,RESET_BASE,R11.2,Q1.2,Host reset only; never connect 12 V directly to RESET
+W129,RESET_BASE,Q1.2,R12.1,Host reset only; never connect 12 V directly to RESET
+W130,0V,TB0.rail,Q1.1,Host reset only; never connect 12 V directly to RESET
+W131,0V,Q1.1,R12.2,Host reset only; never connect 12 V directly to RESET
+W132,RESET_N,Q1.3,U1.RESET1,Host reset only; never connect 12 V directly to RESET

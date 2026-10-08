@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Draw the entire Revision E netlist as one continuous wiring schematic.
+"""Draw the entire Revision F netlist as one continuous wiring schematic.
 
-No embedded detail sheets. Revision E removes only the flow-meter branch. Functional terminal positions
+No embedded detail sheets. Revision F uses direct valve wiring and a transistor watchdog reset. Functional terminal positions
 are deliberately arranged for tracing; this is not a PCB/connector footprint.
 Requires Inkscape and pypdf. Geometry is also checked by check-docs.mjs in CI.
 """
@@ -14,7 +14,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'docs/assets/hardware'
-DATA = ROOT / 'hardware/rev-e'
+DATA = ROOT / 'hardware/rev-f'
 N = json.loads((DATA/'netlist.json').read_text())
 NS = 'http://www.w3.org/2000/svg'
 ET.register_namespace('', NS)
@@ -30,8 +30,8 @@ root = ET.Element(f'{{{NS}}}svg', {'width':'1189mm','height':'841mm','viewBox':f
  'role':'img','aria-labelledby':'title desc'})
 def el(tag, attrs=None, parent=None, **kw):
     return ET.SubElement(root if parent is None else parent, f'{{{NS}}}{tag}', {str(k):str(v) for k,v in {**(attrs or {}),**kw}.items()})
-el('title',id='title').text='Rock-Saw Water Control — continuous Revision E wiring schematic'
-el('desc',id='desc').text='All 126 external wires drawn between their terminals on one interconnected page. No tiled detail sheets. Forty-nine components; functional terminals; no external temperature sensors. Detailed booklet remains separate.'
+el('title',id='title').text='Rock-Saw Water Control — continuous Revision F wiring schematic'
+el('desc',id='desc').text=f'All {len(N["wires"])} external wires on one connected page. Relay-free valve circuit; solid-state host watchdog; all five harness wires enter together at left.'
 def rect(x,y,w,h,fill='#f1f5f8',stroke=NAVY,parent=None,**a):
     return el('rect',{'x':x,'y':y,'width':w,'height':h,'fill':fill,'stroke':stroke,'stroke-width':1.6,**a},parent)
 def txt(x,y,s,size=17,bold=False,color=NAVY,parent=None,anchor='start',halo=False,rotate=None):
@@ -46,7 +46,7 @@ def line(points,color=NAVY,width=2,parent=None,**attrs):
 rect(0,0,W,H,'white','none')
 rect(0,0,W,108,NAVY,'none')
 txt(46,46,'ROCK-SAW WATER CONTROL',32,True,'white')
-txt(46,79,'CONTINUOUS WIRING REFERENCE  /  REVISION E  /  7 OCTOBER 2026',19,False,'#d8e6ed')
+txt(46,79,'CONTINUOUS WIRING REFERENCE  /  REVISION F  /  7 OCTOBER 2026',19,False,'#d8e6ed')
 txt(2520,43,f'ONE CONNECTED DRAWING · {len(N["wires"])} WIRES',23,True,'white')
 txt(2520,78,'A0 landscape · vector PDF · keep the detailed booklet',17,False,'#d8e6ed')
 txt(46,151,'Read by terminal name, not by physical pin position.',21,True)
@@ -142,7 +142,7 @@ for j,(xx,ww) in enumerate([(210,1100),(1460,1100),(2740,650)],1):
     for name,dx in [('VIN',80),('LOAD_GND',150),('V',450 if j<3 else 300),('D',600 if j<3 else 410),('C',680 if j<3 else 490)]:
         pin(ref,name,xx+dx,710,'bottom',{'LOAD_GND':'0 V','V':'V / 5 V','D':'D / SDA','C':'C / SCL'}.get(name,name))
     if j==3:
-        pin(ref,'CH4',3390,560,'right','CH4 · steady enable')
+        pin(ref,'CH4',3390,560,'right','CH4 · reset pulse')
         txt(3220,673,'CH5–CH7: unused / off',14,parent=G[ref],anchor='end')
     passive(f'C{6+j}',xx+240,790,'capacitor','47 µF / 35 V')
     passive(f'C{9+j}',xx+365,790,'capacitor','100 nF')
@@ -157,9 +157,12 @@ for ref,net,y,label in [('TB12','MACHINE_12V',910,'TB12  MACHINE +12 V'),('TB5',
 txt(480,434,'LAMP RETURNS — size for the sum of active lamp currents',15,True,halo=True)
 txt(70,1035,'SDA',17,True,COLORS['SDA']);txt(70,1065,'SCL',17,True,COLORS['SCL'])
 
-module('X1',190,1360,180,460,'HARNESS','Reused 14-pin',('Machine +12 V','and machine 0 V','from connector.','','G / H rocker','J trigger','','Key-off state: H1','Verify cavities (H1)'),title_y=63)
-pin('X1','1',230,1360,'top','+12 V');pin('X1','2',310,1360,'top','0 V')
-for name,y,lab in [('3',1480,'G'),('4',1590,'H'),('5',1720,'J')]:pin('X1',name,370,y,'right',lab)
+module('X1',45,1220,210,660,'HARNESS','Reused 14-pin',(),title_y=58)
+for name,y,lab in [('1',1330,'+12 V'),('2',1400,'0 V'),('3',1480,'G / up'),('4',1590,'H / down'),('5',1720,'J / trigger')]:pin('X1',name,255,y,'right',lab)
+# Five machine wires enter together from the left, including power and return.
+# X1 names are functional identifiers, not a verified machine cavity map.
+txt(66,1828,'Verify machine cavities',13,False,parent=G['X1'])
+txt(66,1855,'H1: actual harness map',13,False,parent=G['X1'])
 for i,y in enumerate([1480,1590,1720],1):
     passive(f'R{i}',475,y,'resistor','1 kΩ / 0.5 W',horizontal=True)
     passive(f'D{i}',565,y+60,'diode','1N4148')
@@ -174,6 +177,7 @@ module('U1',1020,1410,330,370,'ARDUINO','Nano Every · ABX00028',('A4 / A5: loca
 for name,x in [('VIN',1060),('5V',1110),('GND1',1160),('A4',1210),('A5',1260)]:pin('U1',name,x,1410,'top',{'GND1':'GND'}.get(name,name),13)
 for name,y in [('D2',1490),('D3',1580),('D4',1720)]:pin('U1',name,1020,y,'left')
 pin('U1','A0',1350,1540,'right')
+pin('U1','RESET1',1190,1780,'bottom','RESET',13)
 
 module('U3',1730,1450,300,240,'POSITION RECEIVER','DFRobot SEN0262',('4–20 mA → analog voltage','No extra 250 Ω shunt'),title_y=75)
 for name,x in [('VCC',1810),('GND',1880),('I-',1960)]:pin('U3',name,x,1450,'top')
@@ -185,23 +189,23 @@ module('U2',2060,1260,260,210,'','',rows=[(62,'U2  CURRENT COMMAND',20,True),(12
 pin('U2','VCC',2130,1260,'top');pin('U2','GND',2200,1260,'top')
 pin('U2','SDA',2060,1360,'left');pin('U2','SCL',2060,1420,'left');pin('U2','OUT',2320,1420,'right')
 
-module('K1',2460,1430,550,380,'','',rows=[(70,'K1  SIGNAL DISCONNECT',22,True),(210,'Panasonic TQ2-5V · nonlatching DPDT',16,False)])
-pin('K1','1',2860,1430,'top','1 / coil +');pin('K1','10',2960,1430,'top','10 / coil −')
-for name,x,y,side,label in [('3',2460,1560,'left','3 / COM'),('4',3010,1560,'right','4 / NO'),('8',2460,1720,'left','8 / COM'),('7',3010,1720,'right','7 / NO')]:pin('K1',name,x,y,side,label,dy_override=-10)
-# Relay contact symbol; pin positions here are functional, not the package view.
-for y in [1560,1720]:
-    line([(2460,y),(2680,y),(2780,y-43)],parent=G['K1'])
-    line([(2800,y),(3010,y)],parent=G['K1'])
-    el('circle',{'cx':2800,'cy':y,'r':5,'fill':'white','stroke':NAVY,'stroke-width':2},G['K1'])
-line([(2730,1538),(2730,1603)],GRAY,1.5,G['K1'],**{'stroke-dasharray':'6 6'})
-line([(2730,1653),(2730,1677)],GRAY,1.5,G['K1'],**{'stroke-dasharray':'6 6'})
-txt(2735,1786,'NC 2 / 9 open; 5 / 6 unused. Check bottom-view pinout.',14,parent=G['K1'],anchor='middle')
-module('U4',2700,1180,180,120,'','',rows=[(30,'U4  5 V COIL',20,True),(89,'L7805ABV',15,False)])
-pin('U4','1',2700,1240,'left','1 / IN',12);pin('U4','3',2880,1240,'right','3 / OUT',12);pin('U4','2',2790,1300,'bottom','2 / GND',12)
-passive('C4',2580,1260,'capacitor','330 nF')
-passive('C5',3000,1330,'capacitor','100 nF')
-passive('D4',3120,1330,'diode','1N4148')
-module('V1',3240,1500,280,400,'','',rows=[(64,'V1  VALVE + ACTUATOR',20,True),(139,'U.S. Solid USS-MSV50030',15,False),(166,'½-inch stainless · 9–24 V',14,False),(193,'Five-wire actuator cable',14,False),(264,'GREEN: command +',14,False),(289,'WHITE: signal common',14,False),(314,'YELLOW: feedback +',14,False),(351,'H4: shared returns / compliance',13,False)])
+# Discrete open-collector reset interface; no relay or additional board.
+passive('R11',2610,1320,'resistor','4.7 kΩ / 5%',horizontal=True)
+passive('R12',2680,1410,'resistor','1 kΩ / 0.5 W')
+g=G['Q1'];boxes['Q1']=(2720,1270,100,100)
+pin('Q1','2',2720,1320);pin('Q1','3',2820,1270);pin('Q1','1',2820,1370)
+el('circle',{'cx':2770,'cy':1320,'r':42,'fill':'white','stroke':NAVY,'stroke-width':2},g)
+line([(2720,1320),(2750,1320)],parent=g)
+line([(2750,1297),(2750,1343)],width=3,parent=g)
+line([(2750,1307),(2785,1284),(2820,1284),(2820,1270)],parent=g)
+line([(2750,1333),(2785,1356),(2820,1356),(2820,1370)],parent=g)
+el('polygon',{'points':'2785,1356 2768,1352 2776,1340','fill':NAVY},g)
+txt(2730,1237,'Q1  2N3904BU',18,True,parent=g)
+txt(2735,1393,'1 E · 2 B · 3 C',13,parent=g)
+txt(2510,1580,'WOMBAT WATCHDOG → HOST RESET',17,True)
+txt(2510,1610,'No valve-power switching; no relay.',15)
+txt(2510,1640,'Normal LOW · timeout HIGH for 100 ms',15)
+module('V1',3240,1500,280,400,'','',rows=[(64,'V1  VALVE + ACTUATOR',20,True),(139,'U.S. Solid USS-MSV50030',15,False),(166,'½-inch stainless · 9–24 V',14,False),(193,'Five-wire actuator cable',14,False),(264,'GREEN: command +',14,False),(289,'WHITE: signal common',14,False),(314,'YELLOW: feedback +',14,False),(351,'Shared machine power; no power cut',13,False)])
 for name,x in [('RED',3270),('BLACK',3350),('WHITE',3430)]:pin('V1',name,x,1500,'top',name,12)
 pin('V1','GREEN',3240,1600,'left','GREEN',12);pin('V1','YELLOW',3240,1720,'left','YELLOW',12)
 
@@ -226,6 +230,8 @@ for i in range(1,32):
     w=by_id[f'W{i:03}'];ref=w['from'].split('.')[0]
     # Wires requiring a path around a module, rather than a direct drop.
     special={
+      1:([(270,1330)],(270,910)),
+      6:([(310,1400)],(310,1120)),
       15:([(650,1650),(750,1650)],(650,1120)),
       16:([(980,1640),(850,1640)],(980,1120)),
       17:([(3500,1450),(3350,1450)],(3500,1120)),
@@ -255,19 +261,9 @@ for k in range(10):
     i=56+k*3;route(i);route(i+1)
     xx=P[f'L{k+1}.BLACK'][0]
     route(i+2,start=(xx,395))
-route(86,[(3470,560),(3470,1420),(3270,1420)])
-route(87,[(3470,560),(3470,1160),(2660,1160),(2660,1240)])
-route(88,[(3060,1240),(3060,1400),(2860,1400)])
-route(89,[(3120,1240)])
-route(90,[(3000,1240)])
-route(91,[(2960,1410),(3120,1410)])
-route(92,[(2790,1380),(3000,1380)])
-route(93,[(2790,1320),(2580,1320)])
-route(94,[(2660,1240),(2660,1160),(2580,1160)])
-route(95,[(2390,1420),(2390,1560)])
-route(96,[(3160,1560),(3160,1600)])
-route(97)
-route(98,[(2190,1720),(2190,1610)])
+power(86,'TB12',[(3510,1460),(3270,1460)],tap=(3510,910))
+route(95,[(2390,1420),(2390,1530),(3120,1530),(3120,1600)])
+route(97,[(2190,1720),(2190,1610)])
 route(99);route(100)
 route(101,[(1400,1540)]);route(102,[(1510,1540)])
 route(103,[(1160,1360),(1370,1360),(1370,1810),(1400,1810)])
@@ -280,6 +276,12 @@ for j in range(3):
     route(i+1,[(vx,730),(cx,730)])
     route(i+2,[(gx,860),(ex,860)])
     route(i+3,[(gx,860),(cx,860)])
+route(127,[(3450,560),(3450,1180),(2470,1180),(2470,1320)])
+route(128)
+route(129,[(2680,1320)])
+power(130,'TB0',[(2890,1490),(2820,1490)],tap=(2890,1120))
+route(131,[(2820,1510),(2680,1510)])
+route(132,[(2820,1210),(1450,1210),(1450,1820),(1190,1820)])
 assert set(routes)==set(by_id)
 
 # Geometric checks protect against accidental same-line shorts and misplaced ends.
@@ -370,12 +372,12 @@ notes=el('g',id='drawing-notes')
 rect(190,2020,1270,355,'#f4f7f9','none',notes,rx=10)
 txt(220,2060,'CONTROL WITHOUT A FLOW METER',22,True,parent=notes)
 for i,s in enumerate([
- 'Valve command and position feedback remain connected.',
+ 'Valve power shares the machine supply; signal loops are direct.',
  'Normal, Set Max, Flush and all ten lamps retain their controls.',
  'An optional bucket / stopwatch calibration can map levels to flow.',
  'A stored curve estimates flow only under similar water conditions.',
  'No automatic flow sweep, live GPM or water-stop detection is provided.',
- 'Use the detailed booklet for valve-position qualification and recovery.',
+ 'Watchdogs recover the controller; power loss does not close the valve.',
  'Live G/H/J with main power OFF: opto inputs draw about 9 mA each at 12 V.',
  'Output-side HV = controller logic 5 V only. Bench-check the power-off case.'
 ]):txt(220,2105+i*31,s,18,parent=notes)
@@ -384,13 +386,13 @@ txt(1710,2030,'BUILD AND READING NOTES',22,True,parent=notes)
 for i,s in enumerate([
  f'• All {len(N["wires"])} external wires are drawn. Shared trunks are joined terminals, not additional electronics.',
  '• Component terminal positions are arranged for readability. Use the detailed sheets for physical pinouts.',
- '• U1 GND1 = GND2; U2 GND = OUT_GND; U4 pin 2 = tab; HSD grounds are internally common.',
+ '• U1 GND1 = GND2 and RESET1 = RESET2; U2 GND = OUT_GND; HSD grounds are internally common.',
  '• I²C stays inside the enclosure at 100 kHz. Use only the U2 SDA/SCL pull-ups; open all HSD bus pull-up jumpers.',
  '• HSD1 address jumpers open; HSD2 A1 closed; HSD3 A2 closed. All MAX_AMP jumpers open.',
- '• HSD3 CH4 is steady valve/relay enable, reserved for the proposed watchdog. Never include it in lamp effects.',
- '• Resistors: 1%. Ceramic capacitors: X7R, 50 V. C7–C9: 47 µF, 35 V, 105 °C; observe polarity.',
- '• Unused Nano pins: 3V3, A1/A2/A3/A6/A7, AREF, RESET1/2, RX/TX, D5/D6/D7/D8/D9/D10/D11/D12/D13.',
- '• No flow meter or external temperature sensors. FM1, R6–R9 and C2 are removed; wire IDs are retained.',
+ '• HSD3 CH4 is the host-reset pulse, reserved for the watchdog. Never include it in lamp effects.',
+ '• Resistors: 1% except R11 5%. Ceramic capacitors: X7R, 50 V. C7–C9: 47 µF, 35 V, 105 °C; observe polarity.',
+ '• Unused Nano pins: 3V3, A1/A2/A3/A6/A7, AREF, RX/TX, D5/D6/D7/D8/D9/D10/D11/D12/D13.',
+ '• No relay, coil regulator, flow meter or temperature probes. Codes 2 / 9 have no fitted sensors.',
  '• Plumbing: hose → shutoff / strainer → valve → sprayer. Support the plumbing and keep electrical wiring dry.'
 ]):txt(1710,2064+i*28,s,16,parent=notes)
 txt(1710,2359,'Power loss does not spring-return the ball valve closed. Keep an accessible manual water shutoff.',17,True,RED,notes)
@@ -403,16 +405,20 @@ txt(3240,2484,'SHEET 1 OF 1',18,True,'white')
 # Geometry record is part of the SVG and is revalidated independently in CI.
 meta={'pins':P,'rails':rails,'bodies':boxes,'routes':routes,'crossing_count':len(crossings)}
 el('metadata',id='wiring-geometry').text=json.dumps(meta,separators=(',',':'))
-svg=OUT/'water-controller-single-page-rev-e.svg'
+svg=OUT/'water-controller-single-page-rev-f.svg'
 ET.ElementTree(root).write(svg,encoding='utf-8',xml_declaration=True)
 pdf=svg.with_suffix('.pdf');png=svg.with_suffix('.png')
 subprocess.run(['inkscape',str(svg),'--export-type=pdf','--export-filename='+str(pdf)],check=True,stdout=subprocess.DEVNULL)
-subprocess.run(['inkscape',str(svg),'--export-type=png','--export-width=4800','--export-filename='+str(png)],check=True,stdout=subprocess.DEVNULL)
+import fitz, os
+with fitz.open(pdf) as raster_doc:
+    preview_bytes=raster_doc[0].get_pixmap(matrix=fitz.Matrix(1,1),alpha=False).tobytes('png')
+with png.open('wb') as preview_file:
+    preview_file.write(preview_bytes); preview_file.flush(); os.fsync(preview_file.fileno())
 reader=PdfReader(pdf);assert len(reader.pages)==1
 page_text=reader.pages[0].extract_text()
 assert sorted(re.findall(r'W\d{3}',page_text))==sorted(by_id),'Every wire ID must occur exactly once in PDF'
 for ref in N['components']:assert ref in page_text,'Missing PDF component '+ref
-(DATA/'single-page-manifest.json').write_text(json.dumps({'revision':'E','drawing_type':'continuous-wiring',
+(DATA/'single-page-manifest.json').write_text(json.dumps({'revision':'F','drawing_type':'continuous-wiring',
  'pdf_pages':1,'external_wires':len(routes),'components':len(G),'netlist_sha256':sha,
  'outputs':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [svg,pdf,png]}},indent=2)+'\n')
 print(json.dumps({'pages':1,'drawing':'continuous-wiring','wires':len(routes),'components':len(G),'crossings':len(crossings),'output':str(pdf)},indent=2))
